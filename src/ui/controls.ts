@@ -22,13 +22,21 @@ export class UIController {
    * Инициализация всех обработчиков событий формы и кнопок
    */
   private initEventListeners() {
-    // 1. Загрузка файла (File Input & Drag-and-Drop)
+    // 1. Загрузка файла (File Input, Label & Drag-and-Drop)
     const fileInput = document.getElementById('imageFileInput') as HTMLInputElement;
     const dropZone = document.getElementById('imageDropZone') as HTMLElement;
-    const btnSelect = document.getElementById('btnSelectImage') as HTMLButtonElement;
+    const btnSelect = document.getElementById('btnSelectImage') as HTMLElement;
     const btnCrop = document.getElementById('btnOpenCrop') as HTMLButtonElement;
 
-    btnSelect?.addEventListener('click', () => fileInput?.click());
+    // Клавиатурная доступность для семантических label (Enter / Пробел)
+    [btnSelect, dropZone].forEach((elem) => {
+      elem?.addEventListener('keydown', (e: KeyboardEvent) => {
+        if (e.key === 'Enter' || e.key === ' ') {
+          e.preventDefault();
+          fileInput?.click();
+        }
+      });
+    });
 
     fileInput?.addEventListener('change', async () => {
       const file = fileInput.files?.[0];
@@ -300,6 +308,18 @@ export class UIController {
         cropData: null,
       });
       await this.recalculateArtwork();
+
+      // На мобильных устройствах (<= 768px) после успешной загрузки фото
+      // автоматически переключаем на вкладку «Превью листа»,
+      // чтобы пользователь сразу увидел разложенные стикеры
+      if (window.innerWidth <= 768) {
+        const tabBtnPreview = document.getElementById('tabBtnPreview');
+        if (tabBtnPreview && !tabBtnPreview.classList.contains('active')) {
+          setTimeout(() => {
+            tabBtnPreview.click();
+          }, 300);
+        }
+      }
     } catch (e: any) {
       alert(`Ошибка загрузки изображения: ${e.message}`);
     }

@@ -29,25 +29,25 @@
         <!-- 1. Изображение -->
         <section class="panel-section">
           <div class="section-title">1. Изображение стикера</div>
-          <input type="file" id="imageFileInput" accept="image/png, image/jpeg, image/webp" style="display: none;" />
+          <input type="file" id="imageFileInput" class="visually-hidden-input" accept="image/png, image/jpeg, image/webp, image/*" />
 
-          <div class="drop-zone" id="imageDropZone" title="Перетащите файл или вставьте из буфера (Ctrl+V)">
+          <label for="imageFileInput" class="drop-zone" id="imageDropZone" title="Нажмите для выбора фото или перетащите файл">
             <div id="dropZonePrompt" class="drop-zone-prompt">
               <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="#94a3b8" stroke-width="2" style="margin: 0 auto 6px;">
                 <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
                 <polyline points="17 8 12 3 7 8"></polyline>
                 <line x1="12" y1="3" x2="12" y2="15"></line>
               </svg>
-              <div>Перетащите файл PNG, JPG, WebP</div>
-              <div style="font-size: 0.75rem; color: #94a3b8; margin-top: 2px;">или нажмите Ctrl+V для вставки</div>
+              <div style="font-weight: 600; color: var(--primary);">Нажмите, чтобы выбрать фото</div>
+              <div style="font-size: 0.75rem; color: #94a3b8; margin-top: 2px;">из галереи, камеры или перетащите файл</div>
             </div>
             <img id="dropZoneThumb" class="drop-zone-thumb" style="display: none;" alt="Миниатюра" />
-          </div>
+          </label>
 
           <div class="drop-zone-actions">
-            <button type="button" class="btn btn-secondary btn-sm" id="btnSelectImage">
+            <label for="imageFileInput" class="btn btn-secondary btn-sm" id="btnSelectImage" role="button" tabindex="0">
               Выбрать изображение
-            </button>
+            </label>
             <button type="button" class="btn btn-secondary btn-sm" id="btnOpenCrop" disabled>
               Обрезать
             </button>

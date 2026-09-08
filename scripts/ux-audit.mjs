@@ -236,6 +236,71 @@ async function runAudit() {
       };
     });
 
+    // 3. ПРОВЕРКА СЕНСОРНОГО ВЫЗОВА И ЗАГРУЗКИ ФОТО НА МОБИЛЬНОМ
+    console.log('📸 Тестирование сенсорной загрузки фото на Mobile...');
+    
+    // Проверка семантической связки label -> input и атрибутов галереи
+    const touchGalleryValidation = await mobilePage.evaluate(() => {
+      const dropZone = document.getElementById('imageDropZone');
+      const btnSelect = document.getElementById('btnSelectImage');
+      const fileInput = document.getElementById('imageFileInput');
+      const style = fileInput ? window.getComputedStyle(fileInput) : null;
+
+      return {
+        dropZoneIsLabel: dropZone?.tagName === 'LABEL',
+        dropZoneHtmlFor: dropZone?.getAttribute('for'),
+        btnSelectIsLabel: btnSelect?.tagName === 'LABEL',
+        btnSelectHtmlFor: btnSelect?.getAttribute('for'),
+        inputNotDisplayNone: style ? style.display !== 'none' : false,
+        acceptHasImageWildcard: fileInput?.getAttribute('accept')?.includes('image/*') || false,
+      };
+    });
+
+    // Загрузка фото на мобильном устройстве
+    const mobileFileInput = await mobilePage.$('#imageFileInput');
+    await mobileFileInput.uploadFile(path.resolve('test-sticker.png'));
+    await new Promise((r) => setTimeout(r, 600));
+
+    // Проверка отображения миниатюры и DPI на вкладке параметров
+    await mobilePage.click('#tabBtnControls');
+    await new Promise((r) => setTimeout(r, 200));
+
+    const mobileImageStats = await mobilePage.evaluate(() => {
+      const thumb = document.getElementById('dropZoneThumb');
+      const infoPanel = document.getElementById('imageInfoPanel');
+      const btnCrop = document.getElementById('btnOpenCrop');
+      const thumbDisplay = thumb ? window.getComputedStyle(thumb).display : null;
+      const infoDisplay = infoPanel ? window.getComputedStyle(infoPanel).display : null;
+
+      return {
+        thumbVisible: thumbDisplay !== 'none' && !!thumb?.getAttribute('src'),
+        infoPanelVisible: infoDisplay !== 'none',
+        infoText: infoPanel?.innerText || '',
+        btnCropEnabled: btnCrop ? !btnCrop.disabled : false,
+      };
+    });
+
+    await mobilePage.screenshot({
+      path: path.join(OUTPUT_DIR, 'mobile-loaded-controls.png'),
+    });
+
+    // Переключение на вкладку превью с отображением наклеек
+    await mobilePage.click('#tabBtnPreview');
+    await new Promise((r) => setTimeout(r, 300));
+
+    const mobileSheetImagesCount = await mobilePage.evaluate(() => {
+      const svgImages = document.querySelectorAll('#sheetPreviewContainer svg image');
+      const countBadge = document.getElementById('mobileStickyCount')?.innerText;
+      return {
+        imagesCount: svgImages.length,
+        countBadgeText: countBadge,
+      };
+    });
+
+    await mobilePage.screenshot({
+      path: path.join(OUTPUT_DIR, 'mobile-loaded-preview.png'),
+    });
+
     report.mobile = {
       consoleErrors: mobileConsoleErrors,
       hasHorizontalOverflow: mobileOverflow,
@@ -243,9 +308,17 @@ async function runAudit() {
       previewMetrics: mobilePreviewMetrics,
       stickyBar: mobileStickyBarMetrics,
       touchTargets: touchTargetMetrics,
+      touchGalleryValidation,
+      mobilePhotoUpload: {
+        success: mobileImageStats.thumbVisible && mobileSheetImagesCount.imagesCount > 0,
+        imageStats: mobileImageStats,
+        sheetStickersRendered: mobileSheetImagesCount.imagesCount,
+      },
       screenshots: {
         controls: 'test-results/mobile-controls.png',
         preview: 'test-results/mobile-preview.png',
+        loadedControls: 'test-results/mobile-loaded-controls.png',
+        loadedPreview: 'test-results/mobile-loaded-preview.png',
       },
     };
 
