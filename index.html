@@ -1,0 +1,281 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Генератор раскладки наклеек A4 (Sticker Sheet A4 Generator)</title>
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>🏷️</text></svg>">
+</head>
+<body>
+  <div class="app-container">
+    <!-- Левая колонка: панель параметров и управления -->
+    <aside class="sidebar">
+      <div class="sidebar-header">
+        <h1>Раскладка наклеек A4</h1>
+        <span class="badge" id="layoutHeaderBadge">0 шт.</span>
+      </div>
+
+      <!-- Мобильный переключатель экранов: Параметры / Превью -->
+      <div class="mobile-tab-nav" id="mobileTabNav">
+        <button type="button" class="mobile-tab-btn active" id="tabBtnControls">
+          ⚙️ Параметры
+        </button>
+        <button type="button" class="mobile-tab-btn" id="tabBtnPreview">
+          📄 Превью листа <span class="mobile-badge" id="mobileTabBadge">0</span>
+        </button>
+      </div>
+
+      <div class="sidebar-content">
+        <!-- 1. Изображение -->
+        <section class="panel-section">
+          <div class="section-title">1. Изображение стикера</div>
+          <input type="file" id="imageFileInput" accept="image/png, image/jpeg, image/webp" style="display: none;" />
+
+          <div class="drop-zone" id="imageDropZone" title="Перетащите файл или вставьте из буфера (Ctrl+V)">
+            <div id="dropZonePrompt" class="drop-zone-prompt">
+              <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="#94a3b8" stroke-width="2" style="margin: 0 auto 6px;">
+                <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
+                <polyline points="17 8 12 3 7 8"></polyline>
+                <line x1="12" y1="3" x2="12" y2="15"></line>
+              </svg>
+              <div>Перетащите файл PNG, JPG, WebP</div>
+              <div style="font-size: 0.75rem; color: #94a3b8; margin-top: 2px;">или нажмите Ctrl+V для вставки</div>
+            </div>
+            <img id="dropZoneThumb" class="drop-zone-thumb" style="display: none;" alt="Миниатюра" />
+          </div>
+
+          <div class="drop-zone-actions">
+            <button type="button" class="btn btn-secondary btn-sm" id="btnSelectImage">
+              Выбрать изображение
+            </button>
+            <button type="button" class="btn btn-secondary btn-sm" id="btnOpenCrop" disabled>
+              Обрезать
+            </button>
+          </div>
+
+          <div id="imageInfoPanel" style="display: none;"></div>
+        </section>
+
+        <!-- 2. Размер стикера -->
+        <section class="panel-section">
+          <div class="section-title">2. Размер стикера</div>
+          <div class="form-row">
+            <div class="form-col">
+              <label for="stickerWidth">Ширина (мм)</label>
+              <input type="number" id="stickerWidth" value="54.0" step="0.1" min="1" max="297" />
+            </div>
+            <div class="form-col">
+              <label for="stickerHeight">Высота (мм)</label>
+              <input type="number" id="stickerHeight" value="85.0" step="0.1" min="1" max="297" />
+            </div>
+          </div>
+
+          <label class="checkbox-label">
+            <input type="checkbox" id="lockAspectRatio" checked />
+            🔒 Сохранять пропорции
+          </label>
+
+          <div class="form-col">
+            <label>Режим заполнения</label>
+            <div class="segmented-control">
+              <input type="radio" id="sizingFill" name="sizingMode" value="fill" checked />
+              <label for="sizingFill" title="Изображение полностью заполняет стикер (лишнее обрезается)">Crop / Fill</label>
+              <input type="radio" id="sizingFit" name="sizingMode" value="fit" />
+              <label for="sizingFit" title="Всё изображение помещается целиком внутри заданного размера">Fit</label>
+            </div>
+          </div>
+        </section>
+
+        <!-- 3. Лист бумаги и поля -->
+        <section class="panel-section">
+          <div class="section-title">3. Параметры листа A4</div>
+          <div class="form-col">
+            <label>Ориентация страницы</label>
+            <div class="segmented-control">
+              <input type="radio" id="orientPortrait" name="pageOrientation" value="portrait" checked />
+              <label for="orientPortrait">Книжная (210 × 297)</label>
+              <input type="radio" id="orientLandscape" name="pageOrientation" value="landscape" />
+              <label for="orientLandscape">Альбомная (297 × 210)</label>
+            </div>
+          </div>
+
+          <div class="form-col">
+            <div style="display: flex; justify-content: space-between; align-items: center;">
+              <label>Поля листа (Margins)</label>
+              <label class="checkbox-label" style="font-size: 0.78rem;">
+                <input type="checkbox" id="linkMargins" checked /> Связать все поля
+              </label>
+            </div>
+
+            <!-- Связанные поля -->
+            <div id="marginLinkedGroup">
+              <input type="number" id="marginAll" value="5.0" step="0.5" min="0" max="100" />
+            </div>
+
+            <!-- Раздельные поля -->
+            <div id="marginUnlinkedGroup" class="form-grid-4" style="display: none;">
+              <div>
+                <label for="marginTop">Верх (мм)</label>
+                <input type="number" id="marginTop" value="5.0" step="0.5" min="0" />
+              </div>
+              <div>
+                <label for="marginBottom">Низ (мм)</label>
+                <input type="number" id="marginBottom" value="5.0" step="0.5" min="0" />
+              </div>
+              <div>
+                <label for="marginLeft">Лево (мм)</label>
+                <input type="number" id="marginLeft" value="5.0" step="0.5" min="0" />
+              </div>
+              <div>
+                <label for="marginRight">Право (мм)</label>
+                <input type="number" id="marginRight" value="5.0" step="0.5" min="0" />
+              </div>
+            </div>
+          </div>
+
+          <!-- Предупреждение о printable area < 3 мм -->
+          <div id="printableAreaWarning" class="alert alert-warning" style="display: none;"></div>
+
+          <!-- Зазоры между стикерами -->
+          <div class="form-col">
+            <div style="display: flex; justify-content: space-between; align-items: center;">
+              <label>Расстояние между стикерами (Gap)</label>
+              <label class="checkbox-label" style="font-size: 0.78rem;">
+                <input type="checkbox" id="linkGaps" checked /> Связать зазоры
+              </label>
+            </div>
+
+            <div id="gapLinkedGroup">
+              <input type="number" id="gapAll" value="3.0" step="0.5" min="0" max="50" />
+            </div>
+
+            <div id="gapUnlinkedGroup" class="form-grid-4" style="display: none;">
+              <div>
+                <label for="gapX">По горизонтали (мм)</label>
+                <input type="number" id="gapX" value="3.0" step="0.5" min="0" />
+              </div>
+              <div>
+                <label for="gapY">По вертикали (мм)</label>
+                <input type="number" id="gapY" value="3.0" step="0.5" min="0" />
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <!-- 4. Раскладка и оптимизация -->
+        <section class="panel-section">
+          <div class="section-title">4. Раскладка и сетка</div>
+
+          <label class="checkbox-label">
+            <input type="checkbox" id="allowRotation" checked />
+            ☑ Автоматически выбрать наиболее экономичную ориентацию
+          </label>
+
+          <div class="form-row">
+            <div class="form-col" style="flex: 2;">
+              <label for="requestedCopies">Количество копий</label>
+              <input type="text" id="requestedCopies" value="AUTO" placeholder="AUTO или число" />
+            </div>
+            <div class="form-col" style="flex: 1; justify-content: flex-end;">
+              <button type="button" class="btn btn-secondary btn-sm" id="btnAutoCopies" style="height: 36px;">
+                Максимум
+              </button>
+            </div>
+          </div>
+
+          <div id="layoutSummaryStats"></div>
+        </section>
+
+        <!-- 5. Метки реза и Bleed -->
+        <section class="panel-section">
+          <div class="section-title">5. Полиграфия и резка</div>
+          <div class="form-row">
+            <div class="form-col">
+              <label class="checkbox-label">
+                <input type="checkbox" id="cutMarksEnabled" />
+                Метки реза (Cut marks)
+              </label>
+            </div>
+            <div class="form-col">
+              <label for="bleedSelect">Bleed (вылет)</label>
+              <select id="bleedSelect">
+                <option value="0">0 мм (без вылета)</option>
+                <option value="1">1 мм</option>
+                <option value="2">2 мм</option>
+                <option value="3">3 мм</option>
+              </select>
+            </div>
+          </div>
+        </section>
+
+        <!-- 6. Действия и экспорт -->
+        <section class="panel-section" style="border-color: var(--primary);">
+          <div class="section-title" style="color: var(--primary);">6. Экспорт и печать</div>
+          
+          <button type="button" class="btn btn-primary btn-lg btn-block" id="btnDownloadPdf">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
+              <polyline points="7 10 12 15 17 10"></polyline>
+              <line x1="12" y1="15" x2="12" y2="3"></line>
+            </svg>
+            Скачать PDF для печати
+          </button>
+
+          <button type="button" class="btn btn-secondary btn-block" id="btnPrintPdf">
+            🖨️ Печать
+          </button>
+
+          <div class="print-notice">
+            💡 <strong>Важно при печати:</strong> В диалоге принтера обязательно установите масштаб <strong>«100%»</strong> или <strong>«Реальный размер»</strong> (Actual size). Не используйте режим «По размеру страницы» (Fit to page), чтобы сохранить точные размеры наклеек в мм!
+          </div>
+
+          <button type="button" class="btn btn-secondary btn-sm btn-block" id="btnCalibrationPdf" style="margin-top: 4px;">
+            📏 Проверить масштаб принтера (Калибровка A4)
+          </button>
+
+          <button type="button" class="btn btn-secondary btn-sm btn-block" id="btnResetSettings" style="color: #64748b;">
+            Сбросить настройки
+          </button>
+        </section>
+      </div>
+    </aside>
+
+    <!-- Правая колонка: живой предпросмотр листа A4 -->
+    <main class="preview-area">
+      <div class="preview-header">
+        <div class="preview-stats-bar" id="previewHeaderStats">
+          Загрузка листа A4...
+        </div>
+        <div class="preview-header-scale">
+          <span class="scale-badge">
+            Масштаб печати: 100%
+          </span>
+        </div>
+      </div>
+
+        <div class="sheet-shadow-wrapper" id="sheetPreviewContainer">
+          <!-- SVG динамически рендерится через previewRenderer.ts -->
+        </div>
+      </div>
+    </main>
+
+    <!-- Мобильная плавающая панель действий -->
+    <div class="mobile-sticky-bar" id="mobileStickyBar">
+      <div class="mobile-sticky-info">
+        <span id="mobileStickyCount" class="count">0 шт.</span>
+        <span id="mobileStickyGrid" class="grid">Сетка: 0×0</span>
+      </div>
+      <button type="button" class="btn btn-primary btn-mobile-cta" id="btnMobileDownloadPdf">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
+          <polyline points="7 10 12 15 17 10"></polyline>
+          <line x1="12" y1="15" x2="12" y2="3"></line>
+        </svg>
+        Скачать PDF
+      </button>
+    </div>
+  </div>
+
+  <script type="module" src="/src/app.ts"></script>
+</body>
+</html>

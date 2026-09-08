@@ -1,0 +1,781 @@
+/* Основные переменные и сброс */
+:root {
+  --primary: #2563eb;
+  --primary-hover: #1d4ed8;
+  --primary-light: #eff6ff;
+  --text-main: #0f172a;
+  --text-muted: #64748b;
+  --border: #e2e8f0;
+  --bg-app: #f8fafc;
+  --bg-card: #ffffff;
+  --radius-sm: 6px;
+  --radius-md: 10px;
+  --radius-lg: 14px;
+  --shadow-sm: 0 1px 2px 0 rgb(0 0 0 / 0.05);
+  --shadow-md: 0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1);
+  --shadow-sheet: 0 10px 25px -5px rgb(0 0 0 / 0.15), 0 8px 10px -6px rgb(0 0 0 / 0.1);
+}
+
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+body {
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+  color: var(--text-main);
+  background-color: var(--bg-app);
+  line-height: 1.5;
+  -webkit-font-smoothing: antialiased;
+}
+
+/* Главный контейнер приложения */
+.app-container {
+  display: flex;
+  height: 100vh;
+  overflow: hidden;
+}
+
+/* Левая панель настроек */
+.sidebar {
+  width: 440px;
+  min-width: 380px;
+  background-color: var(--bg-card);
+  border-right: 1px solid var(--border);
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+}
+
+.sidebar-header {
+  padding: 18px 24px;
+  border-bottom: 1px solid var(--border);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.sidebar-header h1 {
+  font-size: 1.15rem;
+  font-weight: 700;
+  color: var(--text-main);
+}
+
+.sidebar-header .badge {
+  font-size: 0.75rem;
+  background: var(--primary-light);
+  color: var(--primary);
+  padding: 3px 8px;
+  border-radius: 9999px;
+  font-weight: 600;
+}
+
+.sidebar-content {
+  flex: 1;
+  overflow-y: auto;
+  padding: 20px 24px;
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+/* Секции панели настроек */
+.panel-section {
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-md);
+  padding: 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.section-title {
+  font-size: 0.88rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  color: var(--text-muted);
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+/* Drag & Drop зона */
+.drop-zone {
+  border: 2px dashed #cbd5e1;
+  border-radius: var(--radius-md);
+  padding: 16px;
+  text-align: center;
+  cursor: pointer;
+  background: #f8fafc;
+  transition: all 0.2s ease;
+  position: relative;
+}
+
+.drop-zone.drag-over {
+  border-color: var(--primary);
+  background: var(--primary-light);
+}
+
+.drop-zone-thumb {
+  max-width: 100%;
+  max-height: 120px;
+  object-fit: contain;
+  margin: 0 auto;
+  border-radius: 4px;
+  box-shadow: var(--shadow-sm);
+}
+
+.drop-zone-prompt {
+  font-size: 0.85rem;
+  color: var(--text-muted);
+}
+
+.drop-zone-actions {
+  display: flex;
+  gap: 8px;
+  justify-content: center;
+  margin-top: 10px;
+}
+
+/* Формы и поля ввода */
+.form-row {
+  display: flex;
+  gap: 10px;
+  align-items: center;
+}
+
+.form-col {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.form-grid-4 {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 8px;
+}
+
+label {
+  font-size: 0.82rem;
+  font-weight: 500;
+  color: var(--text-muted);
+}
+
+input[type="number"],
+input[type="text"],
+select {
+  width: 100%;
+  padding: 7px 10px;
+  font-size: 0.9rem;
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+  background: #ffffff;
+  color: var(--text-main);
+  outline: none;
+  transition: border-color 0.15s;
+}
+
+input[type="number"]:focus,
+input[type="text"]:focus,
+select:focus {
+  border-color: var(--primary);
+  box-shadow: 0 0 0 2px rgba(37, 99, 235, 0.15);
+}
+
+.checkbox-label {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 0.85rem;
+  font-weight: 500;
+  cursor: pointer;
+  user-select: none;
+  color: var(--text-main);
+}
+
+.checkbox-label input[type="checkbox"] {
+  width: 16px;
+  height: 16px;
+  accent-color: var(--primary);
+  cursor: pointer;
+}
+
+/* Переключатели сегментов (Radio Button Group) */
+.segmented-control {
+  display: flex;
+  background: #e2e8f0;
+  padding: 3px;
+  border-radius: var(--radius-sm);
+  gap: 3px;
+}
+
+.segmented-control label {
+  flex: 1;
+  text-align: center;
+  font-size: 0.82rem;
+  padding: 5px 8px;
+  border-radius: 4px;
+  cursor: pointer;
+  color: var(--text-muted);
+  font-weight: 600;
+  transition: all 0.15s;
+}
+
+.segmented-control input[type="radio"] {
+  display: none;
+}
+
+.segmented-control input[type="radio"]:checked + label {
+  background: #ffffff;
+  color: var(--primary);
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
+}
+
+/* Статистика DPI */
+.image-stats-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  font-size: 0.78rem;
+  color: var(--text-muted);
+  margin-bottom: 8px;
+}
+
+.dpi-badge-wrapper {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.dpi-badge {
+  display: inline-block;
+  padding: 4px 8px;
+  border-radius: var(--radius-sm);
+  font-size: 0.82rem;
+  font-weight: 600;
+}
+
+.dpi-description {
+  font-size: 0.74rem;
+  color: var(--text-muted);
+}
+
+/* Карточка результатов раскладки */
+.stats-card {
+  background: var(--primary-light);
+  border: 1px solid #bfdbfe;
+  border-radius: var(--radius-md);
+  padding: 14px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.stats-main-number {
+  display: flex;
+  align-items: baseline;
+  gap: 6px;
+}
+
+.stats-main-number .number {
+  font-size: 2.2rem;
+  font-weight: 800;
+  color: var(--primary);
+  line-height: 1;
+}
+
+.stats-main-number .label {
+  font-size: 0.95rem;
+  font-weight: 600;
+  color: var(--text-main);
+}
+
+.stats-details {
+  font-size: 0.82rem;
+  color: #334155;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.recommendation-box {
+  background: #ffffff;
+  padding: 6px 10px;
+  border-radius: var(--radius-sm);
+  font-size: 0.78rem;
+  font-weight: 600;
+  color: #1e40af;
+  border: 1px solid #dbeafe;
+}
+
+/* Кнопки */
+.btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  padding: 8px 14px;
+  font-size: 0.88rem;
+  font-weight: 600;
+  border-radius: var(--radius-sm);
+  border: 1px solid transparent;
+  cursor: pointer;
+  transition: all 0.15s ease;
+  user-select: none;
+}
+
+.btn-primary {
+  background: var(--primary);
+  color: #ffffff;
+}
+
+.btn-primary:hover {
+  background: var(--primary-hover);
+}
+
+.btn-secondary {
+  background: #ffffff;
+  border-color: var(--border);
+  color: var(--text-main);
+}
+
+.btn-secondary:hover {
+  background: #f1f5f9;
+}
+
+.btn-sm {
+  padding: 4px 10px;
+  font-size: 0.8rem;
+}
+
+.btn-lg {
+  padding: 12px 18px;
+  font-size: 1rem;
+}
+
+.btn-block {
+  width: 100%;
+}
+
+.btn:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+/* Предупреждения и алерты */
+.alert {
+  padding: 10px 12px;
+  border-radius: var(--radius-sm);
+  font-size: 0.8rem;
+  line-height: 1.4;
+}
+
+.alert-warning {
+  background: #fffbeb;
+  border: 1px solid #fef3c7;
+  color: #b45309;
+}
+
+.alert-error {
+  background: #fef2f2;
+  border: 1px solid #fee2e2;
+  color: #b91c1c;
+}
+
+.print-notice {
+  font-size: 0.78rem;
+  background: #f0fdf4;
+  border: 1px solid #bbf7d0;
+  color: #166534;
+  padding: 10px;
+  border-radius: var(--radius-sm);
+  line-height: 1.4;
+}
+
+/* Правая область — Live Preview A4 */
+.preview-area {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  background: #cbd5e1;
+  height: 100%;
+  overflow: hidden;
+}
+
+.preview-header {
+  background: #ffffff;
+  padding: 12px 24px;
+  border-bottom: 1px solid var(--border);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.preview-stats-bar {
+  font-size: 0.82rem;
+  color: var(--text-muted);
+  display: flex;
+  gap: 8px;
+  align-items: center;
+  flex-wrap: wrap;
+}
+
+.preview-stats-bar .stat-chip {
+  display: inline-flex;
+  align-items: center;
+}
+
+.preview-stats-bar .stat-dot {
+  color: #94a3b8;
+}
+
+.scale-badge {
+  font-size: 0.8rem;
+  font-weight: 600;
+  color: var(--text-muted);
+  background: #f1f5f9;
+  padding: 4px 8px;
+  border-radius: 4px;
+  white-space: nowrap;
+}
+
+.preview-container {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 30px;
+  overflow: auto;
+}
+
+.sheet-shadow-wrapper {
+  box-shadow: var(--shadow-sheet);
+  background: #ffffff;
+  width: min(85vw, 560px);
+  aspect-ratio: 210 / 297;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 4px;
+  margin: auto;
+  position: relative;
+  transition: aspect-ratio 0.2s ease, width 0.2s ease;
+}
+
+.sheet-shadow-wrapper.landscape {
+  aspect-ratio: 297 / 210;
+  width: min(88vw, 760px);
+}
+
+.sheet-svg {
+  width: 100%;
+  height: 100%;
+  display: block;
+}
+
+/* Модальное окно кадрирования (Crop Modal) */
+.crop-modal-backdrop {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.75);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+  backdrop-filter: blur(4px);
+}
+
+.crop-modal-window {
+  background: #ffffff;
+  width: 92vw;
+  max-width: 800px;
+  height: 85vh;
+  border-radius: var(--radius-lg);
+  box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.35);
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+}
+
+.crop-modal-header {
+  padding: 16px 20px;
+  border-bottom: 1px solid var(--border);
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.crop-badge-ratio {
+  font-size: 0.82rem;
+  background: #f1f5f9;
+  color: var(--text-main);
+  padding: 4px 10px;
+  border-radius: 999px;
+  font-weight: 600;
+}
+
+.crop-modal-body {
+  flex: 1;
+  background: #0f172a;
+  position: relative;
+  overflow: hidden;
+}
+
+.crop-image-container {
+  width: 100%;
+  height: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.crop-image-container img {
+  max-width: 100%;
+  max-height: 100%;
+  display: block;
+}
+
+.crop-modal-toolbar {
+  padding: 14px 20px;
+  border-top: 1px solid var(--border);
+  background: #ffffff;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.spacer {
+  flex: 1;
+}
+
+/* Мобильный таб-бар и плавающий бар действий */
+.mobile-tab-nav {
+  display: none;
+  background: #ffffff;
+  border-bottom: 1px solid var(--border);
+  padding: 8px 16px;
+  gap: 8px;
+  position: sticky;
+  top: 0;
+  z-index: 40;
+}
+
+.mobile-tab-btn {
+  flex: 1;
+  min-height: 44px;
+  padding: 10px 14px;
+  font-size: 0.92rem;
+  font-weight: 600;
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+  background: #f8fafc;
+  color: var(--text-muted);
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  transition: all 0.15s ease;
+}
+
+.mobile-tab-btn.active {
+  background: var(--primary);
+  color: #ffffff;
+  border-color: var(--primary);
+  box-shadow: var(--shadow-sm);
+}
+
+.mobile-badge {
+  background: rgba(0, 0, 0, 0.18);
+  color: inherit;
+  padding: 2px 7px;
+  border-radius: 999px;
+  font-size: 0.75rem;
+  font-weight: 700;
+}
+
+.mobile-sticky-bar {
+  display: none;
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  background: #ffffff;
+  border-top: 1px solid var(--border);
+  box-shadow: 0 -4px 16px rgba(0, 0, 0, 0.1);
+  padding: 10px 16px;
+  z-index: 50;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+}
+
+.mobile-sticky-info {
+  display: flex;
+  flex-direction: column;
+}
+
+.mobile-sticky-info .count {
+  font-size: 1.15rem;
+  font-weight: 800;
+  color: var(--primary);
+  line-height: 1.1;
+}
+
+.mobile-sticky-info .grid {
+  font-size: 0.78rem;
+  color: var(--text-muted);
+  font-weight: 500;
+}
+
+.btn-mobile-cta {
+  min-height: 44px;
+  padding: 10px 18px;
+  font-size: 0.95rem;
+  font-weight: 700;
+}
+
+/* Адаптивность для экранов планшетов и смартфонов (<= 1024px) */
+@media (max-width: 1024px) {
+  .app-container {
+    flex-direction: column;
+    height: auto;
+    min-height: 100vh;
+    padding-bottom: 74px; /* Отступ под плавающий бар */
+  }
+
+  .mobile-tab-nav {
+    display: flex;
+  }
+
+  .mobile-sticky-bar {
+    display: flex;
+  }
+
+  .sidebar {
+    width: 100%;
+    min-width: 100%;
+    height: auto;
+    border-right: none;
+  }
+
+  .sidebar-content {
+    overflow-y: visible;
+    height: auto;
+    padding: 16px;
+  }
+
+  .preview-area {
+    min-height: calc(100vh - 120px);
+    height: auto;
+  }
+
+  .preview-header {
+    padding: 8px 12px;
+    display: flex;
+    flex-direction: row;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: space-between;
+    gap: 6px;
+  }
+
+  .preview-stats-bar {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 4px;
+    font-size: 0.74rem;
+    flex: 1;
+  }
+
+  .preview-stats-bar .stat-chip {
+    background: #f1f5f9;
+    padding: 3px 6px;
+    border-radius: 4px;
+    display: inline-flex;
+    align-items: center;
+  }
+
+  .preview-stats-bar .stat-dot {
+    display: none;
+  }
+
+  .preview-header-scale .scale-badge {
+    font-size: 0.72rem;
+    padding: 3px 6px;
+  }
+
+  .preview-container {
+    padding: 12px 12px 90px 12px; /* Запас снизу под плавающий бар действий */
+  }
+
+  .sheet-shadow-wrapper {
+    width: min(92vw, 420px);
+  }
+
+  /* Переключение вкладок на мобильных */
+  body.tab-active-controls .preview-area {
+    display: none !important;
+  }
+
+  body.tab-active-preview .sidebar-content {
+    display: none !important;
+  }
+
+  body.tab-active-preview .preview-area {
+    display: flex !important;
+  }
+
+  /* Сенсорные зоны (Touch Targets >= 44px) */
+  .btn {
+    min-height: 44px;
+  }
+
+  .btn-sm {
+    min-height: 44px;
+    padding: 10px 16px;
+    font-size: 0.88rem;
+  }
+
+  input[type="number"],
+  input[type="text"],
+  select {
+    min-height: 44px;
+    font-size: 16px !important; /* Предотвращает нежелательный зум на iOS */
+    padding: 10px 12px;
+  }
+
+  .checkbox-label {
+    min-height: 44px;
+    padding: 6px 0;
+  }
+
+  .segmented-control label {
+    min-height: 42px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 0.88rem;
+  }
+
+  /* Модальное окно на мобильных */
+  .crop-modal-window {
+    width: 100vw;
+    height: 100vh;
+    max-width: 100vw;
+    border-radius: 0;
+  }
+
+  .crop-modal-toolbar {
+    flex-wrap: wrap;
+    gap: 6px;
+  }
+
+  .crop-modal-toolbar .btn {
+    min-height: 44px;
+  }
+}
