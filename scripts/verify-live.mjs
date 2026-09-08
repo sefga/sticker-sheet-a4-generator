@@ -15,14 +15,18 @@ async function testLive() {
 
   console.log('Navigating to live GitHub Pages...');
   await page.goto('https://sefga.github.io/sticker-sheet-a4-generator/', { waitUntil: 'networkidle0', timeout: 30000 });
-  const title = await page.title();
-  console.log('Page title:', title);
-  console.log('Console errors count:', errors.length);
-  if (errors.length > 0) console.log('Errors:', errors);
+  let title = await page.title();
+  console.log('GitHub Pages title:', title, '| Errors:', errors.length);
+
+  console.log('Navigating to live Vercel...');
+  errors.length = 0;
+  await page.goto('https://sticker-sheet-a4-generator.vercel.app', { waitUntil: 'networkidle0', timeout: 30000 });
+  title = await page.title();
+  console.log('Vercel title:', title, '| Errors:', errors.length);
 
   await page.setViewport({ width: 1280, height: 800 });
-  await page.screenshot({ path: 'test-results/live-desktop.png' });
-  console.log('Screenshot saved to test-results/live-desktop.png');
+  await page.screenshot({ path: 'test-results/live-vercel.png' });
+  console.log('Screenshot saved to test-results/live-vercel.png');
 
   await browser.close();
 }

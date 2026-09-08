@@ -1,9 +1,13 @@
 # Sticker Sheet A4 Generator (Генератор раскладки наклеек на листе A4)
 
 [![Deploy to GitHub Pages](https://github.com/sefga/sticker-sheet-a4-generator/actions/workflows/deploy.yml/badge.svg)](https://github.com/sefga/sticker-sheet-a4-generator/actions/workflows/deploy.yml)
-[![Live Demo](https://img.shields.io/badge/Live%20Demo-GitHub%20Pages-brightgreen?logo=github)](https://sefga.github.io/sticker-sheet-a4-generator/)
+[![Vercel Deployment](https://img.shields.io/badge/Vercel-Live%20Demo-black?logo=vercel)](https://sticker-sheet-a4-generator.vercel.app)
+[![Deploy to Netlify](https://www.netlify.com/img/deploy/button.svg)](https://app.netlify.com/start/deploy?repository=https://github.com/sefga/sticker-sheet-a4-generator)
 
-> 🌐 **Онлайн-версия приложения:** [https://sefga.github.io/sticker-sheet-a4-generator/](https://sefga.github.io/sticker-sheet-a4-generator/)
+> 🌐 **Онлайн-версии приложения:**
+> - **GitHub Pages:** [https://sefga.github.io/sticker-sheet-a4-generator/](https://sefga.github.io/sticker-sheet-a4-generator/)
+> - **Vercel:** [https://sticker-sheet-a4-generator.vercel.app](https://sticker-sheet-a4-generator.vercel.app)
+> - **Netlify:** [Развернуть в 1 клик (Deploy to Netlify)](https://app.netlify.com/start/deploy?repository=https://github.com/sefga/sticker-sheet-a4-generator)
 
 Автономное клиентское веб-приложение для автоматической подготовки и верстки листов A4 со стикерами для печати с физической точностью геометрии (в миллиметрах).
 
