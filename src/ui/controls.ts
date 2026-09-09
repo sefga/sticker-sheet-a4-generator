@@ -471,18 +471,31 @@ export class UIController {
 
     // По умолчанию на мобильных активны параметры
     document.body.classList.add('tab-active-controls');
+    let lastActiveTab: 'controls' | 'preview' = 'controls';
 
     const guideModalBackdrop = document.getElementById('guideModalBackdrop');
     const btnGuideModalClose = document.getElementById('btnGuideModalClose');
+    const btnGuideBack = document.getElementById('btnGuideBack');
+    const btnGuideDoneBottom = document.getElementById('btnGuideDoneBottom');
 
     const openGuideModal = () => {
-      guideModalBackdrop?.classList.add('open');
-      guideModalBackdrop?.setAttribute('aria-hidden', 'false');
+      if (window.innerWidth <= 1024) {
+        activateTab('guide');
+      } else {
+        guideModalBackdrop?.classList.add('open');
+        guideModalBackdrop?.setAttribute('aria-hidden', 'false');
+      }
     };
 
-    const closeGuideModal = () => {
+    const dismissGuide = () => {
       guideModalBackdrop?.classList.remove('open');
       guideModalBackdrop?.setAttribute('aria-hidden', 'true');
+      document.body.classList.remove('tab-active-guide');
+      tabBtnGuide?.classList.remove('active');
+
+      if (window.innerWidth <= 1024) {
+        activateTab(lastActiveTab);
+      }
     };
 
     const activateTab = (tab: 'controls' | 'preview' | 'guide') => {
@@ -492,15 +505,21 @@ export class UIController {
       tabBtnGuide?.classList.remove('active');
 
       if (tab === 'controls') {
+        lastActiveTab = 'controls';
         document.body.classList.add('tab-active-controls');
         tabBtnControls?.classList.add('active');
       } else if (tab === 'preview') {
+        lastActiveTab = 'preview';
         document.body.classList.add('tab-active-preview');
         tabBtnPreview?.classList.add('active');
         window.scrollTo({ top: 0, behavior: 'smooth' });
       } else if (tab === 'guide') {
         document.body.classList.add('tab-active-guide');
         tabBtnGuide?.classList.add('active');
+        const guideScroll = document.querySelector('.guide-modal-scroll');
+        if (guideScroll) {
+          guideScroll.scrollTop = 0;
+        }
         window.scrollTo({ top: 0, behavior: 'smooth' });
       }
     };
@@ -512,31 +531,41 @@ export class UIController {
     // Открытие модального окна Справки на десктопе или переключение таба на мобильных
     btnGuideLink?.addEventListener('click', (e) => {
       e.preventDefault();
-      if (window.innerWidth <= 1024) {
-        activateTab('guide');
-      } else {
-        openGuideModal();
-      }
+      openGuideModal();
     });
 
-    // Закрытие модального окна Справки
-    btnGuideModalClose?.addEventListener('click', () => {
-      if (window.innerWidth <= 1024) {
-        activateTab('controls');
-      } else {
-        closeGuideModal();
-      }
+    // Мульти-выход из Справки: крестик, мобильная кнопка назад и кнопка внизу контента
+    btnGuideModalClose?.addEventListener('click', (e) => {
+      e.preventDefault();
+      dismissGuide();
     });
 
+    btnGuideBack?.addEventListener('click', (e) => {
+      e.preventDefault();
+      dismissGuide();
+    });
+
+    btnGuideDoneBottom?.addEventListener('click', (e) => {
+      e.preventDefault();
+      dismissGuide();
+    });
+
+    // Закрытие по клику вне модального окна (на затемненный оверлей)
     guideModalBackdrop?.addEventListener('click', (e) => {
-      if (e.target === guideModalBackdrop) {
-        closeGuideModal();
+      const modalWindow = document.querySelector('.guide-modal-window');
+      if (modalWindow && !modalWindow.contains(e.target as Node)) {
+        dismissGuide();
       }
     });
 
+    // Закрытие по нажатию клавиши Escape в любом режиме (десктоп или мобильный)
     window.addEventListener('keydown', (e) => {
-      if (e.key === 'Escape' && guideModalBackdrop?.classList.contains('open')) {
-        closeGuideModal();
+      const isGuideOpen =
+        guideModalBackdrop?.classList.contains('open') ||
+        document.body.classList.contains('tab-active-guide');
+
+      if (e.key === 'Escape' && isGuideOpen) {
+        dismissGuide();
       }
     });
 

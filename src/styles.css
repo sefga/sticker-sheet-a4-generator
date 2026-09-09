@@ -737,19 +737,44 @@ input.input-has-error {
 }
 
 .guide-modal-header {
-  padding: 16px 24px;
+  padding: 14px 20px;
   border-bottom: 1px solid var(--border);
   display: flex;
   align-items: center;
   justify-content: space-between;
   background: #f8fafc;
   flex-shrink: 0;
+  position: sticky;
+  top: 0;
+  z-index: 20;
 }
 
 .guide-modal-title-wrap {
   display: flex;
   align-items: center;
   gap: 12px;
+}
+
+.btn-guide-back {
+  display: none;
+  align-items: center;
+  gap: 4px;
+  min-height: 44px;
+  padding: 8px 14px;
+  font-size: 0.9rem;
+  font-weight: 600;
+  border-radius: var(--radius-sm);
+  background: #ffffff;
+  border: 1px solid var(--border);
+  color: var(--text-main);
+  cursor: pointer;
+  transition: all 0.15s ease;
+  box-shadow: var(--shadow-sm);
+}
+
+.btn-guide-back:hover {
+  background: #f1f5f9;
+  border-color: #cbd5e1;
 }
 
 .guide-modal-logo {
@@ -770,21 +795,59 @@ input.input-has-error {
   background: #e2e8f0;
   border: none;
   border-radius: 50%;
-  width: 32px;
-  height: 32px;
+  width: 48px;
+  height: 48px;
+  min-width: 48px;
+  min-height: 48px;
   display: flex;
   align-items: center;
   justify-content: center;
-  font-size: 0.95rem;
+  font-size: 1.15rem;
   font-weight: 700;
   color: var(--text-main);
   cursor: pointer;
   transition: all 0.15s ease;
+  flex-shrink: 0;
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.06);
 }
 
 .guide-modal-close:hover {
   background: #cbd5e1;
-  transform: scale(1.05);
+  transform: scale(1.06);
+}
+
+.guide-modal-close:active {
+  transform: scale(0.95);
+}
+
+.guide-done-wrapper {
+  margin: 36px 0 24px 0;
+  display: flex;
+  justify-content: center;
+  padding: 20px 16px;
+  background: #f8fafc;
+  border: 1px dashed var(--border);
+  border-radius: var(--radius);
+}
+
+.btn-guide-done-bottom {
+  min-height: 48px;
+  padding: 12px 28px;
+  font-size: 0.98rem;
+  font-weight: 700;
+  border-radius: 999px;
+  box-shadow: 0 4px 14px rgba(37, 99, 235, 0.25);
+  cursor: pointer;
+  transition: all 0.18s ease;
+}
+
+.btn-guide-done-bottom:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 6px 18px rgba(37, 99, 235, 0.35);
+}
+
+.btn-guide-done-bottom:active {
+  transform: translateY(0);
 }
 
 .guide-modal-scroll {
@@ -1317,6 +1380,20 @@ input.input-has-error {
 
   body.tab-active-guide .guide-modal-scroll {
     padding: 20px 16px 90px 16px !important;
+  }
+
+  .btn-guide-back {
+    display: inline-flex;
+  }
+
+  body.tab-active-guide .guide-modal-header {
+    padding: 10px 14px;
+    background: #ffffff;
+    box-shadow: 0 1px 4px rgba(0, 0, 0, 0.06);
+  }
+
+  body.tab-active-guide .guide-modal-subtitle {
+    display: none; /* Скрываем субтитр на мобильных, чтобы не теснить заголовок и кнопки */
   }
 
   body.tab-active-guide .mobile-sticky-bar {

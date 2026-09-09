@@ -32,8 +32,9 @@
     "critic": "node scripts/apple-design-critic.mjs",
     "critic:5": "node scripts/critic-5-cycles.mjs",
     "critic:personas": "node scripts/multi-persona-critic.mjs",
+    "critic:guide-ux": "node scripts/guide-close-ux-critic.mjs",
     "audit:speed": "node scripts/performance-critic.mjs",
-    "eval": "vitest run && tsc && vite build && node scripts/apple-design-critic.mjs && node scripts/performance-critic.mjs && node scripts/critic-5-cycles.mjs && node scripts/multi-persona-critic.mjs",
+    "eval": "vitest run && tsc && vite build && node scripts/apple-design-critic.mjs && node scripts/performance-critic.mjs && node scripts/guide-close-ux-critic.mjs && node scripts/critic-5-cycles.mjs && node scripts/multi-persona-critic.mjs",
     "screenshots": "node scripts/capture-readme-screenshots.mjs",
     "deploy:netlify": "npx netlify-cli deploy --prod --dir=dist"
   },

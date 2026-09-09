@@ -18,6 +18,9 @@ export const translations = {
     btnGuide: '📖 Справка & FAQ',
     guideModalTitle: 'Справка & Руководство StickerFit',
     guideModalSub: 'Справочный центр и калькулятор',
+    btnGuideDone: '✓ Понятно, вернуться к раскладке',
+    btnGuideBack: '← Назад',
+    btnGuideCloseAria: 'Закрыть окно справки',
 
     // Мобильные вкладки
     tabControls: '⚙️ Параметры',
@@ -212,6 +215,9 @@ export const translations = {
     btnGuide: '📖 Guide & FAQ',
     guideModalTitle: 'StickerFit Guide & Documentation',
     guideModalSub: 'Help Center & Grid Calculator',
+    btnGuideDone: '✓ Done, back to layout',
+    btnGuideBack: '← Back',
+    btnGuideCloseAria: 'Close help modal',
 
     // Mobile tabs
     tabControls: '⚙️ Settings',

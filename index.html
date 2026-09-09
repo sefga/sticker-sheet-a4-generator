@@ -383,10 +383,13 @@
       <div class="guide-modal-window" role="dialog" aria-modal="true" aria-labelledby="guideHeroTitle">
         <div class="guide-modal-header">
           <div class="guide-modal-title-wrap">
+            <button type="button" class="btn-guide-back" id="btnGuideBack" data-i18n="btnGuideBack" aria-label="Назад к раскладке">
+              ← Назад
+            </button>
             <span class="guide-modal-logo">🏷️ StickerFit</span>
             <span class="guide-modal-subtitle" data-i18n="guideModalSub">Справочный центр и калькулятор</span>
           </div>
-          <button type="button" class="guide-modal-close" id="btnGuideModalClose" aria-label="Закрыть справку">✕</button>
+          <button type="button" class="guide-modal-close" id="btnGuideModalClose" data-i18n-title="btnGuideCloseAria" aria-label="Закрыть справку" title="Закрыть окно">✕</button>
         </div>
         <div class="guide-modal-scroll">
           <!-- SEO & GEO Content Hub (Справочный центр, калькулятор и FAQ) -->
@@ -516,6 +519,13 @@
             </details>
           </div>
         </section>
+
+        <!-- Быстрый выход: кнопка закрытия внизу гайда -->
+        <div class="guide-done-wrapper">
+          <button type="button" class="btn btn-primary btn-guide-done-bottom" id="btnGuideDoneBottom" data-i18n="btnGuideDone">
+            ✓ Понятно, вернуться к раскладке
+          </button>
+        </div>
 
         <!-- Подвал Content Hub -->
         <footer class="content-hub-footer">
