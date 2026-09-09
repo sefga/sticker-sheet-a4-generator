@@ -13,6 +13,13 @@ import { setLanguage, t, applyTranslations, onLanguageChange, TranslationKey } f
 export class UIController {
   private currentLayout: LayoutResult | null = null;
   private isProcessingImage: boolean = false;
+  private lastArtworkCache: {
+    imageSrc: string;
+    cropJson: string;
+    sizingMode: string;
+    aspectRatio: number;
+    sheetRotation: number;
+  } | null = null;
 
   constructor() {
     this.initEventListeners();
@@ -22,6 +29,86 @@ export class UIController {
       this.render(store.getState());
     });
     store.subscribe((state) => this.render(state));
+  }
+
+  /**
+   * Привязка "умного" обработчика к числовому инпуту:
+   * 1. Во время набора (событие input) не производит тяжелых расчетов,
+   *    а ждет паузы в наборе (debounce 450 мс).
+   * 2. При явном завершении ввода (blur, change, Enter) сразу коммитит без ожидания.
+   * 3. Поддерживает запятую как десятичный разделитель на мобильных клавиатурах.
+   * 4. Защищает от пустых или микро-значений (не крашит макет).
+   * 5. По клавише Enter вызывает blur(), скрывая мобильную экранную клавиатуру.
+   */
+  private bindSmartNumberInput(
+    input: HTMLInputElement | null,
+    options: {
+      min?: number;
+      max?: number;
+      getFallback: () => number;
+      onCommit: (val: number) => void | Promise<void>;
+      debounceMs?: number;
+    }
+  ) {
+    if (!input) return;
+
+    const { min = 0, max = 1000, getFallback, onCommit, debounceMs = 450 } = options;
+    let timer: any = null;
+
+    const parseVal = (raw: string): number | null => {
+      const sanitized = raw.trim().replace(',', '.');
+      if (sanitized === '' || sanitized === '-' || sanitized === '.') return null;
+      const num = parseFloat(sanitized);
+      return isNaN(num) ? null : num;
+    };
+
+    const commit = async (forceValid = false) => {
+      if (timer) {
+        clearTimeout(timer);
+        timer = null;
+      }
+
+      const parsed = parseVal(input.value);
+      let finalVal: number;
+
+      if (parsed === null) {
+        if (forceValid) {
+          finalVal = getFallback();
+          input.value = finalVal.toString();
+        } else {
+          return; // пользователь в процессе набора
+        }
+      } else {
+        finalVal = parsed;
+        if (min !== undefined && finalVal < min) finalVal = min;
+        if (max !== undefined && finalVal > max) finalVal = max;
+        if (forceValid) {
+          input.value = finalVal.toString();
+        }
+      }
+
+      await onCommit(finalVal);
+    };
+
+    input.addEventListener('input', () => {
+      if (timer) clearTimeout(timer);
+      const parsed = parseVal(input.value);
+      // Если значение валидно и не меньше допустимого порога, взводим таймер
+      if (parsed !== null && parsed >= (min || 0)) {
+        timer = setTimeout(() => commit(false), debounceMs);
+      }
+    });
+
+    input.addEventListener('change', () => commit(true));
+    input.addEventListener('blur', () => commit(true));
+
+    input.addEventListener('keydown', (e: KeyboardEvent) => {
+      if (e.key === 'Enter') {
+        e.preventDefault();
+        commit(true);
+        input.blur(); // Скрывает экранную клавиатуру на мобильном
+      }
+    });
   }
 
   /**
@@ -107,6 +194,7 @@ export class UIController {
         targetHeightMm: state.stickerHeightMm,
         initialCropData: state.cropData,
         onApply: async (cropData: CropData) => {
+          this.lastArtworkCache = null;
           store.update({ cropData });
           await this.recalculateArtwork();
         },
@@ -121,32 +209,40 @@ export class UIController {
     const sizingFillBtn = document.getElementById('sizingFill') as HTMLInputElement;
     const sizingFitBtn = document.getElementById('sizingFit') as HTMLInputElement;
 
-    inputWidth?.addEventListener('input', async () => {
-      const state = store.getState();
-      const newWidth = parseFloat(inputWidth.value) || 1;
-      if (state.lockAspectRatio && state.stickerWidthMm > 0) {
-        const ratio = state.stickerHeightMm / state.stickerWidthMm;
-        const newHeight = roundMm(newWidth * ratio, 1);
-        inputHeight.value = newHeight.toString();
-        store.update({ stickerWidthMm: newWidth, stickerHeightMm: newHeight });
-      } else {
-        store.update({ stickerWidthMm: newWidth });
-      }
-      await this.recalculateArtwork();
+    this.bindSmartNumberInput(inputWidth, {
+      min: 5,
+      max: 297,
+      getFallback: () => store.getState().stickerWidthMm,
+      onCommit: async (newWidth) => {
+        const state = store.getState();
+        if (state.lockAspectRatio && state.stickerWidthMm > 0) {
+          const ratio = state.stickerHeightMm / state.stickerWidthMm;
+          const newHeight = roundMm(newWidth * ratio, 1);
+          inputHeight.value = newHeight.toString();
+          store.update({ stickerWidthMm: newWidth, stickerHeightMm: newHeight });
+        } else {
+          store.update({ stickerWidthMm: newWidth });
+        }
+        await this.recalculateArtwork();
+      },
     });
 
-    inputHeight?.addEventListener('input', async () => {
-      const state = store.getState();
-      const newHeight = parseFloat(inputHeight.value) || 1;
-      if (state.lockAspectRatio && state.stickerHeightMm > 0) {
-        const ratio = state.stickerWidthMm / state.stickerHeightMm;
-        const newWidth = roundMm(newHeight * ratio, 1);
-        inputWidth.value = newWidth.toString();
-        store.update({ stickerWidthMm: newWidth, stickerHeightMm: newHeight });
-      } else {
-        store.update({ stickerHeightMm: newHeight });
-      }
-      await this.recalculateArtwork();
+    this.bindSmartNumberInput(inputHeight, {
+      min: 5,
+      max: 297,
+      getFallback: () => store.getState().stickerHeightMm,
+      onCommit: async (newHeight) => {
+        const state = store.getState();
+        if (state.lockAspectRatio && state.stickerHeightMm > 0) {
+          const ratio = state.stickerWidthMm / state.stickerHeightMm;
+          const newWidth = roundMm(newHeight * ratio, 1);
+          inputWidth.value = newWidth.toString();
+          store.update({ stickerWidthMm: newWidth, stickerHeightMm: newHeight });
+        } else {
+          store.update({ stickerHeightMm: newHeight });
+        }
+        await this.recalculateArtwork();
+      },
     });
 
     lockRatioToggle?.addEventListener('change', () => {
@@ -196,26 +292,35 @@ export class UIController {
       store.update({ linkMargins: linkMarginsToggle.checked });
     });
 
-    marginAll?.addEventListener('input', () => {
-      const val = Math.max(0, parseFloat(marginAll.value) || 0);
-      store.update({
-        margins: { top: val, bottom: val, left: val, right: val },
-      });
+    this.bindSmartNumberInput(marginAll, {
+      min: 0,
+      max: 100,
+      getFallback: () => store.getState().margins.top,
+      onCommit: (val) => {
+        store.update({
+          margins: { top: val, bottom: val, left: val, right: val },
+        });
+      },
     });
 
-    const updateIndividualMargins = () => {
-      store.update({
-        margins: {
-          top: Math.max(0, parseFloat(marginTop.value) || 0),
-          bottom: Math.max(0, parseFloat(marginBottom.value) || 0),
-          left: Math.max(0, parseFloat(marginLeft.value) || 0),
-          right: Math.max(0, parseFloat(marginRight.value) || 0),
+    const marginFields = [
+      { el: marginTop, key: 'top' as const },
+      { el: marginBottom, key: 'bottom' as const },
+      { el: marginLeft, key: 'left' as const },
+      { el: marginRight, key: 'right' as const },
+    ];
+
+    marginFields.forEach(({ el, key }) => {
+      this.bindSmartNumberInput(el, {
+        min: 0,
+        max: 100,
+        getFallback: () => store.getState().margins[key],
+        onCommit: (val) => {
+          store.update({
+            margins: { ...store.getState().margins, [key]: val },
+          });
         },
       });
-    };
-
-    [marginTop, marginBottom, marginLeft, marginRight].forEach((input) => {
-      input?.addEventListener('input', updateIndividualMargins);
     });
 
     // 5. Зазор между стикерами (Gap)
@@ -228,17 +333,31 @@ export class UIController {
       store.update({ linkGaps: linkGapsToggle.checked });
     });
 
-    gapAll?.addEventListener('input', () => {
-      const val = Math.max(0, parseFloat(gapAll.value) || 0);
-      store.update({ gapX: val, gapY: val });
+    this.bindSmartNumberInput(gapAll, {
+      min: 0,
+      max: 50,
+      getFallback: () => store.getState().gapX,
+      onCommit: (val) => {
+        store.update({ gapX: val, gapY: val });
+      },
     });
 
-    gapX?.addEventListener('input', () => {
-      store.update({ gapX: Math.max(0, parseFloat(gapX.value) || 0) });
+    this.bindSmartNumberInput(gapX, {
+      min: 0,
+      max: 50,
+      getFallback: () => store.getState().gapX,
+      onCommit: (val) => {
+        store.update({ gapX: val });
+      },
     });
 
-    gapY?.addEventListener('input', () => {
-      store.update({ gapY: Math.max(0, parseFloat(gapY.value) || 0) });
+    this.bindSmartNumberInput(gapY, {
+      min: 0,
+      max: 50,
+      getFallback: () => store.getState().gapY,
+      onCommit: (val) => {
+        store.update({ gapY: val });
+      },
     });
 
     // 6. Раскладка и количество копий
@@ -251,21 +370,46 @@ export class UIController {
       await this.recalculateArtwork();
     });
 
-    requestedCopiesInput?.addEventListener('input', () => {
-      const val = requestedCopiesInput.value.trim().toUpperCase();
-      if (val === 'AUTO' || val === '') {
+    let copiesTimer: any = null;
+    const commitCopies = (force = false) => {
+      if (copiesTimer) {
+        clearTimeout(copiesTimer);
+        copiesTimer = null;
+      }
+      if (!requestedCopiesInput) return;
+      const raw = requestedCopiesInput.value.trim().toUpperCase();
+      if (raw === 'AUTO' || raw === '') {
         store.update({ requestedCopies: 'AUTO' });
+        if (force) requestedCopiesInput.value = 'AUTO';
       } else {
-        const num = parseInt(val, 10);
+        const num = parseInt(raw, 10);
         if (!isNaN(num) && num > 0) {
           store.update({ requestedCopies: num });
+          if (force) requestedCopiesInput.value = num.toString();
+        } else if (force) {
+          store.update({ requestedCopies: 'AUTO' });
+          requestedCopiesInput.value = 'AUTO';
         }
+      }
+    };
+
+    requestedCopiesInput?.addEventListener('input', () => {
+      if (copiesTimer) clearTimeout(copiesTimer);
+      copiesTimer = setTimeout(() => commitCopies(false), 450);
+    });
+    requestedCopiesInput?.addEventListener('change', () => commitCopies(true));
+    requestedCopiesInput?.addEventListener('blur', () => commitCopies(true));
+    requestedCopiesInput?.addEventListener('keydown', (e: KeyboardEvent) => {
+      if (e.key === 'Enter') {
+        e.preventDefault();
+        commitCopies(true);
+        requestedCopiesInput.blur();
       }
     });
 
     autoCopiesBtn?.addEventListener('click', () => {
       store.update({ requestedCopies: 'AUTO' });
-      requestedCopiesInput.value = 'AUTO';
+      if (requestedCopiesInput) requestedCopiesInput.value = 'AUTO';
     });
 
     // 7. Метки реза и Bleed
@@ -380,6 +524,7 @@ export class UIController {
   private async handleNewImage(file: File) {
     try {
       const loaded = await loadSourceImage(file);
+      this.lastArtworkCache = null;
       store.update({
         loadedImage: loaded,
         cropData: null,
@@ -426,7 +571,29 @@ export class UIController {
       });
 
       const sheetRotation = layout.selectedRotation;
-      const aspectRatio = state.stickerWidthMm / state.stickerHeightMm;
+      const aspectRatio = roundMm(state.stickerWidthMm / state.stickerHeightMm, 4);
+
+      const cacheKey = {
+        imageSrc: state.loadedImage.imageElement.src,
+        cropJson: JSON.stringify(state.cropData),
+        sizingMode: state.sizingMode,
+        aspectRatio,
+        sheetRotation,
+      };
+
+      if (
+        this.lastArtworkCache &&
+        this.lastArtworkCache.imageSrc === cacheKey.imageSrc &&
+        this.lastArtworkCache.cropJson === cacheKey.cropJson &&
+        this.lastArtworkCache.sizingMode === cacheKey.sizingMode &&
+        Math.abs(this.lastArtworkCache.aspectRatio - cacheKey.aspectRatio) < 0.001 &&
+        this.lastArtworkCache.sheetRotation === cacheKey.sheetRotation &&
+        state.croppedResult !== null
+      ) {
+        // Кэш актуален: изображение и пропорции не менялись, тяжелый Canvas рендер пропускаем!
+        return;
+      }
+
       const cropped = await renderCroppedArtwork(
         state.loadedImage.imageElement,
         state.cropData,
@@ -439,6 +606,8 @@ export class UIController {
       // Расчет эффективного разрешения DPI
       const dpiDimensionMm = sheetRotation === 90 ? state.stickerHeightMm : state.stickerWidthMm;
       const dpiInfo = getDpiInfo(cropped.pixelWidth, dpiDimensionMm);
+
+      this.lastArtworkCache = cacheKey;
 
       store.update({
         croppedResult: cropped,

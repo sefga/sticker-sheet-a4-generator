@@ -157,11 +157,11 @@
           <div class="form-row">
             <div class="form-col">
               <label for="stickerWidth" data-i18n="lblWidth">Ширина (мм)</label>
-              <input type="number" id="stickerWidth" value="54.0" step="0.1" min="1" max="297" />
+              <input type="text" id="stickerWidth" value="54.0" inputmode="decimal" autocomplete="off" />
             </div>
             <div class="form-col">
               <label for="stickerHeight" data-i18n="lblHeight">Высота (мм)</label>
-              <input type="number" id="stickerHeight" value="85.0" step="0.1" min="1" max="297" />
+              <input type="text" id="stickerHeight" value="85.0" inputmode="decimal" autocomplete="off" />
             </div>
           </div>
 
@@ -204,26 +204,26 @@
 
             <!-- Связанные поля -->
             <div id="marginLinkedGroup">
-              <input type="number" id="marginAll" value="5.0" step="0.5" min="0" max="100" />
+              <input type="text" id="marginAll" value="5.0" inputmode="decimal" autocomplete="off" />
             </div>
 
             <!-- Раздельные поля -->
             <div id="marginUnlinkedGroup" class="form-grid-4" style="display: none;">
               <div>
                 <label for="marginTop" data-i18n="lblMarginTop">Верх (мм)</label>
-                <input type="number" id="marginTop" value="5.0" step="0.5" min="0" />
+                <input type="text" id="marginTop" value="5.0" inputmode="decimal" autocomplete="off" />
               </div>
               <div>
                 <label for="marginBottom" data-i18n="lblMarginBottom">Низ (мм)</label>
-                <input type="number" id="marginBottom" value="5.0" step="0.5" min="0" />
+                <input type="text" id="marginBottom" value="5.0" inputmode="decimal" autocomplete="off" />
               </div>
               <div>
                 <label for="marginLeft" data-i18n="lblMarginLeft">Лево (мм)</label>
-                <input type="number" id="marginLeft" value="5.0" step="0.5" min="0" />
+                <input type="text" id="marginLeft" value="5.0" inputmode="decimal" autocomplete="off" />
               </div>
               <div>
                 <label for="marginRight" data-i18n="lblMarginRight">Право (мм)</label>
-                <input type="number" id="marginRight" value="5.0" step="0.5" min="0" />
+                <input type="text" id="marginRight" value="5.0" inputmode="decimal" autocomplete="off" />
               </div>
             </div>
           </div>
@@ -241,17 +241,17 @@
             </div>
 
             <div id="gapLinkedGroup">
-              <input type="number" id="gapAll" value="3.0" step="0.5" min="0" max="50" />
+              <input type="text" id="gapAll" value="3.0" inputmode="decimal" autocomplete="off" />
             </div>
 
             <div id="gapUnlinkedGroup" class="form-grid-4" style="display: none;">
               <div>
                 <label for="gapX" data-i18n="lblGapX">По горизонтали (мм)</label>
-                <input type="number" id="gapX" value="3.0" step="0.5" min="0" />
+                <input type="text" id="gapX" value="3.0" inputmode="decimal" autocomplete="off" />
               </div>
               <div>
                 <label for="gapY" data-i18n="lblGapY">По вертикали (мм)</label>
-                <input type="number" id="gapY" value="3.0" step="0.5" min="0" />
+                <input type="text" id="gapY" value="3.0" inputmode="decimal" autocomplete="off" />
               </div>
             </div>
           </div>
@@ -269,7 +269,7 @@
           <div class="form-row">
             <div class="form-col" style="flex: 2;">
               <label for="requestedCopies" data-i18n="lblCopies">Количество копий</label>
-              <input type="text" id="requestedCopies" value="AUTO" data-i18n-placeholder="placeholderCopies" placeholder="AUTO или число" />
+              <input type="text" id="requestedCopies" value="AUTO" data-i18n-placeholder="placeholderCopies" placeholder="AUTO или число" inputmode="numeric" pattern="[0-9]*" autocomplete="off" />
             </div>
             <div class="form-col" style="flex: 1; justify-content: flex-end;">
               <button type="button" class="btn btn-secondary btn-sm" id="btnAutoCopies" style="height: 36px;" data-i18n="btnMaxCopies">

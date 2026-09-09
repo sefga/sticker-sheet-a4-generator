@@ -66,8 +66,11 @@ export function renderPreviewSvg(options: PreviewOptions): string {
     );
   }
 
-  // 4. Отрисовка каждого стикера
-  layout.positions.forEach((pos, idx) => {
+  // 4. Отрисовка каждого стикера (с защитой от подвисания DOM при экстремальных значениях)
+  const maxRenderPositions = 300;
+  const visiblePositions = layout.positions.slice(0, maxRenderPositions);
+
+  visiblePositions.forEach((pos, idx) => {
     const { xMm, yMm, widthMm, heightMm } = pos;
 
     // Зона Bleed (если включен)
@@ -102,6 +105,17 @@ export function renderPreviewSvg(options: PreviewOptions): string {
       );
     }
   });
+
+  if (layout.positions.length > maxRenderPositions) {
+    svgParts.push(`
+      <g>
+        <rect x="15" y="${pageHeightMm - 14}" width="${pageWidthMm - 30}" height="8" rx="2" fill="#0f172a" fill-opacity="0.85" />
+        <text x="${pageWidthMm / 2}" y="${pageHeightMm - 9}" font-family="system-ui, sans-serif" font-size="2.8" fill="#ffffff" text-anchor="middle" font-weight="600">
+          Показаны первые ${maxRenderPositions} из ${layout.positions.length} стикеров (для плавной работы интерфейса)
+        </text>
+      </g>
+    `);
+  }
 
   // 5. Векторные метки реза (Cut marks)
   if (cutMarksConfig.enabled && layout.positions.length > 0) {
