@@ -266,6 +266,8 @@ body {
   padding: 3px;
   flex-shrink: 0;
   gap: 2px;
+  max-width: 100%;
+  box-sizing: border-box;
 }
 
 .paper-chip-btn {
@@ -1951,6 +1953,17 @@ input.input-has-error {
 
   .mobile-tab-nav {
     display: flex;
+    padding: 8px 12px;
+    gap: 6px;
+    box-sizing: border-box;
+    width: 100%;
+    max-width: 100%;
+  }
+
+  .mobile-tab-btn {
+    min-width: 0;
+    padding: 8px 8px;
+    font-size: 0.85rem;
   }
 
   .mobile-sticky-bar {
@@ -1967,7 +1980,8 @@ input.input-has-error {
   .sidebar-content {
     overflow-y: visible;
     height: auto;
-    padding: 16px;
+    padding: 14px;
+    box-sizing: border-box;
   }
 
   .preview-area {
@@ -2192,14 +2206,38 @@ input.input-has-error {
     font-size: 0.85rem;
   }
 
-  .paper-quick-chips {
-    gap: 6px;
+  /* Раздел 3: адаптивный заголовок и горизонтальная прокрутка чипсов */
+  .section-title-row.section-title-paper,
+  .section-title-row:has(.paper-switch),
+  .panel-section:nth-of-type(3) .section-title-row {
+    flex-direction: column;
+    align-items: stretch;
+    gap: 10px;
+  }
+
+  .paper-switch {
+    display: flex;
+    width: 100%;
+    max-width: 100%;
+    box-sizing: border-box;
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+    scrollbar-width: none;
+    flex-wrap: nowrap;
+    padding: 4px;
+    gap: 4px;
+  }
+
+  .paper-switch::-webkit-scrollbar {
+    display: none;
   }
 
   .paper-chip-btn {
-    min-height: 36px;
+    min-height: 38px;
     padding: 6px 13px;
     font-size: 0.82rem;
+    white-space: nowrap;
+    flex-shrink: 0;
   }
 
   .btn-guide-modal-trigger {
@@ -2237,21 +2275,65 @@ input.input-has-error {
     font-size: 0.88rem;
   }
 
-  /* Модальное окно на мобильных */
+  /* Модальное окно кадрирования на мобильных */
   .crop-modal-window {
     width: 100vw;
+    height: 100dvh;
     height: 100vh;
     max-width: 100vw;
     border-radius: 0;
+    display: flex;
+    flex-direction: column;
+  }
+
+  .crop-modal-header {
+    padding: calc(max(env(safe-area-inset-top, 0px), 12px) + 8px) 16px 12px 16px;
+    flex-shrink: 0;
+  }
+
+  .crop-modal-body {
+    flex: 1 1 auto;
+    min-height: 0;
   }
 
   .crop-modal-toolbar {
+    display: flex;
     flex-wrap: wrap;
-    gap: 6px;
+    gap: 8px;
+    padding: 10px 16px max(env(safe-area-inset-bottom, 0px), 14px) 16px;
+    background: #ffffff;
+    border-top: 1px solid var(--border);
+    flex-shrink: 0;
+    box-sizing: border-box;
   }
 
-  .crop-modal-toolbar .btn {
+  .crop-modal-toolbar .spacer {
+    display: none;
+  }
+
+  #btnCropRotateLeft,
+  #btnCropRotateRight,
+  #btnCropReset {
+    flex: 1 1 0;
+    min-width: 0;
     min-height: 44px;
+    padding: 8px 6px;
+    font-size: 0.84rem;
+    white-space: nowrap;
+  }
+
+  #btnCropCancel,
+  #btnCropApply {
+    flex: 1 1 0;
+    min-width: 0;
+    min-height: 46px;
+    padding: 10px 14px;
+    font-size: 0.95rem;
+    font-weight: 600;
+  }
+
+  #btnCropApply {
+    flex: 1.4 1 0;
   }
 
   /* Адаптивный Bottom Sheet каталога бумаги на смартфонах */
@@ -2262,10 +2344,14 @@ input.input-has-error {
   .paper-catalog-dialog {
     width: 100%;
     max-width: 100%;
+    max-height: 88dvh;
     max-height: 88vh;
     border-radius: 24px 24px 0 0;
     box-shadow: 0 -10px 35px rgba(15, 23, 42, 0.25);
     transform: translateY(100%);
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
   }
 
   .paper-catalog-modal.open .paper-catalog-dialog {
@@ -2279,33 +2365,116 @@ input.input-has-error {
     background: #cbd5e1;
     border-radius: 3px;
     margin: 10px auto 4px auto;
+    flex-shrink: 0;
   }
 
   .paper-catalog-header {
     padding: 8px 18px 12px 18px;
+    flex-shrink: 0;
   }
 
   .catalog-search-wrapper {
     padding: 8px 18px;
+    flex-shrink: 0;
   }
 
   .catalog-category-tabs {
     padding: 4px 18px 10px 18px;
+    flex-shrink: 0;
+    display: flex;
+    flex-wrap: nowrap;
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+    scrollbar-width: none;
+    gap: 6px;
+  }
+
+  .catalog-category-tabs::-webkit-scrollbar {
+    display: none;
+  }
+
+  .catalog-tab {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-height: 36px;
+    padding: 6px 14px;
+    white-space: nowrap;
+    flex-shrink: 0;
+    font-size: 0.8rem;
   }
 
   .catalog-cards-grid {
+    flex: 1 1 auto;
+    min-height: 0;
     padding: 10px 18px 16px 18px;
-    grid-template-columns: 1fr;
-    max-height: 55vh;
+    grid-template-columns: minmax(0, 1fr);
+    max-height: none;
+    overflow-y: auto;
+    -webkit-overflow-scrolling: touch;
+    gap: 10px;
+    box-sizing: border-box;
   }
 
   .catalog-card {
-    min-height: 52px;
+    height: auto;
+    min-height: unset;
+    min-width: 0;
+    width: 100%;
+    box-sizing: border-box;
     padding: 12px 14px;
+    gap: 5px;
+    display: flex;
+    flex-direction: column;
+  }
+
+  .card-header-row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 8px;
+    min-width: 0;
+    width: 100%;
+  }
+
+  .card-title-wrap {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    min-width: 0;
+    flex: 1 1 auto;
+  }
+
+  .card-name {
+    min-width: 0;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+
+  .card-badges {
+    flex-shrink: 0;
+  }
+
+  .card-dimensions {
+    font-size: 0.82rem;
+    font-weight: 600;
+    color: var(--primary);
+    line-height: 1.25;
+  }
+
+  .card-description {
+    font-size: 0.74rem;
+    color: var(--text-muted);
+    line-height: 1.35;
+    word-break: break-word;
   }
 
   .paper-catalog-footer {
-    padding: 12px 18px 24px 18px;
+    padding: 12px 18px max(env(safe-area-inset-bottom, 0px), 18px) 18px;
+    flex-shrink: 0;
+    background: #ffffff;
+    border-top: 1px solid #f1f5f9;
   }
 
   .btn-catalog-done {
@@ -2329,6 +2498,71 @@ input.input-has-error {
     min-height: 38px;
     padding: 8px 14px;
   }
+
+  /* Адаптивность таблиц в справке */
+  .table-responsive {
+    width: 100%;
+    max-width: 100%;
+    box-sizing: border-box;
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+  }
 }
+
+@media (max-width: 480px) {
+  .reference-table th,
+  .reference-table td {
+    padding: 8px 10px;
+    font-size: 0.8rem;
+  }
+
+  .reference-table th:first-child,
+  .reference-table td:first-child {
+    white-space: nowrap;
+  }
+}
+
+@media (max-width: 360px) {
+  .sidebar-content {
+    padding: 10px;
+  }
+
+  .mobile-tab-nav {
+    padding: 6px 6px;
+    gap: 4px;
+  }
+
+  .mobile-tab-btn {
+    padding: 7px 4px;
+    font-size: 0.78rem;
+    gap: 3px;
+  }
+
+  .mobile-badge {
+    padding: 1px 5px;
+    font-size: 0.7rem;
+  }
+
+  .paper-catalog-header {
+    padding: 6px 14px 10px 14px;
+  }
+
+  .catalog-search-wrapper {
+    padding: 6px 14px;
+  }
+
+  .catalog-category-tabs {
+    padding: 4px 14px 8px 14px;
+  }
+
+  .catalog-cards-grid {
+    padding: 8px 14px 14px 14px;
+  }
+
+  .paper-catalog-footer {
+    padding: 10px 14px max(env(safe-area-inset-bottom, 0px), 14px) 14px;
+  }
+}
+
 
 
