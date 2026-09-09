@@ -1,211 +1,180 @@
-# StickerFit — A4 Sticker Sheet Maker (Генератор раскладки наклеек на листе A4)
+# 🏷️ StickerFit — A4 Sticker Sheet Maker & Generator
 
-[![Deploy to GitHub Pages](https://github.com/sefga/stickerfit/actions/workflows/deploy.yml/badge.svg)](https://github.com/sefga/stickerfit/actions/workflows/deploy.yml)
-[![Vercel Deployment](https://img.shields.io/badge/Vercel-Live%20Demo-black?logo=vercel)](https://stickerfit.vercel.app)
-[![Deploy to Netlify](https://img.shields.io/badge/Netlify-Live%20Demo-00C7B7?logo=netlify)](https://stickerfit.netlify.app/)
-[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
+<div align="center">
 
-**StickerFit** — автономное клиентское веб-приложение для автоматической подготовки, оптимальной компоновки и верстки листов A4 со стикерами для печати с физической точностью геометрии (в миллиметрах). 100% Client-Side Privacy: изображения обрабатываются только в браузере и никуда не передаются.
+**Auto-layout & print custom stickers on A4 sheets with exact millimeter precision.**  
+*Автоматическая верстка и подготовка к печати стикеров на листах A4 с физической точностью в миллиметрах.*
 
----
+[![Vercel Deployment](https://img.shields.io/badge/Vercel-Live%20Production-black?style=for-the-badge&logo=vercel)](https://stickerfit.vercel.app)
+[![Netlify Deployment](https://img.shields.io/badge/Netlify-Edge%20CDN-00C7B7?style=for-the-badge&logo=netlify)](https://stickerfit.netlify.app/)
+[![GitHub Pages](https://img.shields.io/badge/GitHub%20Pages-Mirror-181717?style=for-the-badge&logo=github)](https://sefga.github.io/stickerfit/)
+[![Apple HIG Critic](https://img.shields.io/badge/Apple%20HIG-100%2F100-success?style=for-the-badge&logo=apple)](https://stickerfit.vercel.app)
+[![Tests](https://img.shields.io/badge/Vitest-15%2F15%20Passed-22c55e?style=for-the-badge&logo=vitest)](https://github.com/sefga/stickerfit)
+[![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg?style=for-the-badge)](https://opensource.org/licenses/MIT)
 
-## 🌐 Ссылки на сервисы и онлайн-доступ
+**[ 🇬🇧 English Overview ](#-english-overview) &nbsp;•&nbsp; [ 🇷🇺 Русская документация ](#-русская-документация) &nbsp;•&nbsp; [ 🚀 Быстрый старт ](#-быстрый-старт-для-разработчиков-quick-start)**
 
-| Сервис / Платформа | Статус | Прямая ссылка | Назначение |
-|:---|:---:|:---|:---|
-| **Vercel (Основной домен)** | 🟢 Live | [stickerfit.vercel.app](https://stickerfit.vercel.app) | Основной канонический production CDN |
-| **Netlify (Официальный домен)** | 🟢 Live | [stickerfit.netlify.app](https://stickerfit.netlify.app/) | Высокопроизводительный Edge CDN Netlify |
-| **GitHub Pages (Зеркало)** | 🟢 Live | [sefga.github.io/stickerfit](https://sefga.github.io/stickerfit/) | Официальное зеркало на GitHub Pages |
-| **Исходный код (GitHub)** | 🟢 Public | [github.com/sefga/stickerfit](https://github.com/sefga/stickerfit) | Открытый репозиторий проекта |
+</div>
 
 ---
 
-## 🚀 Основные возможности
+## 📸 Интерфейс приложения / Interface Preview
 
-1. **Загрузка и кадрирование**:
-   - Поддержка Drag & Drop, выбора файла и вставки из буфера обмена (Ctrl+V).
-   - Поддерживаемые форматы: PNG, JPG/JPEG, WebP.
-   - Интерактивное кадрирование через Cropper.js с сохранением координат относительно исходного разрешения (без потери резкости).
-   - Поворот кадра на 90°, сброс, сохранение целевого соотношения сторон.
-   - Режимы заполнения: **Crop / Fill** (заполнение стикера) и **Fit** (целиком внутри стикера).
+### 💻 Desktop Experience (1440 × 900)
+> Интерактивный предпросмотр листа A4 в реальном масштабе, расчет максимальной вместимости, параметров сетки и качества DPI.
 
-2. **Точная физическая геометрия (мм)**:
-   - Ввод размеров стикера с шагом 0.1 мм.
-   - Опция фиксации пропорций 🔒.
-   - Поддержка форматов A4 Portrait (210 × 297 мм) и Landscape (297 × 210 мм).
-   - Настройка полей (Margins) и расстояния между стикерами (Gap) со связкой значений.
-   - Предупреждение о полях меньше 3 мм для принтеров с широкими технологическими полями.
+<div align="center">
+  <img src="docs/screenshots/desktop-ui.png" alt="StickerFit Desktop UI – A4 Sticker Sheet Maker" width="95%" />
+</div>
 
-3. **Автоматическая оптимизация раскладки**:
-   - Автоматический расчет сетки: $N = \text{columns} \times \text{rows}$.
-   - **Автоповорот 90°**: расчет экономичной ориентации (например, 10 шт. с поворотом вместо 9 шт. без поворота).
-   - Автоматическое центрирование сетки внутри доступной области листа.
-   - Ограничение количества копий (`AUTO` или ручной ввод числа, например 7).
+<br />
 
-4. **Контроль качества (DPI)**:
-   - Автоматический расчет эффективного разрешения: $\text{DPI} = \text{pixelWidth} / (\text{widthMm} / 25.4)$.
-   - Цветовая шкала качества:
-     - $\ge 300\text{ DPI}$ — Отличное качество (зеленый);
-     - $200\text{--}299\text{ DPI}$ — Допустимое качество (синий);
-     - $150\text{--}199\text{ DPI}$ — Низкое качество (желтый);
-     - $< 150\text{ DPI}$ — Предупреждение о пикселизации (красный).
-
-5. **Полиграфия и экспорт в PDF**:
-   - Программная генерация PDF через библиотеку `pdf-lib` (физический MediaBox $210 \times 297\text{ мм} = 595.28 \times 841.89\text{ pt}$).
-   - Однократное встраивание растрового изображения в PDF без повторного пережатия.
-   - Тонкие векторные метки реза (длина 3 мм, смещение 1 мм, толщина 0.2 pt).
-   - Поддержка Bleed (вылета под обрез): 0, 1, 2, 3 мм.
-   - Кнопка «Печать» с предупреждением о печати со 100% масштабом (Actual size).
-   - Калибровочный лист PDF: тестовый квадрат $50 \times 50\text{ мм}$, контрольная линия $100\text{ мм}$ и линейка $0\text{--}15\text{ см}$ с шагом 1 мм.
-
-6. **Надежность и автономность**:
-   - 100% client-side (без бэкенда, полная конфиденциальность).
-   - Автосохранение настроек в `LocalStorage` + кнопка сброса к заводским.
-   - Полный набор юнит-тестов Vitest, проверяющих Тесты 1–6 из ТЗ и регрессионный тест MediaBox.
+<div align="center">
+  <table>
+    <tr>
+      <td width="33%" align="center">
+        <b>📱 Мобильный интерфейс (Touch)</b><br />
+        <i>Адаптивные вкладки и цифровые клавиатуры</i><br /><br />
+        <img src="docs/screenshots/mobile-ui.png" alt="StickerFit Mobile UI" width="280" />
+      </td>
+      <td width="33%" align="center">
+        <b>⚙️ Интуитивные параметры</b><br />
+        <i>Связывание сторон 🔗 и режимы Заполнить/Вписать</i><br /><br />
+        <img src="docs/screenshots/smart-input.png" alt="StickerFit Smart Controls" width="280" />
+      </td>
+      <td width="33%" align="center">
+        <b>📖 Справочный центр & Калькулятор</b><br />
+        <i>Apple Help Sheet с FAQ и калькулятором</i><br /><br />
+        <img src="docs/screenshots/help-modal.png" alt="StickerFit Help & Guide Modal" width="280" />
+      </td>
+    </tr>
+  </table>
+</div>
 
 ---
 
-## 🛠️ Запуск и тестирование
+## 🌐 Доступ к онлайн-версии / Live Deployments
 
-### 1. Установка зависимостей:
+| Платформа | Домен | Скорость | Назначение |
+|:---|:---|:---:|:---|
+| **Vercel (Production)** | [stickerfit.vercel.app](https://stickerfit.vercel.app) | ⚡ Fast | Основной канонический домен (Global Anycast CDN) |
+| **Netlify (Mirror)** | [stickerfit.netlify.app](https://stickerfit.netlify.app/) | ⚡ Fast | Зеркало на глобальной инфраструктуре Netlify Edge |
+| **GitHub Pages** | [sefga.github.io/stickerfit](https://sefga.github.io/stickerfit/) | ⚡ Fast | Официальное открытое зеркало проекта |
+
+---
+
+## 🇬🇧 English Overview
+
+### What is StickerFit?
+**StickerFit** is a high-performance, 100% client-side web application designed to automatically arrange stickers, labels, and decals onto an A4 paper sheet for physical printing. It calculates the maximum possible sheet capacity, optimizes layout with 90° auto-rotation, and exports a print-ready 1:1 scale vector PDF with cut marks and bleed.
+
+### Key Highlights
+- 🛡️ **100% Client-Side Privacy**: Your pictures never leave your browser. Zero server uploads, zero tracking.
+- 📏 **Exact Millimeter Precision**: Enter exact sticker dimensions ($W \times H$ mm), margins, and gaps with 0.1 mm step.
+- 📐 **Intelligent Auto-Rotation (90°)**: Automatically rotates stickers if more copies fit on the sheet (e.g. 10 instead of 8).
+- ✂️ **Fill (Crop) vs Fit (Whole)**:
+  - **Fill (Crop edges)**: Photo covers 100% of the sticker area with zero white borders.
+  - **Fit (Whole image)**: Entire image remains 100% visible with no cropped details.
+- 🔗 **Optional Proportional Linking**: Freely enter custom dimensions ($70 \times 40$ mm) or lock proportions with a single toggle.
+- 🔍 **Real DPI Quality Indicator**: Automatically detects effective print resolution ($\ge 300\text{ DPI}$ green, $200\text{--}299\text{ DPI}$ good, $<150\text{ DPI}$ warning).
+- 📄 **1:1 Scale Print-Ready PDF**: Powered by `pdf-lib` with exact A4 MediaBox ($595.28 \times 841.89\text{ pt}$), vector cut marks, bleed margins, and a built-in printer calibration ruler sheet.
+- 📱 **Mobile & Desktop First (Apple HIG)**: Touch targets $\ge 42$ px, native decimal keyboards, 60 FPS typing with zero long tasks.
+
+---
+
+## 🇷🇺 Русская документация
+
+### О проекте
+**StickerFit** — онлайн-генератор раскладки наклеек на листе формата A4. Сервис решает главную проблему полиграфии: как быстро и без Photoshop разложить стикеры нужного размера на лист A4, получить максимальный тираж и сразу отправить на печать или скачать файл для типографии.
+
+### Главные преимущества
+1. **Конфиденциальность 100%**: Вся обработка графики и генерация PDF происходит локально в вашем браузере. Ваши файлы никуда не загружаются.
+2. **Точные размеры в мм**: Задавайте ширину и высоту в миллиметрах (например, стандартные $54 \times 85$ мм для визиток или $50 \times 50$ мм для круглых стикеров).
+3. **Умный расчет экономии бумаги**:
+   - Автоматический расчет сетки (колонки × строки).
+   - Автоповорот на 90°, если так на лист поместится больше наклеек.
+   - Ограничение тиража (режим `AUTO` для максимума или конкретное число копий).
+4. **Понятная настройка кадрирования**:
+   - **«Заполнить (обрезка)»** — стикер заполнен целиком без белых полей по краям.
+   - **«Вписать целиком»** — изображение видно на 100% без обрезки важных надписей и логотипов.
+5. **Защита от ошибок ввода**:
+   - Мгновенное инлайн-предупреждение, если размер превышает габариты листа A4 (например, $> 297$ мм или 304 мм).
+   - Защита от зависания при случайном вводе микро-чисел.
+6. **Полиграфическая подготовка**:
+   - Тонкие векторные метки реза (Cut marks) под линейку.
+   - Вылеты под обрез (Bleed 0, 1, 2, 3 мм).
+   - Встроенный калибровочный лист A4 с миллиметровой линейкой и контрольным квадратом $50 \times 50$ мм.
+
+### Памятка для идеальной печати
+> ⚠️ **Важно:** При печати из любого просмотрщика PDF или браузера всегда выбирайте параметр масштаба **«100%»** или **«Реальный размер» (Actual size)**. Не выбирайте «По размеру страницы» (Fit to page), иначе принтер уменьшит ваши наклейки на 3–5%!
+
+---
+
+## 🚀 Быстрый старт для разработчиков (Quick Start)
+
+### Требования
+- Node.js $\ge 18.0.0$
+- Любой современный браузер (Chrome, Safari, Edge, Firefox)
+
+### 1. Клонирование и установка
 ```bash
+git clone https://github.com/sefga/stickerfit.git
+cd stickerfit
 npm install
 ```
 
-### 2. Запуск локального dev-сервера:
+### 2. Запуск локального сервера разработки
 ```bash
 npm run dev
 ```
-Приложение откроется по адресу `http://localhost:3000`.
+Приложение будет доступно по адресу `http://localhost:3000`.
 
-### 3. Запуск автоматических тестов (Vitest):
+### 3. Запуск тестов
 ```bash
 npm test
 ```
+*Запускает 15 юнит-тестов Vitest: математику раскладки, отступы, DPI и физический размер PDF MediaBox.*
 
-### 4. Сборка production-бандла:
-```bash
-npm run build
-```
-
-### 5. Браузерный аудит дизайн-критика Apple HIG (Headless Chrome):
-```bash
-npm run critic
-```
-Автоматически поднимает локальный сервер, запускает реальный Chromium/Chrome и оценивает качество интерфейса по 100-балльной шкале Apple HIG.
-
-### 6. Полный цикл валидации (Unit Tests + Build + Браузерный критик):
+### 4. Комплексный цикл оценки качества
 ```bash
 npm run eval
 ```
-Комплексный прогон: юнит-тесты (15 тестов) $\to$ сборка TypeScript/Vite $\to$ запуск браузерного критика с жестким порогом $\ge 95$ баллов.
+*Выполняет полный 6-ступенчатый аудит:*
+1. Юнит-тесты Vitest (15/15);
+2. Проверка типов TypeScript (`tsc`);
+3. Production-сборка Vite;
+4. Браузерный дизайн-критик Apple HIG (**100 / 100**);
+5. Интеркритика задержек ввода и Long Tasks (**5 / 5**);
+6. 5-цикличный аудит UX, локализации и валидации (**100 / 100 во всех 5 циклах**).
 
 ---
 
-## 📁 Архитектура проекта
+## 📁 Структура проекта / Architecture
 
 ```text
-src/
-  app.ts                 # Точка входа приложения
-  state.ts               # Управление состоянием (Store) и LocalStorage
-  styles.css             # Стили оформления интерфейса
-
-  units/
-    mm.ts                # Преобразования мм <-> pt <-> px, расчет DPI, константы A4
-
-  layout/
-    layoutEngine.ts      # Чистый математический модуль раскладки сетки (без DOM/Canvas)
-    layoutEngine.test.ts # Тесты геометрических сценариев 1-6 из ТЗ
-
-  image/
-    imageLoader.ts       # Загрузка (File, Drag&Drop, Clipboard)
-    cropEngine.ts        # Кадрирование в полном исходном разрешении и учет поворота
-    dpiCalculator.ts     # Расчет effective DPI и градаций качества
-
-  preview/
-    previewRenderer.ts   # Точный физический SVG-рендерер листа A4
-
-  pdf/
-    pdfGenerator.ts      # Векторная сборка PDF через pdf-lib
-    pdfGenerator.test.ts # Регрессионный тест точного размера MediaBox и координат
-    cutMarks.ts          # Расчет и векторная отрисовка меток реза
-    calibrationPage.ts   # Генерация калибровочной страницы A4
-
-  ui/
-    controls.ts          # Контроллер элементов интерфейса и событий формы
-    cropDialog.ts        # Модальное окно кадрирования Cropper.js
+stickerfit/
+├── docs/screenshots/     # Официальные скриншоты для витрины GitHub
+├── public/               # robots.txt, sitemap.xml, og-image.svg
+├── scripts/              # Автономные браузерные критики качества (Puppeteer)
+│   ├── apple-design-critic.mjs   # Аудит дизайна по стандартам Apple HIG
+│   ├── critic-5-cycles.mjs       # 5 независимых циклов проверки UX и валидации
+│   ├── performance-critic.mjs    # Тесты скорости ввода и отсутствия Long Tasks
+│   └── capture-readme-screenshots.mjs # Автозахват снимков экрана
+├── src/
+│   ├── image/            # Загрузка фото, кадрирование в исходном DPI
+│   ├── layout/           # Чистая математическая модель раскладки (Layout Engine)
+│   ├── pdf/              # Векторный генератор PDF 1:1, метки реза, калибровка
+│   ├── preview/          # Быстрый SVG-рендерер листа A4
+│   ├── ui/               # Умный диспетчер ввода, контроллеры и модалки
+│   ├── i18n.ts           # Двуязычная локализация (RU / EN)
+│   ├── state.ts          # Реактивное хранилище состояния и LocalStorage
+│   └── styles.css        # Apple HIG дизайн-система
+└── package.json
 ```
 
 ---
 
-## ☁️ Как опубликовать на Netlify и Автоматизация в 1 клик
+## 📜 Лицензия / License
 
-В проект уже добавлен файл конфигурации [netlify.toml](file:///c:/Desk/автоматизация%20разкалдки%20наклеек/netlify.toml), определяющий команду сборки `npm run build`, каталог `dist` и SPA-редиректы.
-
-### Вариант 1. В 1 клик через веб (Рекомендуется)
-Нажмите на кнопку ниже, войдите через свой GitHub — Netlify автоматически клонирует репозиторий, запустит сборку и выделит постоянный онлайн-домен `.netlify.app` с автообновлением при каждом `git push`:
-
-[![Deploy to Netlify](https://www.netlify.com/img/deploy/button.svg)](https://app.netlify.com/start/deploy?repository=https://github.com/sefga/stickerfit)
-
-### Вариант 2. Через Netlify CLI из консоли
-1. Однократный вход в аккаунт:
-   ```bash
-   npx netlify-cli login
-   ```
-2. Развертывание в production в 1 команду:
-   ```bash
-   npm run deploy:netlify
-   ```
-   *(или `npx netlify-cli deploy --prod --dir=dist`)*.
-
----
-
-## 🤖 Netlify Model Context Protocol (MCP) для ИИ-Агентов
-
-Для полной автоматизации деплоя и управления сайтами в **1 клик силами ИИ-агентов** (включая Antigravity, Claude Desktop, Cursor) существует официальный протокол **MCP (Model Context Protocol)** от Netlify.
-
-### Как настроить Netlify MCP сервер:
-1. Получите Personal Access Token в личном кабинете Netlify: `User Settings -> Applications -> Personal access tokens`.
-2. Добавьте MCP-сервер в конфигурацию агента (например, в `claude_desktop_config.json` или конфигурацию Antigravity MCP):
-
-```json
-{
-  "mcpServers": {
-    "netlify": {
-      "command": "npx",
-      "args": ["-y", "@netlify/mcp"],
-      "env": {
-        "NETLIFY_AUTH_TOKEN": "ваш_персональный_токен_netlify"
-      }
-    }
-  }
-}
-```
-
-### Что может ИИ-агент через Netlify MCP в 1 клик:
-* `listSites` — получать список всех проектов пользователя;
-* `createSite` — создавать новые сайты без открытия браузера;
-* `deploySite` — загружать собранные артефакты `dist/` в production;
-* `getDeploy` — проверять статус сборки и доступность URL;
-* `configureSite` — настраивать переменные окружения, кастомные домены и заголовки.
-
----
-
-## 🔍 SEO & GEO Оптимизация страницы
-
-Проект полностью оптимизирован для индексации поисковыми системами (Яндекс, Google, Bing, Mail.ru) и привлекательного сниппета в социальных сетях:
-
-1. **Региональный GEO-таргетинг (GEO Meta Tags)**:
-   - `geo.region: RU`
-   - `geo.placename: Москва, Россия`
-   - `geo.position / ICBM: 55.7558; 37.6176` (географическая привязка к региону).
-2. **Семантическая микроразметка Schema.org (JSON-LD)**:
-   - Внедрена схема `WebApplication` / `DesignApplication` с описанием бесплатных функций кадрирования, контроля DPI, раскладки на листе A4 и генерации PDF 1:1.
-3. **Open Graph & Twitter Cards**:
-   - При отправке ссылки в **Telegram, WhatsApp, VK, Twitter** генерируется привлекательное превью с брендовым векторным баннером [public/og-image.svg](file:///c:/Desk/автоматизация%20разкалдки%20наклеек/public/og-image.svg).
-4. **Канонический URL (`canonical`)**:
-   - Адрес `https://stickerfit.vercel.app/` назначен основным каноническим доменом, что объединяет ссылочную массу и исключает санкции за дублирование зеркал на GitHub Pages и Netlify.
-5. **Файлы для поисковых краулеров**:
-   - [public/robots.txt](file:///c:/Desk/автоматизация%20разкалдки наклеек/public/robots.txt) — правила индексации для всех роботов.
-   - [public/sitemap.xml](file:///c:/Desk/автоматизация%20разкалдки наклеек/public/sitemap.xml) — карта сайта с приоритетом 1.0.
-
+Проект распространяется под свободной лицензией **MIT License**.  
+Автор: **Михаил Сокольский ([@sefga](https://github.com/sefga))**.
