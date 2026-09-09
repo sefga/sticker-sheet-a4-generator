@@ -17,5 +17,3 @@ Disallow: /
 
 # Sitemaps
 Sitemap: https://stickerfit.vercel.app/sitemap.xml
-Sitemap: https://stickerfit.netlify.app/sitemap.xml
-Sitemap: https://sefga.github.io/stickerfit/sitemap.xml
