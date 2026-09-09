@@ -9,7 +9,7 @@ import { createCalibrationPdf } from '../pdf/calibrationPage';
 import { renderPreviewSvg } from '../preview/previewRenderer';
 import { roundMm } from '../units/mm';
 import { Unit, toMm, fromMm, formatUnitValue, getUnitSymbol } from '../units/units';
-import { PAPER_FORMATS, getPaperFormat, getAppTitleForFormat } from '../units/paperFormats';
+import { PAPER_FORMATS, getPaperFormat, getAppTitleForFormat, isRollPaperFormat } from '../units/paperFormats';
 import { setLanguage, t, applyTranslations, onLanguageChange, TranslationKey } from '../i18n';
 import { trackEvent } from '../analytics';
 
@@ -340,6 +340,58 @@ export class UIController {
         store.update({ customPageHeightMm: valMm, paperFormatId: 'custom' });
         await this.recalculateArtwork();
       },
+    });
+
+    // 3.1.2 Длина рулона термопринтера (настройка расстояния по длине в мм)
+    const thermalRollLenInput = document.getElementById('thermalRollLength') as HTMLInputElement;
+    this.bindSmartNumberInput(thermalRollLenInput, {
+      min: 20,
+      max: 3000,
+      getFallback: () => fromMm(store.getState().rollLengthMm, store.getState().unit),
+      onCommit: async (valInUnit) => {
+        const valMm = toMm(valInUnit, store.getState().unit);
+        store.update({ rollLengthMm: valMm });
+        await this.recalculateArtwork();
+      },
+    });
+
+    // Быстрые пресеты длины рулона (80, 120, 150, 200 мм)
+    const rollChips = document.querySelectorAll('.roll-preset-chip');
+    rollChips.forEach((chip) => {
+      chip.addEventListener('click', async () => {
+        const lenVal = parseFloat((chip as HTMLElement).dataset.len || '80');
+        store.update({ rollLengthMm: lenVal });
+        await this.recalculateArtwork();
+      });
+    });
+
+    // Авто-длина рулона под наклейки ("По наклейкам")
+    const btnAutoRoll = document.getElementById('btnAutoRollLength');
+    btnAutoRoll?.addEventListener('click', async () => {
+      const state = store.getState();
+      const fmt = getPaperFormat(state.paperFormatId);
+      const rollW = fmt.widthMm;
+      const usableW = Math.max(10, rollW - state.margins.left - state.margins.right);
+      const stW = state.stickerWidthMm;
+      const stH = state.stickerHeightMm;
+      const gapX = state.gapX;
+      const gapY = state.gapY;
+
+      // Число колонок
+      const cols = Math.max(1, Math.floor((usableW + gapX) / (stW + gapX)));
+      let targetCopies = 1;
+      if (typeof state.requestedCopies === 'number' && state.requestedCopies > 0) {
+        targetCopies = state.requestedCopies;
+      } else if (this.currentLayout && this.currentLayout.actualCopies > 0) {
+        targetCopies = this.currentLayout.actualCopies;
+      }
+
+      const rows = Math.max(1, Math.ceil(targetCopies / cols));
+      const requiredH = roundMm(state.margins.top + rows * stH + (rows - 1) * gapY + state.margins.bottom);
+      const finalH = Math.max(30, Math.min(3000, requiredH));
+
+      store.update({ rollLengthMm: finalH });
+      await this.recalculateArtwork();
     });
 
     // 3.2 Ориентация листа (Portrait / Landscape)
@@ -957,8 +1009,8 @@ export class UIController {
       }
     }
 
-    if (morePaperGroup && !isTopFormat) {
-      morePaperGroup.style.display = 'block';
+    if (morePaperGroup) {
+      morePaperGroup.style.display = 'none';
     }
 
     // Обновление сводной дизайнерской карточки бумаги и принтера
@@ -970,6 +1022,19 @@ export class UIController {
     }
     setVal('customPageWidth', formatUnitValue(state.customPageWidthMm, state.unit));
     setVal('customPageHeight', formatUnitValue(state.customPageHeightMm, state.unit));
+
+    const isRoll = isRollPaperFormat(state.paperFormatId);
+    const thermalRollGroup = document.getElementById('thermalRollGroup');
+    if (thermalRollGroup) {
+      thermalRollGroup.style.display = isRoll ? 'flex' : 'none';
+    }
+    setVal('thermalRollLength', formatUnitValue(state.rollLengthMm, state.unit));
+
+    const rollChips = document.querySelectorAll('.roll-preset-chip');
+    rollChips.forEach((chip) => {
+      const lenVal = parseFloat((chip as HTMLElement).dataset.len || '0');
+      chip.classList.toggle('active', isRoll && Math.abs(state.rollLengthMm - lenVal) < 0.5);
+    });
 
     setVal('stickerWidth', formatUnitValue(state.stickerWidthMm, state.unit));
     setVal('stickerHeight', formatUnitValue(state.stickerHeightMm, state.unit));
@@ -1060,6 +1125,7 @@ export class UIController {
     setLabel('lblGapY', t('lblGapYUnit', { unit: symbol }));
     setLabel('lblCustomPageWidth', t('lblCustomPaperWidth', { unit: symbol }));
     setLabel('lblCustomPageHeight', t('lblCustomPaperHeight', { unit: symbol }));
+    setLabel('lblThermalRollLength', t('lblRollLengthUnit', { unit: symbol }));
   }
 
   /**
@@ -1389,11 +1455,9 @@ export class UIController {
 
     // Открытие дизайнерского каталога
     chipMore?.addEventListener('click', () => {
-      if (morePaperGroup) morePaperGroup.style.display = 'block';
       this.openPaperCatalog();
     });
     btnOpenCatalogLink?.addEventListener('click', () => {
-      if (morePaperGroup) morePaperGroup.style.display = 'block';
       this.openPaperCatalog();
     });
 
@@ -1510,6 +1574,11 @@ export class UIController {
       if (isCurStandard) {
         updates.margins = { top: 0, bottom: 0, left: 0, right: 0 };
       }
+      if (newFormat.isRoll && newFormat.defaultRollLengthMm) {
+        if (!store.getState().rollLengthMm || store.getState().rollLengthMm <= 0) {
+          updates.rollLengthMm = newFormat.defaultRollLengthMm;
+        }
+      }
     } else if (newFormat.group === 'iso' || newFormat.group === 'ansi') {
       // При возврате с термопринтера на офисный лист восстанавливаем рекомендуемые поля 5 мм
       if (curFormat.group === 'thermal' && isCurZero) {
@@ -1525,9 +1594,15 @@ export class UIController {
       customPaperGroup.style.display = formatId === 'custom' ? 'flex' : 'none';
     }
 
-    // Скрываем блок morePaperGroup для стандартных
+    // Управляем видимостью блока настройки рулона
+    const thermalRollGroup = document.getElementById('thermalRollGroup');
+    if (thermalRollGroup) {
+      thermalRollGroup.style.display = isRollPaperFormat(formatId) ? 'flex' : 'none';
+    }
+
+    // Гарантируем скрытие рудиментарного блока morePaperGroup
     const morePaperGroup = document.getElementById('morePaperGroup');
-    if (morePaperGroup && (formatId === 'a4' || formatId === 'letter' || formatId === 'label_58x40' || formatId === 'peripage_57' || formatId === 'custom')) {
+    if (morePaperGroup) {
       morePaperGroup.style.display = 'none';
     }
 
@@ -1587,6 +1662,10 @@ export class UIController {
         const w = formatUnitValue(state.customPageWidthMm, state.unit);
         const h = formatUnitValue(state.customPageHeightMm, state.unit);
         dimText = `${w} × ${h} ${unitSymbol}`;
+      } else if (fmt.isRoll) {
+        const w = formatUnitValue(fmt.widthMm, state.unit);
+        const h = formatUnitValue(state.paperFormatId === fmt.id ? state.rollLengthMm : (fmt.defaultRollLengthMm || fmt.heightMm), state.unit);
+        dimText = `${w} × ${h} ${unitSymbol}`;
       } else {
         const w = formatUnitValue(fmt.widthMm, state.unit);
         const h = formatUnitValue(fmt.heightMm, state.unit);
@@ -1595,7 +1674,7 @@ export class UIController {
 
       // Бейджи
       const badgesHtml: string[] = [];
-      if (fmt.id === 'a4' || fmt.id === 'label_58x40' || fmt.id === 'peripage_57') {
+      if (fmt.id === 'a4' || fmt.id === 'label_58x40' || fmt.id === 'peripage_57' || fmt.id === 'roll_80') {
         badgesHtml.push(`<span class="card-badge card-badge-popular">${t('badgePopular')}</span>`);
       }
       if (fmt.group === 'thermal') {
@@ -1653,8 +1732,9 @@ export class UIController {
     const fmt = getPaperFormat(state.paperFormatId);
     const lang = (localStorage.getItem('sticker_sheet_lang') as 'ru' | 'en') || 'ru';
     const unitSymbol = getUnitSymbol(state.unit, lang);
-    const wVal = formatUnitValue(state.paperFormatId === 'custom' ? state.customPageWidthMm : fmt.widthMm, state.unit);
-    const hVal = formatUnitValue(state.paperFormatId === 'custom' ? state.customPageHeightMm : fmt.heightMm, state.unit);
+    const pageDim = store.getPageDimensions();
+    const wVal = formatUnitValue(pageDim.widthMm, state.unit);
+    const hVal = formatUnitValue(pageDim.heightMm, state.unit);
 
     if (cardIcon) {
       cardIcon.innerHTML = getPaperFormatSvgIcon(fmt.group, fmt.id);

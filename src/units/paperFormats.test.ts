@@ -4,6 +4,7 @@ import {
   getPaperFormat,
   calculatePageDimensions,
   getAppTitleForFormat,
+  isRollPaperFormat,
 } from './paperFormats';
 
 describe('Paper Formats Module (Стандарты бумаги и кастомные размеры)', () => {
@@ -87,11 +88,40 @@ describe('Paper Formats Module (Стандарты бумаги и кастом�
   });
 
   describe('Термопринтеры и этикетки (PeriPage, Niimbot, маркетплейсы)', () => {
-    it('PeriPage 57 мм рулон строго 57 × 80 мм', () => {
+    it('PeriPage 57 мм рулон строго 57 × 80 мм по умолчанию, с флагом isRoll', () => {
       const p57 = getPaperFormat('peripage_57');
       expect(p57.widthMm).toBe(57);
       expect(p57.heightMm).toBe(80);
       expect(p57.group).toBe('thermal');
+      expect(p57.isRoll).toBe(true);
+      expect(isRollPaperFormat('peripage_57')).toBe(true);
+    });
+
+    it('Терморулон 80 мм (roll_80) с флагом isRoll и настраиваемой длиной', () => {
+      const r80 = getPaperFormat('roll_80');
+      expect(r80.widthMm).toBe(80);
+      expect(r80.heightMm).toBe(100);
+      expect(r80.group).toBe('thermal');
+      expect(r80.isRoll).toBe(true);
+      expect(isRollPaperFormat('roll_80')).toBe(true);
+      expect(isRollPaperFormat('a4')).toBe(false);
+    });
+
+    it('Расчет физических размеров рулона с настраиваемым расстоянием по длине в мм', () => {
+      // По умолчанию, если rollLengthMm не указан — берутся дефолтные 80 мм
+      const defaultDim = calculatePageDimensions('peripage_57', 0, 0, 'portrait');
+      expect(defaultDim.widthMm).toBe(57);
+      expect(defaultDim.heightMm).toBe(80);
+
+      // При настройке расстояния по длине 150 мм
+      const customLenDim = calculatePageDimensions('peripage_57', 0, 0, 'portrait', 150);
+      expect(customLenDim.widthMm).toBe(57);
+      expect(customLenDim.heightMm).toBe(150);
+
+      // Рулон 80 мм с длиной 250 мм
+      const r80Dim = calculatePageDimensions('roll_80', 0, 0, 'portrait', 250);
+      expect(r80Dim.widthMm).toBe(80);
+      expect(r80Dim.heightMm).toBe(250);
     });
 
     it('Термоэтикетка 58 × 40 мм (WB, Ozon)', () => {
@@ -115,6 +145,7 @@ describe('Paper Formats Module (Стандарты бумаги и кастом�
       expect(getAppTitleForFormat('letter', 'ru')).toBe('Раскладка наклеек Letter');
       expect(getAppTitleForFormat('a3', 'ru')).toBe('Раскладка наклеек A3');
       expect(getAppTitleForFormat('peripage_57', 'ru')).toBe('Раскладка наклеек PeriPage 57 мм');
+      expect(getAppTitleForFormat('roll_80', 'ru')).toBe('Раскладка наклеек Терморулон 80 мм');
       expect(getAppTitleForFormat('label_58x40', 'ru')).toBe('Раскладка наклеек 58 × 40 мм');
       expect(getAppTitleForFormat('label_50x30', 'ru')).toBe('Раскладка наклеек 50 × 30 мм');
       expect(getAppTitleForFormat('photo_10x15', 'ru')).toBe('Раскладка наклеек 10 × 15 см');
@@ -127,6 +158,7 @@ describe('Paper Formats Module (Стандарты бумаги и кастом�
       expect(getAppTitleForFormat('letter', 'en')).toBe('Letter Sticker Sheet Maker');
       expect(getAppTitleForFormat('a3', 'en')).toBe('A3 Sticker Sheet Maker');
       expect(getAppTitleForFormat('peripage_57', 'en')).toBe('PeriPage 57 mm Sticker Maker');
+      expect(getAppTitleForFormat('roll_80', 'en')).toBe('80 mm Thermal Roll Sticker Maker');
       expect(getAppTitleForFormat('label_58x40', 'en')).toBe('58 × 40 mm Thermal Label Maker');
       expect(getAppTitleForFormat('label_50x30', 'en')).toBe('50 × 30 mm Thermal Label Maker');
       expect(getAppTitleForFormat('photo_10x15', 'en')).toBe('10 × 15 cm Photo Sticker Sheet Maker');

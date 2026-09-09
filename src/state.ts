@@ -13,6 +13,7 @@ export interface AppSettings {
   paperFormatId: string;
   customPageWidthMm: number;
   customPageHeightMm: number;
+  rollLengthMm: number;
   pageOrientation: PageOrientation;
   stickerWidthMm: number;
   stickerHeightMm: number;
@@ -46,6 +47,7 @@ export const DEFAULT_SETTINGS: AppSettings = {
   paperFormatId: DEFAULT_PAPER_FORMAT_ID, // 'a4'
   customPageWidthMm: 210,
   customPageHeightMm: 297,
+  rollLengthMm: 80,
   pageOrientation: 'portrait',
   stickerWidthMm: 54.0,
   stickerHeightMm: 85.0,
@@ -100,6 +102,7 @@ export function saveSettings(settings: AppSettings): void {
       paperFormatId: settings.paperFormatId,
       customPageWidthMm: settings.customPageWidthMm,
       customPageHeightMm: settings.customPageHeightMm,
+      rollLengthMm: settings.rollLengthMm,
       pageOrientation: settings.pageOrientation,
       stickerWidthMm: settings.stickerWidthMm,
       stickerHeightMm: settings.stickerHeightMm,
@@ -154,7 +157,8 @@ export class AppStore {
       this.state.paperFormatId,
       this.state.customPageWidthMm,
       this.state.customPageHeightMm,
-      this.state.pageOrientation
+      this.state.pageOrientation,
+      this.state.rollLengthMm
     );
   }
 

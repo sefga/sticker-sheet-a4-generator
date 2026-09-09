@@ -111,6 +111,12 @@ export function parseUrlSettings(queryString: string): Partial<AppSettings> {
     if (!patch.paperFormatId) patch.paperFormatId = 'custom';
   }
 
+  // 0.3 Длина ленты для рулонного термопринтера
+  const rollLen = parseNumber(params, ['rollLength', 'rollLen', 'tapeLength', 'roll'], 20, 3000);
+  if (rollLen !== null) {
+    patch.rollLengthMm = rollLen;
+  }
+
   // 2. Ориентация листа бумаги
   for (const key of ['orientation', 'orient', 'pageOrientation', 'o']) {
     const raw = params.get(key);

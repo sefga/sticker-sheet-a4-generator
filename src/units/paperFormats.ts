@@ -11,6 +11,8 @@ export interface PaperFormat {
   descriptionRu: string;
   descriptionEn: string;
   keywords?: string[];
+  isRoll?: boolean;
+  defaultRollLengthMm?: number;
 }
 
 export const PAPER_FORMATS: PaperFormat[] = [
@@ -105,9 +107,23 @@ export const PAPER_FORMATS: PaperFormat[] = [
     group: 'thermal',
     widthMm: 57,
     heightMm: 80,
-    descriptionRu: '57 × 80 мм (рулон PeriPage, Paperang, Phomemo, чековый принтер)',
-    descriptionEn: '57 × 80 mm (PeriPage, Paperang, Phomemo mini pocket printer roll)',
+    isRoll: true,
+    defaultRollLengthMm: 80,
+    descriptionRu: '57 × 80 мм (рулон PeriPage, Paperang, Phomemo, чековый принтер) с настраиваемой длиной',
+    descriptionEn: '57 × 80 mm (PeriPage, Paperang, Phomemo mini pocket printer roll) with customizable length',
     keywords: ['peripage', 'перипейдж', 'paperang', 'phomemo', 'фомемо', 'термо', 'рулон', 'чек'],
+  },
+  {
+    id: 'roll_80',
+    name: 'Терморулон 80 мм',
+    group: 'thermal',
+    widthMm: 80,
+    heightMm: 100,
+    isRoll: true,
+    defaultRollLengthMm: 100,
+    descriptionRu: '80 × 100 мм (чековый термопринтер, кассовая лента, широкая наклейка) с настраиваемой длиной',
+    descriptionEn: '80 × 100 mm (POS receipt thermal roll, continuous label) with customizable length',
+    keywords: ['80мм', '80mm', 'кассовый', 'терморулон', 'чек', 'лента', 'roll', 'pos', 'термо'],
   },
   {
     id: 'label_58x40',
@@ -175,15 +191,21 @@ export function getPaperFormat(formatId: string): PaperFormat {
   return found || PAPER_FORMATS[0]; // По умолчанию A4
 }
 
+export function isRollPaperFormat(formatId: string): boolean {
+  const fmt = getPaperFormat(formatId);
+  return !!fmt.isRoll;
+}
+
 /**
  * Расчет физических размеров страницы в миллиметрах с учетом формата,
- * пользовательских размеров (если выбран custom) и ориентации.
+ * пользовательских размеров (если выбран custom), длины рулона (для термопринтеров) и ориентации.
  */
 export function calculatePageDimensions(
   formatId: string,
   customWidthMm: number,
   customHeightMm: number,
-  orientation: PageOrientation
+  orientation: PageOrientation,
+  rollLengthMm?: number
 ): { widthMm: number; heightMm: number } {
   let baseW: number;
   let baseH: number;
@@ -194,7 +216,14 @@ export function calculatePageDimensions(
   } else {
     const format = getPaperFormat(formatId);
     baseW = format.widthMm;
-    baseH = format.heightMm;
+    if (format.isRoll) {
+      // Для рулонов термопринтера расстояние по длине настраивается пользователем
+      const chosenLen = rollLengthMm ?? customHeightMm;
+      const len = chosenLen && chosenLen > 0 ? chosenLen : format.heightMm;
+      baseH = Math.max(20, Math.min(3000, len));
+    } else {
+      baseH = format.heightMm;
+    }
   }
 
   // При книжной ориентации ширина <= высоты (или исходные пропорции)
@@ -225,6 +254,7 @@ export function getAppTitleForFormat(formatId: string, lang: 'ru' | 'en'): strin
     if (fId === 'tabloid') return 'Раскладка наклеек Tabloid';
     if (fId === 'half_letter') return 'Раскладка наклеек Half Letter';
     if (fId === 'peripage_57') return 'Раскладка наклеек PeriPage 57 мм';
+    if (fId === 'roll_80') return 'Раскладка наклеек Терморулон 80 мм';
     if (fId === 'label_58x40') return 'Раскладка наклеек 58 × 40 мм';
     if (fId === 'label_50x30') return 'Раскладка наклеек 50 × 30 мм';
     if (fId === 'label_4x6') return 'Раскладка наклеек 4 × 6"';
@@ -242,6 +272,7 @@ export function getAppTitleForFormat(formatId: string, lang: 'ru' | 'en'): strin
     if (fId === 'tabloid') return 'US Tabloid Sticker Sheet Maker';
     if (fId === 'half_letter') return 'Half Letter Sticker Sheet Maker';
     if (fId === 'peripage_57') return 'PeriPage 57 mm Sticker Maker';
+    if (fId === 'roll_80') return '80 mm Thermal Roll Sticker Maker';
     if (fId === 'label_58x40') return '58 × 40 mm Thermal Label Maker';
     if (fId === 'label_50x30') return '50 × 30 mm Thermal Label Maker';
     if (fId === 'label_4x6') return '4 × 6" Label Sticker Sheet Maker';

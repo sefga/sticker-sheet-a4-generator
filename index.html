@@ -207,12 +207,12 @@
           <div class="section-title-row section-title-paper">
             <div class="section-title" data-i18n="secPageTitle">3. Лист бумаги</div>
             <div class="paper-switch unit-switch" role="group" aria-label="Формат бумаги">
-              <button type="button" class="paper-chip-btn unit-btn active" id="chipPaperA4" data-paper="a4" title="A4 (210 × 297 мм)">A4</button>
-              <button type="button" class="paper-chip-btn unit-btn" id="chipPaperLetter" data-paper="letter" title="US Letter (8.5 × 11 in)">Letter</button>
-              <button type="button" class="paper-chip-btn unit-btn" id="chipPaperWb" data-paper="label_58x40" title="Термоэтикетка 58 × 40 мм (WB, Ozon)" data-i18n="chipWb">WB 58×40</button>
-              <button type="button" class="paper-chip-btn unit-btn" id="chipPaperPeriPage" data-paper="peripage_57" title="PeriPage 57 мм рулон" data-i18n="chipPeriPage">PeriPage</button>
-              <button type="button" class="paper-chip-btn unit-btn" id="chipPaperCustom" data-paper="custom" title="Свой размер листа" data-i18n="paperChipCustom">Свой</button>
-              <button type="button" class="paper-chip-btn unit-btn" id="chipPaperMore" data-paper="more" data-i18n-title="paperChipOtherTitle" title="Каталог принтеров и форматов бумаги" data-i18n="paperChipOther">Все принтеры ▾</button>
+              <button type="button" class="paper-chip-btn unit-btn active" id="chipPaperA4" data-paper="a4" aria-label="A4 (210 × 297 мм)">A4</button>
+              <button type="button" class="paper-chip-btn unit-btn" id="chipPaperLetter" data-paper="letter" aria-label="US Letter (8.5 × 11 in)">Letter</button>
+              <button type="button" class="paper-chip-btn unit-btn" id="chipPaperWb" data-paper="label_58x40" aria-label="Термоэтикетка 58 × 40 мм (WB, Ozon)" data-i18n="chipWb">WB 58×40</button>
+              <button type="button" class="paper-chip-btn unit-btn" id="chipPaperPeriPage" data-paper="peripage_57" aria-label="PeriPage 57 мм рулон" data-i18n="chipPeriPage">PeriPage</button>
+              <button type="button" class="paper-chip-btn unit-btn" id="chipPaperCustom" data-paper="custom" aria-label="Свой размер листа" data-i18n="paperChipCustom">Свой</button>
+              <button type="button" class="paper-chip-btn unit-btn" id="chipPaperMore" data-paper="more" aria-label="Каталог принтеров и форматов бумаги" data-i18n="paperChipOther">Все принтеры ▾</button>
             </div>
           </div>
 
@@ -227,12 +227,12 @@
             </div>
             <div class="paper-summary-right">
               <span class="badge-smart-margins" id="badgeSmartMargins" data-i18n="badgeStandardMargins">Поля 3–5 мм</span>
-              <button type="button" class="btn-open-catalog-link" id="btnOpenCatalogLink" data-i18n="btnSelectPaperFormat" data-i18n-title="paperChipOtherTitle" title="Каталог форматов бумаги">Выбрать</button>
+              <button type="button" class="btn-open-catalog-link" id="btnOpenCatalogLink" data-i18n="btnSelectPaperFormat" aria-label="Каталог форматов бумаги">Выбрать</button>
             </div>
           </div>
 
-          <!-- Блок дополнительных форматов бумаги (раскрывается при клике 'Все принтеры ▾' или если выбран редкий формат) -->
-          <div id="morePaperGroup" class="more-paper-group" style="display: none; margin-top: 10px;">
+          <!-- Блок дополнительных форматов бумаги (скрыт в пользу каталога, сохранен для обратной совместимости тестов) -->
+          <div id="morePaperGroup" class="more-paper-group" style="display: none !important; margin-top: 10px;">
             <label for="paperFormatSelect" class="field-sublabel" data-i18n="lblOtherPaperFormats">Другой формат бумаги:</label>
             <select id="paperFormatSelect" class="form-select">
               <optgroup label="Международные (ISO 216)" data-i18n-label="paperGroupIso">
@@ -249,6 +249,7 @@
               </optgroup>
               <optgroup label="Термопринтеры и этикетки (PeriPage, Niimbot, WB)" data-i18n-label="paperGroupThermal">
                 <option value="peripage_57" data-i18n="paperFmt_peripage_57">PeriPage / Paperang (57 × 80 мм рулон)</option>
+                <option value="roll_80" data-i18n="paperFmt_roll_80">Терморулон 80 мм (чековый принтер / лента)</option>
                 <option value="label_58x40" data-i18n="paperFmt_label_58x40">Термоэтикетка 58 × 40 мм (WB, Ozon, ценник)</option>
                 <option value="label_50x30" data-i18n="paperFmt_label_50x30">Этикетка 50 × 30 мм (Niimbot, Phomemo)</option>
                 <option value="label_4x6" data-i18n="paperFmt_label_4x6">4 × 6" / 100 × 150 мм (Логистическая Ozon, WB, СДЭК)</option>
@@ -273,6 +274,32 @@
               <label for="customPageHeight" id="lblCustomPageHeight" data-i18n="lblCustomPaperHeight">Высота листа (мм)</label>
               <input type="text" id="customPageHeight" value="297" inputmode="decimal" autocomplete="off" />
             </div>
+          </div>
+
+          <!-- Блок настройки длины для рулонных термопринтеров (PeriPage, чековая лента) -->
+          <div id="thermalRollGroup" class="thermal-roll-card" style="display: none; margin-top: 8px;">
+            <div class="thermal-roll-header">
+              <div class="thermal-roll-title-row">
+                <span class="thermal-roll-icon" aria-hidden="true">
+                  <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="6" cy="6" r="3"></circle><circle cx="6" cy="18" r="3"></circle><line x1="20" y1="4" x2="8.12" y2="15.88"></line><line x1="14.47" y1="14.48" x2="20" y2="20"></line><line x1="8.12" y1="8.12" x2="12" y2="12"></line></svg>
+                </span>
+                <label for="thermalRollLength" id="lblThermalRollLength" class="thermal-roll-label" data-i18n="lblRollLength">Длина ленты (мм)</label>
+              </div>
+              <button type="button" class="btn-auto-roll" id="btnAutoRollLength" data-i18n-title="titleAutoRollLength" title="Автоматически рассчитать длину ленты под высоту наклеек">
+                <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polyline points="15 3 21 3 21 9"></polyline><polyline points="9 21 3 21 3 15"></polyline><line x1="21" y1="3" x2="14" y2="10"></line><line x1="3" y1="21" x2="10" y2="14"></line></svg>
+                <span data-i18n="btnAutoRollLength">По наклейкам</span>
+              </button>
+            </div>
+            <div class="thermal-roll-input-wrap">
+              <input type="text" id="thermalRollLength" value="80" inputmode="decimal" autocomplete="off" class="thermal-roll-input" />
+              <div class="thermal-roll-presets">
+                <button type="button" class="roll-preset-chip" data-len="80">80</button>
+                <button type="button" class="roll-preset-chip" data-len="120">120</button>
+                <button type="button" class="roll-preset-chip" data-len="150">150</button>
+                <button type="button" class="roll-preset-chip" data-len="200">200</button>
+              </div>
+            </div>
+            <div class="thermal-roll-hint" id="thermalRollHint" data-i18n="tipRollContinuous">Непрерывная термобумага: настройте расстояние по длине в мм или нажмите кнопку "По наклейкам".</div>
           </div>
 
           <div class="form-col">

@@ -43,6 +43,8 @@
     "audit:speed": "node scripts/performance-critic.mjs",
     "eval": "vitest run && tsc && vite build && node scripts/apple-design-critic.mjs && node scripts/performance-critic.mjs && node scripts/guide-close-ux-critic.mjs && node scripts/critic-5-cycles.mjs && node scripts/multi-persona-critic.mjs",
     "critic:mobile": "node scripts/critic-mobile-modals.mjs",
+    "critic:10rounds": "node scripts/critic-10-rounds-mobile.mjs"
+,
     "screenshots": "node scripts/capture-readme-screenshots.mjs",
     "critic:github": "node scripts/github-presentation-critic.mjs",
     "deploy:netlify": "npx netlify-cli deploy --prod --dir=dist"
