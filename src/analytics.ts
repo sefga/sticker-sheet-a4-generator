@@ -23,9 +23,13 @@ declare global {
 export function initAnalytics(): void {
   try {
     if (typeof window !== 'undefined') {
-      inject({
-        mode: 'auto',
-      });
+      const hostname = window.location.hostname;
+      const isVercel = hostname.endsWith('.vercel.app') || hostname === 'localhost' || hostname === '127.0.0.1';
+      if (isVercel) {
+        inject({
+          mode: 'auto',
+        });
+      }
     }
   } catch {
     // Изолировано: аналитика не должна прерывать работу UI
