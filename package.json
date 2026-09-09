@@ -3,7 +3,7 @@
   "private": true,
   "version": "1.0.0",
   "license": "MIT",
-  "description": "Автоматический генератор раскладки наклеек на листе A4 для печати с физической точностью в миллиметрах (StickerFit)",
+  "description": "Free A4 sticker sheet layout maker & print-ready 1:1 vector PDF generator with exact millimeter precision (StickerFit)",
   "homepage": "https://stickerfit.vercel.app",
   "repository": {
     "type": "git",
@@ -13,14 +13,21 @@
     "url": "https://github.com/sefga/stickerfit/issues"
   },
   "keywords": [
-    "stickers",
     "sticker-sheet",
+    "sticker-sheet-maker",
+    "sticker-generator",
     "print-ready",
-    "a4",
-    "pdf",
-    "cropperjs",
-    "vite",
-    "typescript"
+    "label-maker",
+    "a4-stickers",
+    "vector-pdf",
+    "papercraft",
+    "stationery",
+    "merch-maker",
+    "print-calculator",
+    "client-side",
+    "open-source",
+    "stickers",
+    "pdf"
   ],
   "author": "Михаил Сокольский (sefga)",
   "type": "module",
@@ -36,6 +43,7 @@
     "audit:speed": "node scripts/performance-critic.mjs",
     "eval": "vitest run && tsc && vite build && node scripts/apple-design-critic.mjs && node scripts/performance-critic.mjs && node scripts/guide-close-ux-critic.mjs && node scripts/critic-5-cycles.mjs && node scripts/multi-persona-critic.mjs",
     "screenshots": "node scripts/capture-readme-screenshots.mjs",
+    "critic:github": "node scripts/github-presentation-critic.mjs",
     "deploy:netlify": "npx netlify-cli deploy --prod --dir=dist"
   },
   "dependencies": {

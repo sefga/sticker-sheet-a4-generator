@@ -18,12 +18,12 @@
 
 ---
 
-## ⚡ 15-Second Workflow / 3 простых шага к готовой печати
+## ⚡ 15-Second Workflow / 3 шага к готовой печати
 
 ```text
-  [ 1. Загрузите стикер ]       →    [ 2. Укажите размер (мм) ]    →    [ 3. Скачайте векторный PDF ]
-PNG, JPEG, WebP (в браузере)          Ширина × Высота (0.1 мм)            1:1 MediaBox, Bleed, Cut Marks
-                                      Автоповорот 90° для экономии         Готово за 30–60 секунд!
+  [ 1. Upload Sticker ]         →    [ 2. Set Exact Size (mm) ]    →    [ 3. Download Vector PDF ]
+PNG, JPEG, WebP (in browser)          Width × Height (0.1 mm step)        1:1 MediaBox, Bleed & Cut Marks
+Загрузите исходник                    Точный размер и автоповорот 90°     Готово к печати без искажений!
 ```
 
 ---
