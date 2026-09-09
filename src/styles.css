@@ -1390,12 +1390,12 @@ input.input-has-error {
 
   body.tab-active-guide .guide-modal-header,
   .guide-modal-backdrop.open .guide-modal-header {
-    /* Безопасный отступ сверху под чёлку, Dynamic Island и статус-бар iOS/Android */
-    padding-top: calc(max(env(safe-area-inset-top, 0px), 16px) + 12px) !important;
+    /* Безопасный отступ сверху под чёлку, Dynamic Island и статус-бар iOS/Android (минимум 36px) */
+    padding-top: calc(max(env(safe-area-inset-top, 0px), 24px) + 12px) !important;
     padding-bottom: 12px !important;
     padding-left: max(env(safe-area-inset-left, 0px), 16px) !important;
     padding-right: max(env(safe-area-inset-right, 0px), 16px) !important;
-    min-height: calc(56px + max(env(safe-area-inset-top, 0px), 28px)) !important;
+    min-height: calc(54px + max(env(safe-area-inset-top, 0px), 36px)) !important;
     box-sizing: border-box !important;
     background: #ffffff !important;
     border-bottom: 1px solid var(--border) !important;
@@ -1417,22 +1417,44 @@ input.input-has-error {
     min-width: 0 !important;
   }
 
+  body.tab-active-guide .btn-guide-back,
+  .guide-modal-backdrop.open .btn-guide-back {
+    display: inline-flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    height: 42px !important;
+    min-height: 42px !important;
+    padding: 6px 14px !important;
+    font-size: 0.88rem !important;
+    border-radius: var(--radius-sm) !important;
+    align-self: center !important;
+    margin: 0 !important;
+    flex-shrink: 0 !important;
+  }
+
   body.tab-active-guide .guide-modal-logo,
   .guide-modal-backdrop.open .guide-modal-logo {
     white-space: nowrap !important;
     overflow: hidden !important;
     text-overflow: ellipsis !important;
+    font-size: 1rem !important;
+    align-self: center !important;
   }
 
   body.tab-active-guide .guide-modal-close,
   .guide-modal-backdrop.open .guide-modal-close {
-    width: 46px !important;
-    height: 46px !important;
-    min-width: 46px !important;
-    min-height: 46px !important;
+    width: 44px !important;
+    height: 44px !important;
+    min-width: 44px !important;
+    min-height: 44px !important;
     margin: 0 !important;
     align-self: center !important;
     flex-shrink: 0 !important;
+    border-radius: 50% !important;
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    font-size: 1.1rem !important;
   }
 
   body.tab-active-guide .guide-modal-subtitle,

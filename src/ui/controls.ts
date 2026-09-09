@@ -491,6 +491,7 @@ export class UIController {
       guideModalBackdrop?.classList.remove('open');
       guideModalBackdrop?.setAttribute('aria-hidden', 'true');
       document.body.classList.remove('tab-active-guide');
+      document.body.style.overflow = '';
       tabBtnGuide?.classList.remove('active');
 
       if (window.innerWidth <= 1024) {
@@ -505,22 +506,25 @@ export class UIController {
       tabBtnGuide?.classList.remove('active');
 
       if (tab === 'controls') {
+        document.body.style.overflow = '';
         lastActiveTab = 'controls';
         document.body.classList.add('tab-active-controls');
         tabBtnControls?.classList.add('active');
       } else if (tab === 'preview') {
+        document.body.style.overflow = '';
         lastActiveTab = 'preview';
         document.body.classList.add('tab-active-preview');
         tabBtnPreview?.classList.add('active');
         window.scrollTo({ top: 0, behavior: 'smooth' });
       } else if (tab === 'guide') {
+        document.body.style.overflow = 'hidden';
         document.body.classList.add('tab-active-guide');
         tabBtnGuide?.classList.add('active');
         const guideScroll = document.querySelector('.guide-modal-scroll');
         if (guideScroll) {
           guideScroll.scrollTop = 0;
         }
-        window.scrollTo({ top: 0, behavior: 'smooth' });
+        window.scrollTo({ top: 0, behavior: 'instant' });
       }
     };
 
