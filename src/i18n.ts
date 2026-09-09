@@ -201,14 +201,6 @@ export const translations = {
     faqA5: 'Да! При включенном автоповороте StickerFit сравнивает варианты 0° и 90° и выбирает тот, в котором на лист помещается больше стикеров.',
     faqQ6: 'Сохраняются ли мои изображения на сервере?',
     faqA6: 'Нет. Вся обработка, кадрирование и сборка PDF происходят на 100% локально в вашем браузере. Ваши файлы и изображения никогда не отправляются на сервер. StickerFit использует только минимальную анонимную продуктовую аналитику (подсчет визитов и факта экспорта PDF) без использования cookies и без сбора персональных данных.',
-
-    // Ненавязчивый опрос обратной связи (Feedback Loop)
-    feedbackPrompt: 'Подошел ли макет для вашей печати?',
-    feedbackYes: 'Да 👍',
-    feedbackNo: 'Нет 👎',
-    feedbackThankYou: 'Спасибо за отзыв! Рады помочь!',
-    feedbackReportIssue: 'Сообщить о неточности печати',
-    feedbackDismiss: 'Закрыть',
   },
 
   en: {
@@ -403,14 +395,6 @@ export const translations = {
     faqA5: 'Yes! When "Auto-rotate" is enabled, StickerFit compares both 0° and 90° orientations and automatically chooses whichever packs more stickers onto the sheet.',
     faqQ6: 'Are my uploaded images saved or sent to any server?',
     faqA6: 'No. All image processing, cropping, and PDF layout rendering take place 100% locally in your web browser. Your artwork and images never leave your device. StickerFit uses minimal, privacy-friendly anonymous product analytics (counting pageviews and successful exports) without cookies and without collecting your files or personal data.',
-
-    // Feedback Loop
-    feedbackPrompt: 'Did the sticker sheet work for your print?',
-    feedbackYes: 'Yes 👍',
-    feedbackNo: 'No 👎',
-    feedbackThankYou: 'Thank you! Glad to help!',
-    feedbackReportIssue: 'Report a print accuracy issue',
-    feedbackDismiss: 'Dismiss',
   },
 } as const;
 
