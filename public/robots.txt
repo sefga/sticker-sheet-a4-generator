@@ -16,5 +16,6 @@ User-agent: GPTBot
 Disallow: /
 
 # Sitemaps
-Sitemap: https://sticker-sheet-a4-generator.vercel.app/sitemap.xml
-Sitemap: https://sefga.github.io/sticker-sheet-a4-generator/sitemap.xml
+Sitemap: https://stickerfit.vercel.app/sitemap.xml
+Sitemap: https://stickerfit.netlify.app/sitemap.xml
+Sitemap: https://sefga.github.io/stickerfit/sitemap.xml

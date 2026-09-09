@@ -1,12 +1,15 @@
 {
-  "name": "sticker-sheet-a4-generator",
+  "name": "stickerfit",
   "private": true,
   "version": "1.0.0",
-  "description": "Автоматический генератор раскладки наклеек на листе A4 для печати с физической точностью в миллиметрах",
-  "homepage": "https://sticker-sheet-a4-generator.vercel.app",
+  "description": "Автоматический генератор раскладки наклеек на листе A4 для печати с физической точностью в миллиметрах (StickerFit)",
+  "homepage": "https://stickerfit.vercel.app",
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/sefga/sticker-sheet-a4-generator.git"
+    "url": "git+https://github.com/sefga/stickerfit.git"
+  },
+  "bugs": {
+    "url": "https://github.com/sefga/stickerfit/issues"
   },
   "keywords": [
     "stickers",

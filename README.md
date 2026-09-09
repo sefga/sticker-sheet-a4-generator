@@ -1,8 +1,8 @@
 # StickerFit — A4 Sticker Sheet Maker (Генератор раскладки наклеек на листе A4)
 
-[![Deploy to GitHub Pages](https://github.com/sefga/sticker-sheet-a4-generator/actions/workflows/deploy.yml/badge.svg)](https://github.com/sefga/sticker-sheet-a4-generator/actions/workflows/deploy.yml)
-[![Vercel Deployment](https://img.shields.io/badge/Vercel-Live%20Demo-black?logo=vercel)](https://sticker-sheet-a4-generator.vercel.app)
-[![Deploy to Netlify](https://www.netlify.com/img/deploy/button.svg)](https://app.netlify.com/start/deploy?repository=https://github.com/sefga/sticker-sheet-a4-generator)
+[![Deploy to GitHub Pages](https://github.com/sefga/stickerfit/actions/workflows/deploy.yml/badge.svg)](https://github.com/sefga/stickerfit/actions/workflows/deploy.yml)
+[![Vercel Deployment](https://img.shields.io/badge/Vercel-Live%20Demo-black?logo=vercel)](https://stickerfit.vercel.app)
+[![Deploy to Netlify](https://img.shields.io/badge/Netlify-Live%20Demo-00C7B7?logo=netlify)](https://stickerfit.netlify.app/)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 
 **StickerFit** — автономное клиентское веб-приложение для автоматической подготовки, оптимальной компоновки и верстки листов A4 со стикерами для печати с физической точностью геометрии (в миллиметрах). 100% Client-Side Privacy: изображения обрабатываются только в браузере и никуда не передаются.
@@ -13,10 +13,10 @@
 
 | Сервис / Платформа | Статус | Прямая ссылка | Назначение |
 |:---|:---:|:---|:---|
-| **Vercel (Основной домен)** | 🟢 Live | [sticker-sheet-a4-generator.vercel.app](https://sticker-sheet-a4-generator.vercel.app) | Основной канонический production CDN |
-| **GitHub Pages (Зеркало)** | 🟢 Live | [sefga.github.io/sticker-sheet-a4-generator](https://sefga.github.io/sticker-sheet-a4-generator/) | Официальное зеркало на GitHub Pages |
-| **Netlify (1-Click Deploy)** | 🟢 Ready | [Развернуть на Netlify в 1 клик](https://app.netlify.com/start/deploy?repository=https://github.com/sefga/sticker-sheet-a4-generator) | Мгновенный импорт и запуск на Netlify CDN |
-| **Исходный код (GitHub)** | 🟢 Public | [github.com/sefga/sticker-sheet-a4-generator](https://github.com/sefga/sticker-sheet-a4-generator) | Открытый репозиторий проекта |
+| **Vercel (Основной домен)** | 🟢 Live | [stickerfit.vercel.app](https://stickerfit.vercel.app) | Основной канонический production CDN |
+| **Netlify (Официальный домен)** | 🟢 Live | [stickerfit.netlify.app](https://stickerfit.netlify.app/) | Высокопроизводительный Edge CDN Netlify |
+| **GitHub Pages (Зеркало)** | 🟢 Live | [sefga.github.io/stickerfit](https://sefga.github.io/stickerfit/) | Официальное зеркало на GitHub Pages |
+| **Исходный код (GitHub)** | 🟢 Public | [github.com/sefga/stickerfit](https://github.com/sefga/stickerfit) | Открытый репозиторий проекта |
 
 ---
 
@@ -133,7 +133,7 @@ src/
 ### Вариант 1. В 1 клик через веб (Рекомендуется)
 Нажмите на кнопку ниже, войдите через свой GitHub — Netlify автоматически клонирует репозиторий, запустит сборку и выделит постоянный онлайн-домен `.netlify.app` с автообновлением при каждом `git push`:
 
-[![Deploy to Netlify](https://www.netlify.com/img/deploy/button.svg)](https://app.netlify.com/start/deploy?repository=https://github.com/sefga/sticker-sheet-a4-generator)
+[![Deploy to Netlify](https://www.netlify.com/img/deploy/button.svg)](https://app.netlify.com/start/deploy?repository=https://github.com/sefga/stickerfit)
 
 ### Вариант 2. Через Netlify CLI из консоли
 1. Однократный вход в аккаунт:
@@ -192,7 +192,7 @@ src/
 3. **Open Graph & Twitter Cards**:
    - При отправке ссылки в **Telegram, WhatsApp, VK, Twitter** генерируется привлекательное превью с брендовым векторным баннером [public/og-image.svg](file:///c:/Desk/автоматизация%20разкалдки%20наклеек/public/og-image.svg).
 4. **Канонический URL (`canonical`)**:
-   - Адрес `https://sticker-sheet-a4-generator.vercel.app/` назначен основным каноническим доменом, что объединяет ссылочную массу и исключает санкции за дублирование зеркал на GitHub Pages и Netlify.
+   - Адрес `https://stickerfit.vercel.app/` назначен основным каноническим доменом, что объединяет ссылочную массу и исключает санкции за дублирование зеркал на GitHub Pages и Netlify.
 5. **Файлы для поисковых краулеров**:
    - [public/robots.txt](file:///c:/Desk/автоматизация%20разкалдки наклеек/public/robots.txt) — правила индексации для всех роботов.
    - [public/sitemap.xml](file:///c:/Desk/автоматизация%20разкалдки наклеек/public/sitemap.xml) — карта сайта с приоритетом 1.0.

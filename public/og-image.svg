@@ -45,15 +45,15 @@
   <!-- Left Content: Typography & Value Props -->
   <g transform="translate(100, 130)">
     <!-- Pill Badge -->
-    <rect width="210" height="36" rx="18" fill="#1e3a8a" stroke="#3b82f6" stroke-width="1.5" />
-    <text x="105" y="23" fill="#60a5fa" font-family="-apple-system, BlinkMacSystemFont, Segoe UI, Roboto, sans-serif" font-size="14" font-weight="600" text-anchor="middle">🏷️ ВЕРСТКА НАКЛЕЕК А4</text>
+    <rect width="230" height="36" rx="18" fill="#1e3a8a" stroke="#3b82f6" stroke-width="1.5" />
+    <text x="115" y="23" fill="#60a5fa" font-family="-apple-system, BlinkMacSystemFont, Segoe UI, Roboto, sans-serif" font-size="14" font-weight="600" text-anchor="middle">🏷️ STICKERFIT MAKER</text>
 
     <!-- Title -->
-    <text x="0" y="90" fill="#ffffff" font-family="-apple-system, BlinkMacSystemFont, Segoe UI, Roboto, sans-serif" font-size="44" font-weight="800" letter-spacing="-0.02em">
-      Генератор раскладки
+    <text x="0" y="90" fill="#ffffff" font-family="-apple-system, BlinkMacSystemFont, Segoe UI, Roboto, sans-serif" font-size="46" font-weight="800" letter-spacing="-0.02em">
+      StickerFit
     </text>
-    <text x="0" y="145" fill="#38bdf8" font-family="-apple-system, BlinkMacSystemFont, Segoe UI, Roboto, sans-serif" font-size="44" font-weight="800" letter-spacing="-0.02em">
-      стикеров на листе A4
+    <text x="0" y="145" fill="#38bdf8" font-family="-apple-system, BlinkMacSystemFont, Segoe UI, Roboto, sans-serif" font-size="40" font-weight="800" letter-spacing="-0.02em">
+      A4 Sticker Sheet Maker
     </text>
 
     <!-- Subtitle -->
@@ -78,7 +78,7 @@
 
     <!-- URL Tagline -->
     <text x="0" y="380" fill="#64748b" font-family="monospace" font-size="16">
-      sticker-sheet-a4-generator.vercel.app
+      stickerfit.vercel.app • stickerfit.netlify.app
     </text>
   </g>
 </svg>
