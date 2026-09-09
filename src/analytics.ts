@@ -58,6 +58,12 @@ export type AnalyticsEvent =
     }
   | {
       name: 'calibration_downloaded';
+    }
+  | {
+      name: 'feedback_response';
+      data: {
+        satisfied: boolean;
+      };
     };
 
 /**

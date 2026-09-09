@@ -2,6 +2,7 @@
   "name": "stickerfit",
   "private": true,
   "version": "1.0.0",
+  "license": "MIT",
   "description": "Автоматический генератор раскладки наклеек на листе A4 для печати с физической точностью в миллиметрах (StickerFit)",
   "homepage": "https://stickerfit.vercel.app",
   "repository": {

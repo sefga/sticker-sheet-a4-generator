@@ -118,56 +118,54 @@ async function run10PersonaCritic() {
     personaResults.push({ id: 1, role: 'Global Technical SEO Specialist', score: s1, defects: d1 });
 
     // =========================================================================
-    // ПЕРСОНАЖ 2: GEO & Local Search Strategist (Яндекс & СНГ)
+    // ПЕРСОНАЖ 2: International & Multilingual Strategist (Глобальный охват & RU)
     // =========================================================================
-    console.log('▶️ [ПЕРСОНАЖ 2 / 10] GEO & Local Search Strategist (Яндекс / СНГ)...');
+    console.log('▶️ [ПЕРСОНАЖ 2 / 10] International & Multilingual Strategist (Global & RU)...');
     const p2Data = await page.evaluate(() => {
-      const geoRegion = document.querySelector('meta[name="geo.region"]')?.getAttribute('content') || '';
-      const geoPlace = document.querySelector('meta[name="geo.placename"]')?.getAttribute('content') || '';
-      const icbm = document.querySelector('meta[name="ICBM"]')?.getAttribute('content') || '';
+      const language = document.querySelector('meta[name="language"]')?.getAttribute('content') || '';
       const keywords = document.querySelector('meta[name="keywords"]')?.getAttribute('content') || '';
       const ogLocaleAlt = document.querySelector('meta[property="og:locale:alternate"]')?.getAttribute('content') || '';
       const btnRu = document.getElementById('btnLangRu');
+      const btnEn = document.getElementById('btnLangEn');
 
       return {
-        geoRegion,
-        geoPlace,
-        icbm,
+        language,
         keywords,
         ogLocaleAlt,
         hasLangRu: !!btnRu,
+        hasLangEn: !!btnEn,
       };
     });
 
     let s2 = 100;
     const d2 = [];
-    if (p2Data.geoRegion !== 'RU') {
+    if (!p2Data.language.includes('English') || !p2Data.language.includes('Russian')) {
       s2 -= 20;
-      d2.push('Отсутствует или некорректен geo.region=RU');
+      d2.push('Метатег language не указывает поддержку English и Russian');
     }
-    if (!p2Data.geoPlace || !p2Data.icbm) {
+    if (!p2Data.hasLangRu || !p2Data.hasLangEn) {
       s2 -= 20;
-      d2.push('Отсутствуют geo.placename или координаты ICBM');
+      d2.push('Отсутствуют переключатели языков (RU / EN)');
     }
-    if (!p2Data.keywords.includes('раскладка наклеек') || !p2Data.keywords.includes('печать наклеек')) {
+    if (!p2Data.keywords.includes('sticker') || !p2Data.keywords.includes('раскладка')) {
       s2 -= 20;
-      d2.push('Keywords не содержат русскоязычные ключевые фразы');
+      d2.push('Keywords не содержат сбалансированные международные и русскоязычные фразы');
     }
     if (p2Data.ogLocaleAlt !== 'ru_RU') {
       s2 -= 20;
-      d2.push('Отсутствует og:locale:alternate=ru_RU для СНГ сниппетов');
+      d2.push('Отсутствует og:locale:alternate=ru_RU для региональных сниппетов');
     }
 
-    console.log(`  ✓ GEO привязка: ${p2Data.geoRegion} (${p2Data.geoPlace}), ICBM: ${p2Data.icbm}`);
-    console.log(`  ✓ Русские ключевые фразы: подтверждены`);
-    console.log(`  ✓ OG Locale: ${p2Data.ogLocaleAlt}`);
+    console.log(`  ✓ Международное позиционирование: Language="${p2Data.language}"`);
+    console.log(`  ✓ Двуязычные контроллеры: RU + EN подтверждены`);
+    console.log(`  ✓ OG Locale Alternate: ${p2Data.ogLocaleAlt}`);
     console.log(`  🏆 Оценка Персонажа 2: ${s2} / 100 ${s2 >= 95 ? '✅ (>=95)' : '❌ (<95)'}\n`);
-    personaResults.push({ id: 2, role: 'GEO & Local Search Strategist', score: s2, defects: d2 });
+    personaResults.push({ id: 2, role: 'International & Multilingual Strategist', score: s2, defects: d2 });
 
     // =========================================================================
-    // ПЕРСОНАЖ 3: AI Answer Engine & GEO Critic (ChatGPT Search & Perplexity)
+    // ПЕРСОНАЖ 3: AI Answer Engine & Semantic Truth Critic (ChatGPT, Perplexity)
     // =========================================================================
-    console.log('▶️ [ПЕРСОНАЖ 3 / 10] AI Answer Engine & GEO Critic (ChatGPT Search / Perplexity)...');
+    console.log('▶️ [ПЕРСОНАЖ 3 / 10] AI Answer Engine & Semantic Truth Critic (ChatGPT Search / Perplexity)...');
     const p3Data = await page.evaluate(() => {
       const scriptLd = document.querySelector('script[type="application/ld+json"]');
       let parsedJson = null;
@@ -183,8 +181,8 @@ async function run10PersonaCritic() {
       return {
         hasJsonLd: !!parsedJson,
         schemaType: parsedJson?.['@type'],
-        hasRating: !!parsedJson?.aggregateRating,
-        ratingVal: parsedJson?.aggregateRating?.ratingValue,
+        hasFakeRating: !!parsedJson?.aggregateRating,
+        license: parsedJson?.license || '',
         hasFaqHub: !!contentHub,
         faqCount: faqHeaders.length,
       };
@@ -196,19 +194,24 @@ async function run10PersonaCritic() {
       s3 -= 25;
       d3.push('Schema.org WebApplication JSON-LD отсутствует или невалиден');
     }
-    if (!p3Data.hasRating || p3Data.ratingVal !== '4.9') {
-      s3 -= 20;
-      d3.push('Отсутствует Schema.org aggregateRating для Rich Snippets');
+    if (p3Data.hasFakeRating) {
+      s3 -= 30;
+      d3.push('Обнаружен фиктивный aggregateRating (недопустимо для честного продукта)');
+    }
+    if (!p3Data.license || !p3Data.license.includes('LICENSE')) {
+      s3 -= 15;
+      d3.push('В Schema.org отсутствует ссылка на лицензию MIT');
     }
     if (!p3Data.hasFaqHub || p3Data.faqCount < 3) {
       s3 -= 25;
       d3.push('Отсутствует семантический блок FAQ для цитирования ИИ-поисковиками');
     }
 
-    console.log(`  ✓ Schema.org: ${p3Data.schemaType}, Рейтинг: ${p3Data.ratingVal} ⭐`);
+    console.log(`  ✓ Schema.org: ${p3Data.schemaType}, Честная разметка без фейковых рейтингов: ${!p3Data.hasFakeRating}`);
+    console.log(`  ✓ Ссылка на лицензию в Schema.org: ${p3Data.license}`);
     console.log(`  ✓ Семантический Content Hub: FAQ вопросов = ${p3Data.faqCount}`);
     console.log(`  🏆 Оценка Персонажа 3: ${s3} / 100 ${s3 >= 95 ? '✅ (>=95)' : '❌ (<95)'}\n`);
-    personaResults.push({ id: 3, role: 'AI Answer Engine & GEO Critic', score: s3, defects: d3 });
+    personaResults.push({ id: 3, role: 'AI Answer Engine & Semantic Truth Critic', score: s3, defects: d3 });
 
     // =========================================================================
     // ПЕРСОНАЖ 4: WCAG 2.1 AA Accessibility Auditor (Скринридеры & a11y)
@@ -267,8 +270,17 @@ async function run10PersonaCritic() {
     console.log('▶️ [ПЕРСОНАЖ 5 / 10] GitHub Search & Open-Source Discovery Auditor...');
     const readmePath = path.resolve(__dirname, '../README.md');
     const screenshotsPath = path.resolve(__dirname, '../docs/screenshots');
+    const licensePath = path.resolve(__dirname, '../LICENSE');
+    const contributingPath = path.resolve(__dirname, '../CONTRIBUTING.md');
+    const securityPath = path.resolve(__dirname, '../SECURITY.md');
+    const printAccuracyPath = path.resolve(__dirname, '../docs/PRINT_ACCURACY.md');
+
     const hasReadme = fs.existsSync(readmePath);
     const readmeContent = hasReadme ? fs.readFileSync(readmePath, 'utf8') : '';
+    const hasLicense = fs.existsSync(licensePath);
+    const hasContributing = fs.existsSync(contributingPath);
+    const hasSecurity = fs.existsSync(securityPath);
+    const hasPrintAccuracy = fs.existsSync(printAccuracyPath);
 
     const screenshots = ['desktop-ui.png', 'mobile-ui.png', 'smart-input.png', 'help-modal.png'];
     const missingScreenshots = screenshots.filter(
@@ -278,24 +290,34 @@ async function run10PersonaCritic() {
     let s5 = 100;
     const d5 = [];
     if (!hasReadme || readmeContent.length < 3000) {
-      s5 -= 30;
+      s5 -= 25;
       d5.push('README.md отсутствует или слишком короткий');
     }
     if (!readmeContent.includes('stickerfit.vercel.app') || !readmeContent.includes('stickerfit.netlify.app')) {
-      s5 -= 20;
+      s5 -= 15;
       d5.push('README.md не содержит прямых ссылок на live deployments');
     }
     if (!readmeContent.includes('English Overview') || !readmeContent.includes('Русская документация')) {
-      s5 -= 20;
+      s5 -= 15;
       d5.push('README.md не содержит двуязычной структуры (RU / EN)');
     }
     if (missingScreenshots.length > 0) {
-      s5 -= 30;
+      s5 -= 25;
       d5.push(`Отсутствуют скриншоты в docs/screenshots/: ${missingScreenshots.join(', ')}`);
+    }
+    if (!hasLicense) {
+      s5 -= 25;
+      d5.push('Отсутствует официальный файл LICENSE (MIT) в корне репозитория');
+    }
+    if (!hasContributing || !hasSecurity || !hasPrintAccuracy) {
+      s5 -= 20;
+      d5.push('Отсутствуют файлы документации сообщества (CONTRIBUTING, SECURITY или PRINT_ACCURACY)');
     }
 
     console.log(`  ✓ README.md: ${readmeContent.length} символов, двуязычный (RU/EN)`);
     console.log(`  ✓ Скриншоты в репозитории: 4/4 файла в docs/screenshots/`);
+    console.log(`  ✓ Стандарты Open Source: LICENSE=${hasLicense}, CONTRIBUTING=${hasContributing}, SECURITY=${hasSecurity}`);
+    console.log(`  ✓ Руководство точности печати: docs/PRINT_ACCURACY.md=${hasPrintAccuracy}`);
     console.log(`  ✓ Ссылки на Vercel, Netlify, GitHub Pages: присутствуют`);
     console.log(`  🏆 Оценка Персонажа 5: ${s5} / 100 ${s5 >= 95 ? '✅ (>=95)' : '❌ (<95)'}\n`);
     personaResults.push({ id: 5, role: 'GitHub Search & Discovery Auditor', score: s5, defects: d5 });

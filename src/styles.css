@@ -1386,3 +1386,97 @@ input.input-has-error {
     min-height: 44px;
   }
 }
+
+/* ==========================================================================
+   Feedback Loop Toast (Ненавязчивый опрос точности после скачивания PDF)
+   ========================================================================== */
+.feedback-toast {
+  position: fixed;
+  bottom: 24px;
+  left: 50%;
+  transform: translateX(-50%) translateY(120px);
+  opacity: 0;
+  pointer-events: none;
+  transition: transform 0.35s cubic-bezier(0.16, 1, 0.3, 1), opacity 0.35s ease;
+  z-index: 9999;
+  max-width: 92vw;
+}
+
+.feedback-toast.visible {
+  transform: translateX(-50%) translateY(0);
+  opacity: 1;
+  pointer-events: auto;
+}
+
+.feedback-toast-inner {
+  background: rgba(255, 255, 255, 0.94);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  border: 1px solid rgba(0, 0, 0, 0.12);
+  border-radius: 999px;
+  padding: 8px 16px;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.12), 0 8px 10px -6px rgba(0, 0, 0, 0.08);
+  font-size: 0.88rem;
+  color: #1e293b;
+}
+
+.feedback-toast-text {
+  font-weight: 500;
+  white-space: nowrap;
+}
+
+.feedback-toast-actions {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.btn-feedback-yes,
+.btn-feedback-no {
+  padding: 4px 10px;
+  border-radius: 999px;
+  font-size: 0.82rem;
+  font-weight: 600;
+  border: 1px solid #cbd5e1;
+  background: #f8fafc;
+  color: #334155;
+  cursor: pointer;
+  transition: all 0.15s ease;
+}
+
+.btn-feedback-yes:hover {
+  background: #ecfdf5;
+  border-color: #10b981;
+  color: #065f46;
+}
+
+.btn-feedback-no:hover {
+  background: #fef2f2;
+  border-color: #ef4444;
+  color: #991b1b;
+}
+
+.btn-feedback-close {
+  background: transparent;
+  border: none;
+  color: #94a3b8;
+  font-size: 14px;
+  cursor: pointer;
+  padding: 2px 6px;
+  border-radius: 50%;
+  line-height: 1;
+}
+
+.btn-feedback-close:hover {
+  color: #475569;
+}
+
+.feedback-issue-link {
+  color: #0284c7;
+  text-decoration: underline;
+  font-weight: 600;
+}
+

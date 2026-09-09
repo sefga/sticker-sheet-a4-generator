@@ -9,12 +9,22 @@
 [![Netlify Deployment](https://img.shields.io/badge/Netlify-Edge%20CDN-00C7B7?style=for-the-badge&logo=netlify)](https://stickerfit.netlify.app/)
 [![GitHub Pages](https://img.shields.io/badge/GitHub%20Pages-Mirror-181717?style=for-the-badge&logo=github)](https://sefga.github.io/stickerfit/)
 [![Apple HIG Critic](https://img.shields.io/badge/Apple%20HIG-100%2F100-success?style=for-the-badge&logo=apple)](https://stickerfit.vercel.app)
-[![Tests](https://img.shields.io/badge/Vitest-15%2F15%20Passed-22c55e?style=for-the-badge&logo=vitest)](https://github.com/sefga/stickerfit)
-[![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg?style=for-the-badge)](https://opensource.org/licenses/MIT)
+[![Tests](https://img.shields.io/badge/Vitest-33%2F33%20Passed-22c55e?style=for-the-badge&logo=vitest)](https://github.com/sefga/stickerfit)
+[![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg?style=for-the-badge)](./LICENSE)
 
-**[ 🇬🇧 English Overview ](#-english-overview) &nbsp;•&nbsp; [ 🇷🇺 Русская документация ](#-русская-документация) &nbsp;•&nbsp; [ 🚀 Быстрый старт ](#-быстрый-старт-для-разработчиков-quick-start)**
+**[ 🚀 Try Online / Открыть сервис ](https://stickerfit.vercel.app)** &nbsp;•&nbsp; **[ 🇬🇧 English Overview ](#-english-overview)** &nbsp;•&nbsp; **[ 🇷🇺 Русская документация ](#-русская-документация)** &nbsp;•&nbsp; **[ 📐 Точность печати (1:1) ](docs/PRINT_ACCURACY.md)**
 
 </div>
+
+---
+
+## ⚡ 15-Second Workflow / 3 простых шага к готовой печати
+
+```text
+  [ 1. Загрузите стикер ]       →    [ 2. Укажите размер (мм) ]    →    [ 3. Скачайте векторный PDF ]
+PNG, JPEG, WebP (в браузере)          Ширина × Высота (0.1 мм)            1:1 MediaBox, Bleed, Cut Marks
+                                      Автоповорот 90° для экономии         Готово за 30–60 секунд!
+```
 
 ---
 
@@ -69,16 +79,19 @@
 **StickerFit** is a high-performance, 100% client-side web application designed to automatically arrange stickers, labels, and decals onto an A4 paper sheet for physical printing. It calculates the maximum possible sheet capacity, optimizes layout with 90° auto-rotation, and exports a print-ready 1:1 scale vector PDF with cut marks and bleed.
 
 ### Key Highlights
-- 🛡️ **100% Client-Side Privacy**: Your pictures never leave your browser. Zero server uploads, zero tracking.
+- 🛡️ **100% Client-Side Privacy**: Your artwork and pictures never leave your browser. Zero server uploads. Client-side processing with minimal, cookie-free anonymous analytics (counting pageviews and exports).
 - 📏 **Exact Millimeter Precision**: Enter exact sticker dimensions ($W \times H$ mm), margins, and gaps with 0.1 mm step.
-- 📐 **Intelligent Auto-Rotation (90°)**: Automatically rotates stickers if more copies fit on the sheet (e.g. 10 instead of 8).
+- 📐 **Intelligent Auto-Rotation (90°)**: Automatically tests both orientations and chooses whichever packs more stickers onto the sheet.
 - ✂️ **Fill (Crop) vs Fit (Whole)**:
-  - **Fill (Crop edges)**: Photo covers 100% of the sticker area with zero white borders.
+  - **Fill (Crop edges)**: Artwork covers 100% of the sticker area with zero white borders.
   - **Fit (Whole image)**: Entire image remains 100% visible with no cropped details.
 - 🔗 **Optional Proportional Linking**: Freely enter custom dimensions ($70 \times 40$ mm) or lock proportions with a single toggle.
 - 🔍 **Real DPI Quality Indicator**: Automatically detects effective print resolution ($\ge 300\text{ DPI}$ green, $200\text{--}299\text{ DPI}$ good, $<150\text{ DPI}$ warning).
-- 📄 **1:1 Scale Print-Ready PDF**: Powered by `pdf-lib` with exact A4 MediaBox ($595.28 \times 841.89\text{ pt}$), vector cut marks, bleed margins, and a built-in printer calibration ruler sheet.
+- 📄 **1:1 Scale Print-Ready PDF**: Powered by `pdf-lib` with exact A4 MediaBox ($595.28 \times 841.89\text{ pt}$), vector cut marks, bleed margins (0..3 mm), and a built-in printer calibration ruler sheet.
 - 📱 **Mobile & Desktop First (Apple HIG)**: Touch targets $\ge 42$ px, native decimal keyboards, 60 FPS typing with zero long tasks.
+
+### 📐 Physical Print Accuracy
+Read our comprehensive guide: **[docs/PRINT_ACCURACY.md](docs/PRINT_ACCURACY.md)** to ensure your printer driver does not shrink your layout with "Fit to printable area".
 
 ---
 
@@ -88,7 +101,7 @@
 **StickerFit** — онлайн-генератор раскладки наклеек на листе формата A4. Сервис решает главную проблему полиграфии: как быстро и без Photoshop разложить стикеры нужного размера на лист A4, получить максимальный тираж и сразу отправить на печать или скачать файл для типографии.
 
 ### Главные преимущества
-1. **Конфиденциальность 100%**: Вся обработка графики и генерация PDF происходит локально в вашем браузере. Ваши файлы никуда не загружаются.
+1. **Конфиденциальность 100%**: Вся обработка графики и генерация PDF происходит локально в вашем браузере. Ваши файлы никогда не отправляются на удаленный сервер.
 2. **Точные размеры в мм**: Задавайте ширину и высоту в миллиметрах (например, стандартные $54 \times 85$ мм для визиток или $50 \times 50$ мм для круглых стикеров).
 3. **Умный расчет экономии бумаги**:
    - Автоматический расчет сетки (колонки × строки).
@@ -103,10 +116,24 @@
 6. **Полиграфическая подготовка**:
    - Тонкие векторные метки реза (Cut marks) под линейку.
    - Вылеты под обрез (Bleed 0, 1, 2, 3 мм).
-   - Встроенный калибровочный лист A4 с миллиметровой линейкой и контрольным квадратом $50 \times 50$ мм.
+   - Встроенный калибровочный лист A4 с контрольными квадратами $50 \times 50$ мм и $100 \times 100$ мм, эталонной линией 100 мм и миллиметровой линейкой.
 
 ### Памятка для идеальной печати
-> ⚠️ **Важно:** При печати из любого просмотрщика PDF или браузера всегда выбирайте параметр масштаба **«100%»** или **«Реальный размер» (Actual size)**. Не выбирайте «По размеру страницы» (Fit to page), иначе принтер уменьшит ваши наклейки на 3–5%!
+> ⚠️ **Важно:** При печати из любого просмотрщика PDF или браузера всегда выбирайте параметр масштаба **«100%»** или **«Реальный размер» (Actual size)**. Не выбирайте «По размеру страницы» (Fit to page), иначе принтер уменьшит ваши наклейки на 3–5%! Подробности в [docs/PRINT_ACCURACY.md](docs/PRINT_ACCURACY.md).
+
+---
+
+## 📚 Документация и стандарты проекта
+
+| Документ | Назначение |
+|:---|:---|
+| **[docs/PRINT_ACCURACY.md](docs/PRINT_ACCURACY.md)** | Руководство по физической точности печати и калибровке принтера линейкой |
+| **[docs/PRODUCT_LAUNCH_AUDIT.md](docs/PRODUCT_LAUNCH_AUDIT.md)** | Карта архитектуры, аудит baseline и классификация задач P0/P1/P2 |
+| **[docs/SEO_STRATEGY.md](docs/SEO_STRATEGY.md)** | Стратегия честного поискового продвижения и AI Discoverability (GEO) |
+| **[docs/MONETIZATION_HYPOTHESES.md](docs/MONETIZATION_HYPOTHESES.md)** | Бэклог гипотез H1–H6 (0 платного кода до подтверждения спроса) |
+| **[CONTRIBUTING.md](CONTRIBUTING.md)** | Инструкция для участников разработки (Setup, тесты, PR) |
+| **[SECURITY.md](SECURITY.md)** | Политика безопасности и модель защиты пользовательских данных |
+| **[LICENSE](LICENSE)** | Полный текст лицензии MIT |
 
 ---
 
@@ -133,19 +160,20 @@ npm run dev
 ```bash
 npm test
 ```
-*Запускает 15 юнит-тестов Vitest: математику раскладки, отступы, DPI и физический размер PDF MediaBox.*
+*Запускает 33 комплексных теста Vitest: физическую геометрию MediaBox, размеры 10–100 мм, нулевой дрейф сетки, краевые случаи и локализацию.*
 
 ### 4. Комплексный цикл оценки качества
 ```bash
 npm run eval
 ```
-*Выполняет полный 6-ступенчатый аудит:*
-1. Юнит-тесты Vitest (15/15);
+*Выполняет полный аудит качества:*
+1. Юнит- и регрессионные тесты Vitest (33/33);
 2. Проверка типов TypeScript (`tsc`);
-3. Production-сборка Vite;
+3. Production-сборка Vite (`vite build`);
 4. Браузерный дизайн-критик Apple HIG (**100 / 100**);
-5. Интеркритика задержек ввода и Long Tasks (**5 / 5**);
-6. 5-цикличный аудит UX, локализации и валидации (**100 / 100 во всех 5 циклах**).
+5. Аудит задержек ввода и Core Web Vitals (**5 / 5**);
+6. 5-цикличный аудит UX и локализации (**100 / 100 во всех 5 циклах**);
+7. 10-агентный цикл критики персоналий (**>= 95 во всех контекстах**).
 
 ---
 
@@ -153,22 +181,35 @@ npm run eval
 
 ```text
 stickerfit/
-├── docs/screenshots/     # Официальные скриншоты для витрины GitHub
-├── public/               # robots.txt, sitemap.xml, og-image.svg
-├── scripts/              # Автономные браузерные критики качества (Puppeteer)
+├── .github/ISSUE_TEMPLATE/  # Шаблоны багов, фич и точности печати
+├── docs/
+│   ├── screenshots/         # Официальные скриншоты для витрины GitHub
+│   ├── PRINT_ACCURACY.md    # Руководство по физической точности печати
+│   ├── PRODUCT_LAUNCH_AUDIT.md # Аудит готовности к публичному запуску
+│   ├── SEO_STRATEGY.md      # Поисковая и AI-стратегия (GEO)
+│   └── MONETIZATION_HYPOTHESES.md # Исследовательский бэклог монетизации
+├── public/                  # robots.txt, sitemap.xml, og-image.svg
+├── scripts/                 # Автономные браузерные критики качества (Puppeteer)
 │   ├── apple-design-critic.mjs   # Аудит дизайна по стандартам Apple HIG
 │   ├── critic-5-cycles.mjs       # 5 независимых циклов проверки UX и валидации
-│   ├── performance-critic.mjs    # Тесты скорости ввода и отсутствия Long Tasks
+│   ├── performance-critic.mjs    # Тесты скорости ввода и Core Web Vitals
+│   ├── multi-persona-critic.mjs  # 10 независимых критиков персоналий
 │   └── capture-readme-screenshots.mjs # Автозахват снимков экрана
 ├── src/
-│   ├── image/            # Загрузка фото, кадрирование в исходном DPI
-│   ├── layout/           # Чистая математическая модель раскладки (Layout Engine)
-│   ├── pdf/              # Векторный генератор PDF 1:1, метки реза, калибровка
-│   ├── preview/          # Быстрый SVG-рендерер листа A4
-│   ├── ui/               # Умный диспетчер ввода, контроллеры и модалки
-│   ├── i18n.ts           # Двуязычная локализация (RU / EN)
-│   ├── state.ts          # Реактивное хранилище состояния и LocalStorage
-│   └── styles.css        # Apple HIG дизайн-система
+│   ├── image/               # Загрузка фото, кадрирование в исходном DPI
+│   ├── layout/              # Чистая математическая модель раскладки (Layout Engine)
+│   ├── pdf/                 # Векторный генератор PDF 1:1, метки реза, калибровка
+│   ├── preview/             # Быстрый SVG-рендерер листа A4
+│   ├── ui/                  # Умный диспетчер ввода, контроллеры и модалки
+│   ├── analytics.ts         # Анонимная аналитика @vercel/analytics
+│   ├── i18n.ts              # Двуязычная локализация (RU / EN)
+│   ├── state.ts             # Реактивное хранилище состояния и LocalStorage
+│   └── styles.css           # Apple HIG дизайн-система
+├── tests/
+│   └── printCorrectness.test.ts # 18 комплексных тестов физической геометрии
+├── CONTRIBUTING.md           # Руководство для контрибьюторов
+├── LICENSE                   # Лицензия MIT (Copyright 2026 Mikhail Sokolskiy)
+├── SECURITY.md               # Политика безопасности
 └── package.json
 ```
 
@@ -176,5 +217,5 @@ stickerfit/
 
 ## 📜 Лицензия / License
 
-Проект распространяется под свободной лицензией **MIT License**.  
-Автор: **Михаил Сокольский ([@sefga](https://github.com/sefga))**.
+Проект распространяется под свободной лицензией **[MIT License](LICENSE)**.  
+Автор: **Михаил Сокольский ([@sefga](https://github.com/sefga))**, 2026.
