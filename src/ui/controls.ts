@@ -1,4 +1,4 @@
-import { store, AppState } from '../state';
+import { store, AppState, PageOrientation } from '../state';
 import { calculateLayout, LayoutResult } from '../layout/layoutEngine';
 import { loadSourceImage, extractImageFromClipboard, isSupportedImageType } from '../image/imageLoader';
 import { renderCroppedArtwork, CropData } from '../image/cropEngine';
@@ -8,6 +8,8 @@ import { generateStickerSheetPdf, downloadPdfBlob, openPdfForPrint } from '../pd
 import { createCalibrationPdf } from '../pdf/calibrationPage';
 import { renderPreviewSvg } from '../preview/previewRenderer';
 import { roundMm } from '../units/mm';
+import { Unit, toMm, fromMm, formatUnitValue, getUnitSymbol } from '../units/units';
+import { getPaperFormat } from '../units/paperFormats';
 import { setLanguage, t, applyTranslations, onLanguageChange, TranslationKey } from '../i18n';
 import { trackEvent } from '../analytics';
 
@@ -25,11 +27,13 @@ export class UIController {
   constructor() {
     this.initEventListeners();
     this.initLanguageSwitch();
+    this.updateUnitLabels();
     applyTranslations();
     onLanguageChange(() => {
       const state = store.getState();
       this.updateLockRatioHint(state.lockAspectRatio);
       this.updateSizingExplanation(state.sizingMode);
+      this.updateUnitLabels(state.unit);
       this.validateStickerDimensions();
       this.render(state);
     });
@@ -215,7 +219,22 @@ export class UIController {
       });
     });
 
-    // 2. Размеры стикера
+    // 1.1 Переключение единиц измерения (мм / см / дюймы)
+    const btnMm = document.getElementById('btnUnitMm');
+    const btnCm = document.getElementById('btnUnitCm');
+    const btnIn = document.getElementById('btnUnitIn');
+
+    const handleUnitSwitch = (newUnit: Unit) => {
+      store.update({ unit: newUnit });
+      this.updateUnitLabels(newUnit);
+      this.syncFormValues(store.getState());
+    };
+
+    btnMm?.addEventListener('click', () => handleUnitSwitch('mm'));
+    btnCm?.addEventListener('click', () => handleUnitSwitch('cm'));
+    btnIn?.addEventListener('click', () => handleUnitSwitch('in'));
+
+    // 2. Размеры стикера (в активной единице измерения)
     const inputWidth = document.getElementById('stickerWidth') as HTMLInputElement;
     const inputHeight = document.getElementById('stickerHeight') as HTMLInputElement;
     const lockRatioToggle = document.getElementById('lockAspectRatio') as HTMLInputElement;
@@ -223,18 +242,20 @@ export class UIController {
     const sizingFitBtn = document.getElementById('sizingFit') as HTMLInputElement;
 
     this.bindSmartNumberInput(inputWidth, {
-      min: 5,
-      max: 297,
-      getFallback: () => store.getState().stickerWidthMm,
+      min: 0.1,
+      max: 2000,
+      getFallback: () => fromMm(store.getState().stickerWidthMm, store.getState().unit),
       onInput: (parsed) => {
-        this.validateStickerDimensions(parsed, null);
+        const parsedMm = parsed !== null ? toMm(parsed, store.getState().unit) : null;
+        this.validateStickerDimensions(parsedMm, null);
       },
-      onCommit: async (newWidth) => {
+      onCommit: async (valInUnit) => {
         const state = store.getState();
+        const newWidth = toMm(valInUnit, state.unit);
         if (state.lockAspectRatio && state.stickerWidthMm > 0) {
           const ratio = state.stickerHeightMm / state.stickerWidthMm;
           const newHeight = roundMm(newWidth * ratio, 1);
-          inputHeight.value = newHeight.toString();
+          inputHeight.value = formatUnitValue(newHeight, state.unit);
           store.update({ stickerWidthMm: newWidth, stickerHeightMm: newHeight });
         } else {
           store.update({ stickerWidthMm: newWidth });
@@ -245,18 +266,20 @@ export class UIController {
     });
 
     this.bindSmartNumberInput(inputHeight, {
-      min: 5,
-      max: 297,
-      getFallback: () => store.getState().stickerHeightMm,
+      min: 0.1,
+      max: 2000,
+      getFallback: () => fromMm(store.getState().stickerHeightMm, store.getState().unit),
       onInput: (parsed) => {
-        this.validateStickerDimensions(null, parsed);
+        const parsedMm = parsed !== null ? toMm(parsed, store.getState().unit) : null;
+        this.validateStickerDimensions(null, parsedMm);
       },
-      onCommit: async (newHeight) => {
+      onCommit: async (valInUnit) => {
         const state = store.getState();
+        const newHeight = toMm(valInUnit, state.unit);
         if (state.lockAspectRatio && state.stickerHeightMm > 0) {
           const ratio = state.stickerWidthMm / state.stickerHeightMm;
           const newWidth = roundMm(newHeight * ratio, 1);
-          inputWidth.value = newWidth.toString();
+          inputWidth.value = formatUnitValue(newWidth, state.unit);
           store.update({ stickerWidthMm: newWidth, stickerHeightMm: newHeight });
         } else {
           store.update({ stickerHeightMm: newHeight });
@@ -288,21 +311,82 @@ export class UIController {
       }
     });
 
-    // 3. Ориентация листа (Portrait / Landscape)
+    // 3. Формат бумаги (Paper Format, Chips, Custom Dimensions)
+    const paperSelect = document.getElementById('paperFormatSelect') as HTMLSelectElement;
+    const chipA4 = document.getElementById('chipPaperA4');
+    const chipLetter = document.getElementById('chipPaperLetter');
+    const chipCustom = document.getElementById('chipPaperCustom');
+
+    paperSelect?.addEventListener('change', async () => {
+      store.update({ paperFormatId: paperSelect.value });
+      await this.recalculateArtwork();
+    });
+
+    chipA4?.addEventListener('click', async () => {
+      store.update({ paperFormatId: 'a4' });
+      await this.recalculateArtwork();
+    });
+
+    chipLetter?.addEventListener('click', async () => {
+      store.update({ paperFormatId: 'letter' });
+      await this.recalculateArtwork();
+    });
+
+    chipCustom?.addEventListener('click', async () => {
+      store.update({ paperFormatId: 'custom' });
+      await this.recalculateArtwork();
+    });
+
+    const customW = document.getElementById('customPageWidth') as HTMLInputElement;
+    const customH = document.getElementById('customPageHeight') as HTMLInputElement;
+
+    this.bindSmartNumberInput(customW, {
+      min: 1,
+      max: 5000,
+      getFallback: () => fromMm(store.getState().customPageWidthMm, store.getState().unit),
+      onCommit: async (valInUnit) => {
+        const valMm = toMm(valInUnit, store.getState().unit);
+        store.update({ customPageWidthMm: valMm, paperFormatId: 'custom' });
+        await this.recalculateArtwork();
+      },
+    });
+
+    this.bindSmartNumberInput(customH, {
+      min: 1,
+      max: 5000,
+      getFallback: () => fromMm(store.getState().customPageHeightMm, store.getState().unit),
+      onCommit: async (valInUnit) => {
+        const valMm = toMm(valInUnit, store.getState().unit);
+        store.update({ customPageHeightMm: valMm, paperFormatId: 'custom' });
+        await this.recalculateArtwork();
+      },
+    });
+
+    // 3.2 Ориентация листа (Portrait / Landscape)
     const orientPortrait = document.getElementById('orientPortrait') as HTMLInputElement;
     const orientLandscape = document.getElementById('orientLandscape') as HTMLInputElement;
+    const lblOrientPortrait = document.getElementById('lblOrientPortrait');
+    const lblOrientLandscape = document.getElementById('lblOrientLandscape');
 
-    orientPortrait?.addEventListener('change', async () => {
-      if (orientPortrait.checked) {
-        store.update({ pageOrientation: 'portrait' });
-        await this.recalculateArtwork();
-      }
+    const handleOrientationSwitch = async (orientation: PageOrientation) => {
+      store.update({ pageOrientation: orientation });
+      await this.recalculateArtwork();
+    };
+
+    orientPortrait?.addEventListener('change', () => {
+      if (orientPortrait.checked) handleOrientationSwitch('portrait');
     });
-    orientLandscape?.addEventListener('change', async () => {
-      if (orientLandscape.checked) {
-        store.update({ pageOrientation: 'landscape' });
-        await this.recalculateArtwork();
-      }
+    orientLandscape?.addEventListener('change', () => {
+      if (orientLandscape.checked) handleOrientationSwitch('landscape');
+    });
+
+    lblOrientPortrait?.addEventListener('click', () => {
+      if (orientPortrait) orientPortrait.checked = true;
+      handleOrientationSwitch('portrait');
+    });
+    lblOrientLandscape?.addEventListener('click', () => {
+      if (orientLandscape) orientLandscape.checked = true;
+      handleOrientationSwitch('landscape');
     });
 
     // 4. Поля страницы (Margins)
@@ -319,9 +403,10 @@ export class UIController {
 
     this.bindSmartNumberInput(marginAll, {
       min: 0,
-      max: 100,
-      getFallback: () => store.getState().margins.top,
-      onCommit: (val) => {
+      max: 500,
+      getFallback: () => fromMm(store.getState().margins.top, store.getState().unit),
+      onCommit: (valInUnit) => {
+        const val = toMm(valInUnit, store.getState().unit);
         store.update({
           margins: { top: val, bottom: val, left: val, right: val },
         });
@@ -338,9 +423,10 @@ export class UIController {
     marginFields.forEach(({ el, key }) => {
       this.bindSmartNumberInput(el, {
         min: 0,
-        max: 100,
-        getFallback: () => store.getState().margins[key],
-        onCommit: (val) => {
+        max: 500,
+        getFallback: () => fromMm(store.getState().margins[key], store.getState().unit),
+        onCommit: (valInUnit) => {
+          const val = toMm(valInUnit, store.getState().unit);
           store.update({
             margins: { ...store.getState().margins, [key]: val },
           });
@@ -360,27 +446,30 @@ export class UIController {
 
     this.bindSmartNumberInput(gapAll, {
       min: 0,
-      max: 50,
-      getFallback: () => store.getState().gapX,
-      onCommit: (val) => {
+      max: 500,
+      getFallback: () => fromMm(store.getState().gapX, store.getState().unit),
+      onCommit: (valInUnit) => {
+        const val = toMm(valInUnit, store.getState().unit);
         store.update({ gapX: val, gapY: val });
       },
     });
 
     this.bindSmartNumberInput(gapX, {
       min: 0,
-      max: 50,
-      getFallback: () => store.getState().gapX,
-      onCommit: (val) => {
+      max: 500,
+      getFallback: () => fromMm(store.getState().gapX, store.getState().unit),
+      onCommit: (valInUnit) => {
+        const val = toMm(valInUnit, store.getState().unit);
         store.update({ gapX: val });
       },
     });
 
     this.bindSmartNumberInput(gapY, {
       min: 0,
-      max: 50,
-      getFallback: () => store.getState().gapY,
-      onCommit: (val) => {
+      max: 500,
+      getFallback: () => fromMm(store.getState().gapY, store.getState().unit),
+      onCommit: (valInUnit) => {
+        const val = toMm(valInUnit, store.getState().unit);
         store.update({ gapY: val });
       },
     });
@@ -710,7 +799,8 @@ export class UIController {
       bleedMm: state.bleedMm,
     });
 
-    const filename = `stickers-${state.stickerWidthMm}x${state.stickerHeightMm}mm-${this.currentLayout.actualCopies}pcs.pdf`;
+    const formatName = state.paperFormatId.toLowerCase();
+    const filename = `stickers-${formatName}-${state.stickerWidthMm}x${state.stickerHeightMm}mm-${this.currentLayout.actualCopies}pcs.pdf`;
     downloadPdfBlob(pdfBytes, filename);
 
     // Фиксация ключевой конверсии: пользователь успешно скачал готовый лист PDF
@@ -722,6 +812,8 @@ export class UIController {
         copies: this.currentLayout.actualCopies,
         bleedMm: state.bleedMm,
         orientation: state.pageOrientation,
+        paperFormat: state.paperFormatId,
+        unit: state.unit,
       },
     });
   }
@@ -803,10 +895,11 @@ export class UIController {
     // 5. Предупреждение о printable area (<3 мм)
     this.updatePrintableAreaWarning(state);
 
-    // 6. Отрисовка Live Preview A4 (векторный SVG в миллиметрах)
+    // 6. Отрисовка Live Preview (векторный SVG в миллиметрах с адаптивным CSS aspect-ratio)
     const previewContainer = document.getElementById('sheetPreviewContainer');
     if (previewContainer) {
-      if (state.pageOrientation === 'landscape') {
+      previewContainer.style.aspectRatio = `${pageDim.widthMm} / ${pageDim.heightMm}`;
+      if (pageDim.widthMm > pageDim.heightMm) {
         previewContainer.classList.add('landscape');
       } else {
         previewContainer.classList.remove('landscape');
@@ -839,8 +932,34 @@ export class UIController {
       if (el) el.checked = checked;
     };
 
-    setVal('stickerWidth', state.stickerWidthMm);
-    setVal('stickerHeight', state.stickerHeightMm);
+    // 1. Единицы измерения
+    ['mm', 'cm', 'in'].forEach((u) => {
+      const btn = document.getElementById(`btnUnit${u.charAt(0).toUpperCase() + u.slice(1)}`);
+      if (btn) btn.classList.toggle('active', state.unit === u);
+    });
+    this.updateUnitLabels(state.unit);
+
+    // 2. Формат бумаги
+    const paperSelect = document.getElementById('paperFormatSelect') as HTMLSelectElement;
+    if (paperSelect && document.activeElement !== paperSelect) {
+      paperSelect.value = state.paperFormatId;
+    }
+    const chipA4 = document.getElementById('chipPaperA4');
+    const chipLetter = document.getElementById('chipPaperLetter');
+    const chipCustom = document.getElementById('chipPaperCustom');
+    chipA4?.classList.toggle('active', state.paperFormatId === 'a4');
+    chipLetter?.classList.toggle('active', state.paperFormatId === 'letter');
+    chipCustom?.classList.toggle('active', state.paperFormatId === 'custom');
+
+    const customPaperGroup = document.getElementById('customPaperGroup');
+    if (customPaperGroup) {
+      customPaperGroup.style.display = state.paperFormatId === 'custom' ? 'flex' : 'none';
+    }
+    setVal('customPageWidth', formatUnitValue(state.customPageWidthMm, state.unit));
+    setVal('customPageHeight', formatUnitValue(state.customPageHeightMm, state.unit));
+
+    setVal('stickerWidth', formatUnitValue(state.stickerWidthMm, state.unit));
+    setVal('stickerHeight', formatUnitValue(state.stickerHeightMm, state.unit));
     setChecked('lockAspectRatio', state.lockAspectRatio);
     this.updateLockRatioHint(state.lockAspectRatio);
 
@@ -860,11 +979,11 @@ export class UIController {
       marginLinkedGroup.style.display = state.linkMargins ? 'block' : 'none';
       marginUnlinkedGroup.style.display = state.linkMargins ? 'none' : 'grid';
     }
-    setVal('marginAll', state.margins.top);
-    setVal('marginTop', state.margins.top);
-    setVal('marginBottom', state.margins.bottom);
-    setVal('marginLeft', state.margins.left);
-    setVal('marginRight', state.margins.right);
+    setVal('marginAll', formatUnitValue(state.margins.top, state.unit));
+    setVal('marginTop', formatUnitValue(state.margins.top, state.unit));
+    setVal('marginBottom', formatUnitValue(state.margins.bottom, state.unit));
+    setVal('marginLeft', formatUnitValue(state.margins.left, state.unit));
+    setVal('marginRight', formatUnitValue(state.margins.right, state.unit));
 
     setChecked('linkGaps', state.linkGaps);
     const gapLinkedGroup = document.getElementById('gapLinkedGroup');
@@ -873,9 +992,9 @@ export class UIController {
       gapLinkedGroup.style.display = state.linkGaps ? 'block' : 'none';
       gapUnlinkedGroup.style.display = state.linkGaps ? 'none' : 'grid';
     }
-    setVal('gapAll', state.gapX);
-    setVal('gapX', state.gapX);
-    setVal('gapY', state.gapY);
+    setVal('gapAll', formatUnitValue(state.gapX, state.unit));
+    setVal('gapX', formatUnitValue(state.gapX, state.unit));
+    setVal('gapY', formatUnitValue(state.gapY, state.unit));
 
     setChecked('allowRotation', state.allowRotation);
     setVal('requestedCopies', state.requestedCopies === 'AUTO' ? 'AUTO' : state.requestedCopies);
@@ -890,6 +1009,31 @@ export class UIController {
     if (btnCrop) {
       btnCrop.disabled = !state.loadedImage;
     }
+  }
+
+  /**
+   * Обновление текста меток инпутов с учетом активной единицы измерения (мм / см / дюймы)
+   */
+  private updateUnitLabels(unit?: Unit) {
+    const activeUnit = unit || store.getState().unit;
+    const lang = (localStorage.getItem('sticker_sheet_lang') as 'ru' | 'en') || 'ru';
+    const symbol = getUnitSymbol(activeUnit, lang);
+
+    const setLabel = (id: string, text: string) => {
+      const el = document.getElementById(id);
+      if (el) el.textContent = text;
+    };
+
+    setLabel('lblStickerWidth', t('lblWidthUnit', { unit: symbol }));
+    setLabel('lblStickerHeight', t('lblHeightUnit', { unit: symbol }));
+    setLabel('lblMarginTop', t('lblMarginTopUnit', { unit: symbol }));
+    setLabel('lblMarginBottom', t('lblMarginBottomUnit', { unit: symbol }));
+    setLabel('lblMarginLeft', t('lblMarginLeftUnit', { unit: symbol }));
+    setLabel('lblMarginRight', t('lblMarginRightUnit', { unit: symbol }));
+    setLabel('lblGapX', t('lblGapXUnit', { unit: symbol }));
+    setLabel('lblGapY', t('lblGapYUnit', { unit: symbol }));
+    setLabel('lblCustomPageWidth', t('lblCustomPaperWidth', { unit: symbol }));
+    setLabel('lblCustomPageHeight', t('lblCustomPaperHeight', { unit: symbol }));
   }
 
   /**
@@ -992,16 +1136,21 @@ export class UIController {
     const previewHeaderStats = document.getElementById('previewHeaderStats');
     if (previewHeaderStats) {
       const pcsSuffix = t('previewMm') === 'мм' ? 'шт.' : 'pcs';
+      const lang = (localStorage.getItem('sticker_sheet_lang') as 'ru' | 'en') || 'ru';
+      const unitSym = getUnitSymbol(state.unit, lang);
+      const paperFormat = getPaperFormat(state.paperFormatId);
+      const paperName = state.paperFormatId === 'custom' ? t('paperGroupCustom') : paperFormat.name;
+
       previewHeaderStats.innerHTML = `
         <span class="stat-chip" title="${t('chipSheet')}">
           <span class="stat-chip-icon" aria-hidden="true">📄</span>
           <span class="stat-chip-label">${t('chipSheet')}:</span>
-          <span class="stat-chip-val">A4 ${pageDim.widthMm} × ${pageDim.heightMm} ${t('previewMm')}</span>
+          <span class="stat-chip-val">${paperName} ${formatUnitValue(pageDim.widthMm, state.unit)} × ${formatUnitValue(pageDim.heightMm, state.unit)} ${unitSym}</span>
         </span>
         <span class="stat-chip" title="${t('chipSticker')}">
           <span class="stat-chip-icon" aria-hidden="true">🏷️</span>
           <span class="stat-chip-label">${t('chipSticker')}:</span>
-          <span class="stat-chip-val">${state.stickerWidthMm} × ${state.stickerHeightMm} ${t('previewMm')}</span>
+          <span class="stat-chip-val">${formatUnitValue(state.stickerWidthMm, state.unit)} × ${formatUnitValue(state.stickerHeightMm, state.unit)} ${unitSym}</span>
         </span>
         <span class="stat-chip stat-chip-accent" title="${t('chipGrid')}">
           <span class="stat-chip-icon" aria-hidden="true">▦</span>
@@ -1011,12 +1160,12 @@ export class UIController {
         <span class="stat-chip" title="${t('chipMargins')}">
           <span class="stat-chip-icon" aria-hidden="true">📐</span>
           <span class="stat-chip-label">${t('chipMargins')}:</span>
-          <span class="stat-chip-val">${state.margins.top} ${t('previewMm')}</span>
+          <span class="stat-chip-val">${formatUnitValue(state.margins.top, state.unit)} ${unitSym}</span>
         </span>
         <span class="stat-chip" title="${t('chipGap')}">
           <span class="stat-chip-icon" aria-hidden="true">↔️</span>
           <span class="stat-chip-label">${t('chipGap')}:</span>
-          <span class="stat-chip-val">${state.gapX} ${t('previewMm')}</span>
+          <span class="stat-chip-val">${formatUnitValue(state.gapX, state.unit)} ${unitSym}</span>
         </span>
       `;
     }
@@ -1106,12 +1255,14 @@ export class UIController {
   }
 
   /**
-   * Инлайн-валидация размеров стикера: защита от некорректных размеров (>304 мм, больше листа A4, < 5 мм)
+   * Инлайн-валидация размеров стикера: динамическая проверка относительно габаритов выбранного листа
    */
-  private validateStickerDimensions(widthOverride?: number | null, heightOverride?: number | null) {
+  private validateStickerDimensions(widthMmOverride?: number | null, heightMmOverride?: number | null) {
     const errorBanner = document.getElementById('stickerSizeError');
     const inputWidth = document.getElementById('stickerWidth') as HTMLInputElement;
     const inputHeight = document.getElementById('stickerHeight') as HTMLInputElement;
+    const state = store.getState();
+    const pageDim = store.getPageDimensions();
 
     const parseNum = (val: string): number | null => {
       const sanitized = val.trim().replace(',', '.');
@@ -1120,24 +1271,43 @@ export class UIController {
       return isNaN(num) ? null : num;
     };
 
-    const w = widthOverride !== undefined ? widthOverride : (inputWidth ? parseNum(inputWidth.value) : null);
-    const h = heightOverride !== undefined ? heightOverride : (inputHeight ? parseNum(inputHeight.value) : null);
+    // Если передан override, он уже в мм. Иначе парсим из инпута в state.unit и переводим в мм
+    const wMm =
+      widthMmOverride !== undefined
+        ? widthMmOverride
+        : inputWidth && parseNum(inputWidth.value) !== null
+        ? toMm(parseNum(inputWidth.value)!, state.unit)
+        : null;
 
-    const maxSheetDim = 297; // Максимальный габарит листа A4
+    const hMm =
+      heightMmOverride !== undefined
+        ? heightMmOverride
+        : inputHeight && parseNum(inputHeight.value) !== null
+        ? toMm(parseNum(inputHeight.value)!, state.unit)
+        : null;
+
+    const maxSheetDim = Math.max(pageDim.widthMm, pageDim.heightMm);
+    const lang = (localStorage.getItem('sticker_sheet_lang') as 'ru' | 'en') || 'ru';
+    const unitSym = getUnitSymbol(state.unit, lang);
+    const maxValDisplay = formatUnitValue(maxSheetDim, state.unit);
+    const minValDisplay = formatUnitValue(5, state.unit);
+
     let errorMessage: string | null = null;
     let hasErrorW = false;
     let hasErrorH = false;
 
-    if (w !== null && w > maxSheetDim) {
-      errorMessage = t('errSizeExceedsSheet', { val: w, max: maxSheetDim });
+    if (wMm !== null && wMm > maxSheetDim) {
+      const displayVal = formatUnitValue(wMm, state.unit);
+      errorMessage = t('errSizeExceedsSheetDynamic', { val: displayVal, max: maxValDisplay, unit: unitSym });
       hasErrorW = true;
-    } else if (h !== null && h > maxSheetDim) {
-      errorMessage = t('errSizeExceedsSheet', { val: h, max: maxSheetDim });
+    } else if (hMm !== null && hMm > maxSheetDim) {
+      const displayVal = formatUnitValue(hMm, state.unit);
+      errorMessage = t('errSizeExceedsSheetDynamic', { val: displayVal, max: maxValDisplay, unit: unitSym });
       hasErrorH = true;
-    } else if ((w !== null && w < 5 && w > 0) || (h !== null && h < 5 && h > 0)) {
-      errorMessage = t('errSizeTooSmall');
-      if (w !== null && w < 5) hasErrorW = true;
-      if (h !== null && h < 5) hasErrorH = true;
+    } else if ((wMm !== null && wMm < 5 && wMm > 0) || (hMm !== null && hMm < 5 && hMm > 0)) {
+      errorMessage = t('errSizeTooSmallDynamic', { min: minValDisplay, unit: unitSym });
+      if (wMm !== null && wMm < 5) hasErrorW = true;
+      if (hMm !== null && hMm < 5) hasErrorH = true;
     }
 
     if (inputWidth) inputWidth.classList.toggle('input-has-error', hasErrorW);

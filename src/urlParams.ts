@@ -71,7 +71,47 @@ export function parseUrlSettings(queryString: string): Partial<AppSettings> {
     patch.lockAspectRatio = lockRatio;
   }
 
-  // 2. Ориентация листа A4
+  // 0. Единицы измерения (unit: mm, cm, in)
+  for (const key of ['unit', 'u', 'units']) {
+    const raw = params.get(key);
+    if (raw) {
+      const lower = raw.trim().toLowerCase();
+      if (['mm', 'миллиметры', 'миллиметр'].includes(lower)) {
+        patch.unit = 'mm';
+        break;
+      } else if (['cm', 'см', 'сантиметры', 'сантиметр'].includes(lower)) {
+        patch.unit = 'cm';
+        break;
+      } else if (['in', 'inch', 'inches', 'дюйм', 'дюймы', '"'].includes(lower)) {
+        patch.unit = 'in';
+        break;
+      }
+    }
+  }
+
+  // 0.1 Формат листа бумаги (paper: a4, letter, a3, custom, etc.)
+  for (const key of ['paper', 'sheet', 'paperFormat', 'format']) {
+    const raw = params.get(key);
+    if (raw) {
+      const lower = raw.trim().toLowerCase();
+      patch.paperFormatId = lower;
+      break;
+    }
+  }
+
+  // 0.2 Кастомные размеры листа (если paper=custom или переданы pw/ph)
+  const customW = parseNumber(params, ['customWidth', 'pw', 'pageWidth', 'sheetWidth'], 20, 2000);
+  if (customW !== null) {
+    patch.customPageWidthMm = customW;
+    if (!patch.paperFormatId) patch.paperFormatId = 'custom';
+  }
+  const customH = parseNumber(params, ['customHeight', 'ph', 'pageHeight', 'sheetHeight'], 20, 2000);
+  if (customH !== null) {
+    patch.customPageHeightMm = customH;
+    if (!patch.paperFormatId) patch.paperFormatId = 'custom';
+  }
+
+  // 2. Ориентация листа бумаги
   for (const key of ['orientation', 'orient', 'pageOrientation', 'o']) {
     const raw = params.get(key);
     if (raw) {

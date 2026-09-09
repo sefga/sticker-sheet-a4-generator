@@ -1,13 +1,18 @@
-import { A4_WIDTH_MM, A4_HEIGHT_MM } from './units/mm';
 import { Margins } from './layout/layoutEngine';
 import { CutMarksConfig, DEFAULT_CUT_MARKS_CONFIG } from './pdf/cutMarks';
 import { CropData, CroppedResult, SizingMode } from './image/cropEngine';
 import { LoadedImage } from './image/imageLoader';
 import { parseUrlSettings } from './urlParams';
+import { Unit } from './units/units';
+import { calculatePageDimensions, DEFAULT_PAPER_FORMAT_ID } from './units/paperFormats';
 
 export type PageOrientation = 'portrait' | 'landscape';
 
 export interface AppSettings {
+  unit: Unit;
+  paperFormatId: string;
+  customPageWidthMm: number;
+  customPageHeightMm: number;
   pageOrientation: PageOrientation;
   stickerWidthMm: number;
   stickerHeightMm: number;
@@ -37,6 +42,10 @@ export interface AppState extends AppSettings {
 const STORAGE_KEY = 'sticker_sheet_a4_settings_v1';
 
 export const DEFAULT_SETTINGS: AppSettings = {
+  unit: 'mm',
+  paperFormatId: DEFAULT_PAPER_FORMAT_ID, // 'a4'
+  customPageWidthMm: 210,
+  customPageHeightMm: 297,
   pageOrientation: 'portrait',
   stickerWidthMm: 54.0,
   stickerHeightMm: 85.0,
@@ -63,7 +72,7 @@ function loadSettings(): AppSettings {
         ...DEFAULT_SETTINGS,
         ...parsed,
         margins: { ...DEFAULT_SETTINGS.margins, ...(parsed.margins || {}) },
-        cutMarks: { ...DEFAULT_SETTINGS.cutMarks, ...(parsed.cutMarks || {}) },
+        cutMarks: { ...DEFAULT_CUT_MARKS_CONFIG, ...(parsed.cutMarks || {}) },
       };
     }
   } catch (e) {
@@ -87,6 +96,10 @@ function loadSettings(): AppSettings {
 export function saveSettings(settings: AppSettings): void {
   try {
     const toSave: AppSettings = {
+      unit: settings.unit,
+      paperFormatId: settings.paperFormatId,
+      customPageWidthMm: settings.customPageWidthMm,
+      customPageHeightMm: settings.customPageHeightMm,
       pageOrientation: settings.pageOrientation,
       stickerWidthMm: settings.stickerWidthMm,
       stickerHeightMm: settings.stickerHeightMm,
@@ -137,10 +150,12 @@ export class AppStore {
   }
 
   public getPageDimensions(): { widthMm: number; heightMm: number } {
-    if (this.state.pageOrientation === 'landscape') {
-      return { widthMm: A4_HEIGHT_MM, heightMm: A4_WIDTH_MM }; // 297 × 210
-    }
-    return { widthMm: A4_WIDTH_MM, heightMm: A4_HEIGHT_MM }; // 210 × 297
+    return calculatePageDimensions(
+      this.state.paperFormatId,
+      this.state.customPageWidthMm,
+      this.state.customPageHeightMm,
+      this.state.pageOrientation
+    );
   }
 
   public update(patch: Partial<AppState>): void {

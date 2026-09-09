@@ -97,9 +97,9 @@
             <span class="badge" id="layoutHeaderBadge">0 pcs</span>
           </div>
           <div class="header-controls-group">
-            <button type="button" class="btn-guide-modal-trigger" id="btnGuideLink" data-i18n-title="btnGuide" title="Documentation & FAQ" aria-label="Справка, руководство и калькулятор">
-              <span class="btn-guide-icon">📖</span>
-              <span class="btn-guide-text" data-i18n="btnGuide">Справка & FAQ</span>
+            <button type="button" class="btn-guide-modal-trigger" id="btnGuideLink" data-i18n-title="btnGuide" title="Справка и руководство" aria-label="Справка, руководство и калькулятор">
+              <svg class="btn-guide-icon" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="10"></circle><line x1="12" y1="16" x2="12" y2="12"></line><line x1="12" y1="8" x2="12.01" y2="8"></line></svg>
+              <span class="btn-guide-text" data-i18n="btnGuide">Справка</span>
             </button>
             <div class="lang-switch" role="group" aria-label="Language selection">
               <button type="button" class="lang-switch-btn active" id="btnLangRu" data-lang="ru" title="Русский" aria-label="Русский язык">RU</button>
@@ -115,13 +115,13 @@
       <!-- Мобильный переключатель экранов: Параметры / Превью / Справка -->
       <div class="mobile-tab-nav" id="mobileTabNav" role="tablist" aria-label="Навигация по разделам">
         <button type="button" class="mobile-tab-btn active" id="tabBtnControls" role="tab" aria-selected="true" data-i18n="tabControls">
-          ⚙️ Параметры
+          Параметры
         </button>
         <button type="button" class="mobile-tab-btn" id="tabBtnPreview" role="tab" aria-selected="false">
-          <span data-i18n="tabPreview">📄 Превью листа</span> <span class="mobile-badge" id="mobileTabBadge">0</span>
+          <span data-i18n="tabPreview">Превью листа</span> <span class="mobile-badge" id="mobileTabBadge">0</span>
         </button>
         <button type="button" class="mobile-tab-btn" id="tabBtnGuide" role="tab" aria-selected="false" data-i18n="tabGuide">
-          📖 Справка
+          Справка
         </button>
       </div>
 
@@ -159,26 +159,33 @@
         <!-- 2. Размер стикера -->
         <!-- 2. Размер стикера -->
         <section class="panel-section">
-          <div class="section-title" data-i18n="secSizeTitle">2. Размер стикера</div>
+          <div class="section-title-row">
+            <div class="section-title" data-i18n="secSizeTitle">2. Размер стикера</div>
+            <div class="unit-switch" role="group" aria-label="Система измерения">
+              <button type="button" class="unit-btn active" id="btnUnitMm" data-unit="mm" title="Миллиметры">мм</button>
+              <button type="button" class="unit-btn" id="btnUnitCm" data-unit="cm" title="Сантиметры">см</button>
+              <button type="button" class="unit-btn" id="btnUnitIn" data-unit="in" title="Дюймы">in</button>
+            </div>
+          </div>
           <div class="form-row">
             <div class="form-col">
-              <label for="stickerWidth" data-i18n="lblWidth">Ширина (мм)</label>
+              <label for="stickerWidth" id="lblStickerWidth" data-i18n="lblWidth">Ширина (мм)</label>
               <input type="text" id="stickerWidth" value="54.0" inputmode="decimal" autocomplete="off" />
             </div>
             <div class="form-col">
-              <label for="stickerHeight" data-i18n="lblHeight">Высота (мм)</label>
+              <label for="stickerHeight" id="lblStickerHeight" data-i18n="lblHeight">Высота (мм)</label>
               <input type="text" id="stickerHeight" value="85.0" inputmode="decimal" autocomplete="off" />
             </div>
           </div>
 
-          <!-- Инлайн-предупреждение при некорректном размере (> 304 мм или больше листа) -->
+          <!-- Инлайн-предупреждение при некорректном размере (> листа или < 5 мм) -->
           <div class="field-error-banner" id="stickerSizeError" style="display: none;"></div>
 
           <label class="checkbox-label" style="margin-top: 6px;">
             <input type="checkbox" id="lockAspectRatio" />
-            <span data-i18n="lblLockRatio">🔗 Связать ширину и высоту</span>
+            <span data-i18n="lblLockRatio">Связать пропорции (W : H)</span>
           </label>
-          <div class="field-hint" id="lockRatioHint" data-i18n="hintLockRatioOff">Размеры независимы: можно свободно задавать любую ширину и высоту.</div>
+          <div class="field-hint" id="lockRatioHint" data-i18n="hintLockRatioOff">Ширина и высота независимы.</div>
 
           <div class="form-col" style="margin-top: 12px;">
             <label data-i18n="lblSizingMode">Режим заполнения стикера</label>
@@ -190,21 +197,67 @@
             </div>
             <!-- Интерактивная карточка с понятным пояснением выбранного режима -->
             <div class="sizing-explanation" id="sizingExplanation" data-i18n="explainSizingFill">
-              ✂️ <strong>Заполнить (обрезка):</strong> фото занимает весь стикер без белых полос. Лишние края кадрируются. Выбирайте, если нужен стикер «под обрез» без рамок.
+              <strong>Заполнить (обрезка):</strong> Без белых полей, фото занимает всю площадь стикера.
             </div>
           </div>
         </section>
 
         <!-- 3. Лист бумаги и поля -->
         <section class="panel-section">
-          <div class="section-title" data-i18n="secPageTitle">3. Параметры листа A4</div>
+          <div class="section-title" data-i18n="secPageTitle">3. Лист бумаги и поля</div>
+
+          <!-- Выбор формата бумаги -->
+          <div class="form-col">
+            <div class="paper-header-row">
+              <label for="paperFormatSelect" data-i18n="lblPaperFormat">Формат бумаги</label>
+              <div class="paper-quick-chips" role="group" aria-label="Быстрый выбор бумаги">
+                <button type="button" class="paper-chip-btn active" id="chipPaperA4" data-paper="a4">A4</button>
+                <button type="button" class="paper-chip-btn" id="chipPaperLetter" data-paper="letter">Letter</button>
+                <button type="button" class="paper-chip-btn" id="chipPaperCustom" data-paper="custom">Свой</button>
+              </div>
+            </div>
+            <select id="paperFormatSelect" class="form-select">
+              <optgroup label="Международные (ISO 216)" data-i18n-label="paperGroupIso">
+                <option value="a4" selected>A4 (210 × 297 мм)</option>
+                <option value="a3">A3 (297 × 420 мм)</option>
+                <option value="a5">A5 (148 × 210 мм)</option>
+                <option value="a6">A6 (105 × 148 мм)</option>
+              </optgroup>
+              <optgroup label="Северная Америка (ANSI / US)" data-i18n-label="paperGroupAnsi">
+                <option value="letter">US Letter (8.5 × 11 in / 215.9 × 279.4 мм)</option>
+                <option value="legal">US Legal (8.5 × 14 in / 215.9 × 355.6 мм)</option>
+                <option value="tabloid">US Tabloid (11 × 17 in / 279.4 × 431.8 мм)</option>
+                <option value="half_letter">Half Letter (5.5 × 8.5 in / 139.7 × 215.9 мм)</option>
+              </optgroup>
+              <optgroup label="Этикетки и фото" data-i18n-label="paperGroupPhotoLabel">
+                <option value="label_4x6">4 × 6" (Термоэтикетка 101.6 × 152.4 мм)</option>
+                <option value="photo_10x15">10 × 15 см (Фото 100 × 150 мм)</option>
+              </optgroup>
+              <optgroup label="Пользовательский" data-i18n-label="paperGroupCustom">
+                <option value="custom">Пользовательский размер (Custom)</option>
+              </optgroup>
+            </select>
+
+            <!-- Блок ввода пользовательского размера листа -->
+            <div id="customPaperGroup" class="form-row" style="display: none; margin-top: 8px;">
+              <div class="form-col">
+                <label for="customPageWidth" id="lblCustomPageWidth" data-i18n="lblCustomPaperWidth">Ширина листа (мм)</label>
+                <input type="text" id="customPageWidth" value="210" inputmode="decimal" autocomplete="off" />
+              </div>
+              <div class="form-col">
+                <label for="customPageHeight" id="lblCustomPageHeight" data-i18n="lblCustomPaperHeight">Высота листа (мм)</label>
+                <input type="text" id="customPageHeight" value="297" inputmode="decimal" autocomplete="off" />
+              </div>
+            </div>
+          </div>
+
           <div class="form-col">
             <label data-i18n="lblOrientation">Ориентация страницы</label>
             <div class="segmented-control">
               <input type="radio" id="orientPortrait" name="pageOrientation" value="portrait" checked />
-              <label for="orientPortrait" data-i18n="lblOrientPortrait">Книжная (210 × 297)</label>
+              <label for="orientPortrait" id="lblOrientPortrait" data-i18n="lblOrientPortrait">Книжная</label>
               <input type="radio" id="orientLandscape" name="pageOrientation" value="landscape" />
-              <label for="orientLandscape" data-i18n="lblOrientLandscape">Альбомная (297 × 210)</label>
+              <label for="orientLandscape" id="lblOrientLandscape" data-i18n="lblOrientLandscape">Альбомная</label>
             </div>
           </div>
 
@@ -224,25 +277,25 @@
             <!-- Раздельные поля -->
             <div id="marginUnlinkedGroup" class="form-grid-4" style="display: none;">
               <div>
-                <label for="marginTop" data-i18n="lblMarginTop">Верх (мм)</label>
+                <label for="marginTop" id="lblMarginTop" data-i18n="lblMarginTop">Верх (мм)</label>
                 <input type="text" id="marginTop" value="5.0" inputmode="decimal" autocomplete="off" />
               </div>
               <div>
-                <label for="marginBottom" data-i18n="lblMarginBottom">Низ (мм)</label>
+                <label for="marginBottom" id="lblMarginBottom" data-i18n="lblMarginBottom">Низ (мм)</label>
                 <input type="text" id="marginBottom" value="5.0" inputmode="decimal" autocomplete="off" />
               </div>
               <div>
-                <label for="marginLeft" data-i18n="lblMarginLeft">Лево (мм)</label>
+                <label for="marginLeft" id="lblMarginLeft" data-i18n="lblMarginLeft">Лево (мм)</label>
                 <input type="text" id="marginLeft" value="5.0" inputmode="decimal" autocomplete="off" />
               </div>
               <div>
-                <label for="marginRight" data-i18n="lblMarginRight">Право (мм)</label>
+                <label for="marginRight" id="lblMarginRight" data-i18n="lblMarginRight">Право (мм)</label>
                 <input type="text" id="marginRight" value="5.0" inputmode="decimal" autocomplete="off" />
               </div>
             </div>
 
             <div class="section-tip" data-i18n="tipPaperMargins">
-              💡 <strong>Поля листа:</strong> стандартная белая кромка принтера (3–5 мм). При 0 мм требуется принтер с поддержкой печати «в край» (borderless).
+              <strong>Поля листа:</strong> Рекомендуемый отступ 3–5 мм под ролики протяжки принтера.
             </div>
           </div>
 
@@ -264,17 +317,17 @@
 
             <div id="gapUnlinkedGroup" class="form-grid-4" style="display: none;">
               <div>
-                <label for="gapX" data-i18n="lblGapX">По горизонтали (мм)</label>
+                <label for="gapX" id="lblGapX" data-i18n="lblGapX">По горизонтали (мм)</label>
                 <input type="text" id="gapX" value="3.0" inputmode="decimal" autocomplete="off" />
               </div>
               <div>
-                <label for="gapY" data-i18n="lblGapY">По вертикали (мм)</label>
+                <label for="gapY" id="lblGapY" data-i18n="lblGapY">По вертикали (мм)</label>
                 <input type="text" id="gapY" value="3.0" inputmode="decimal" autocomplete="off" />
               </div>
             </div>
 
             <div class="section-tip" data-i18n="tipGaps">
-              💡 <strong>Зазор:</strong> 0 мм — резка ножом по линейке встык (1 рез = 2 стикера); 2–4 мм — резка ножницами или плоттером.
+              <strong>Зазор:</strong> 0 мм — резка ножом встык; 2–4 мм — резка ножницами или плоттером.
             </div>
           </div>
         </section>
@@ -285,10 +338,10 @@
 
           <label class="checkbox-label">
             <input type="checkbox" id="allowRotation" checked />
-            <span data-i18n="lblAllowRotation">☑ Автоматически выбрать наиболее экономичную ориентацию</span>
+            <span data-i18n="lblAllowRotation">Автоповорот 90° для экономии листа</span>
           </label>
           <div class="field-hint" data-i18n="tipAutoRotate" style="margin-left: 24px; margin-bottom: 10px;">
-            💡 <strong>Умный поворот:</strong> система автоматически повернет стикеры на 90°, если так на лист поместится больше штук.
+            Поворачивает стикеры, если с разворотом на лист помещается больше копий.
           </div>
 
           <div class="form-row">
@@ -341,16 +394,18 @@
             <span data-i18n="btnDownloadPdf">Скачать PDF для печати</span>
           </button>
 
-          <button type="button" class="btn btn-secondary btn-block" id="btnPrintPdf" data-i18n="btnPrintPdf">
-            🖨️ Печать
+          <button type="button" class="btn btn-secondary btn-block" id="btnPrintPdf">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polyline points="6 9 6 2 18 2 18 9"></polyline><path d="M6 18H4a2 2 0 0 1-2-2v-5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2h-2"></path><rect x="6" y="14" width="12" height="8"></rect></svg>
+            <span data-i18n="btnPrintPdf">Печать</span>
           </button>
 
           <div class="print-notice" data-i18n="printNotice">
-            💡 <strong>Важно при печати:</strong> В диалоге принтера обязательно установите масштаб <strong>«100%»</strong> или <strong>«Реальный размер»</strong> (Actual size). Не используйте режим «По размеру страницы» (Fit to page), чтобы сохранить точные размеры наклеек в мм!
+            <strong>Масштаб печати:</strong> Установите масштаб <strong>100%</strong> (Реальный размер), чтобы не исказить размеры стикеров.
           </div>
 
-          <button type="button" class="btn btn-secondary btn-sm btn-block" id="btnCalibrationPdf" style="margin-top: 4px;" data-i18n="btnCalibrationPdf">
-            📏 Проверить масштаб принтера (Калибровка A4)
+          <button type="button" class="btn btn-secondary btn-sm btn-block" id="btnCalibrationPdf" style="margin-top: 4px;">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21.3 8.7 8.7 21.3c-1 1-2.5 1-3.4 0l-2.6-2.6c-1-1-1-2.5 0-3.4L15.3 2.7c1-1 2.5-1 3.4 0l2.6 2.6c1 1 1 2.4 0 3.4Z"></path><path d="m7.5 10.5 2 2"></path><path d="m10.5 7.5 2 2"></path><path d="m13.5 4.5 2 2"></path></svg>
+            <span data-i18n="btnCalibrationPdf">Калибровочный тест принтера (1:1)</span>
           </button>
 
           <button type="button" class="btn btn-secondary btn-sm btn-block" id="btnResetSettings" style="color: #64748b;" data-i18n="btnResetSettings">
@@ -396,7 +451,7 @@
             <button type="button" class="btn-guide-back" id="btnGuideBack" data-i18n="btnGuideBack" aria-label="Назад к раскладке">
               ← Назад
             </button>
-            <span class="guide-modal-logo">🏷️ StickerFit</span>
+            <span class="guide-modal-logo">StickerFit</span>
             <span class="guide-modal-subtitle" data-i18n="guideModalSub">Справочный центр и калькулятор</span>
           </div>
           <button type="button" class="guide-modal-close" id="btnGuideModalClose" data-i18n-title="btnGuideCloseAria" aria-label="Закрыть справку" title="Закрыть окно">✕</button>
@@ -405,7 +460,7 @@
           <!-- SEO & GEO Content Hub (Справочный центр, калькулятор и FAQ) -->
           <article class="content-hub" id="guideSection">
             <header class="content-hub-header">
-              <div class="hub-pill" data-i18n="hubPrivacyBadge">🛡️ 100% Client-Side Privacy: Your images never leave your device</div>
+              <div class="hub-pill" data-i18n="hubPrivacyBadge">100% Client-Side Privacy: Your images never leave your device</div>
           <h2 class="hub-main-title" data-i18n="hubHeroTitle">A4 Sticker Sheet Maker</h2>
           <p class="hub-main-desc" data-i18n="hubHeroSubtitle">
             Upload a sticker, enter its exact dimensions, and StickerFit automatically fills an A4 sheet with the maximum number of copies. Export a print-ready layout without changing the sticker dimensions.

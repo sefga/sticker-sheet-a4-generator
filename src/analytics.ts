@@ -52,6 +52,8 @@ export type AnalyticsEvent =
         copies: number;
         bleedMm: number;
         orientation?: string;
+        paperFormat?: string;
+        unit?: string;
       };
     }
   | {

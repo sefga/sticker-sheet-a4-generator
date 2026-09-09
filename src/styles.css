@@ -210,6 +210,113 @@ body {
   gap: 6px;
 }
 
+.section-title-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+}
+
+/* Переключатель единиц измерения (мм / см / in) */
+.unit-switch {
+  display: inline-flex;
+  align-items: center;
+  background: #f1f5f9;
+  border: 1px solid var(--border);
+  border-radius: 20px;
+  padding: 3px;
+  flex-shrink: 0;
+}
+
+.unit-btn {
+  background: transparent;
+  border: none;
+  font-size: 0.82rem;
+  font-weight: 600;
+  color: var(--text-muted);
+  padding: 6px 14px;
+  min-height: 36px;
+  border-radius: 17px;
+  cursor: pointer;
+  transition: all 0.15s ease-in-out;
+  line-height: 1.2;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  user-select: none;
+}
+
+.unit-btn:hover:not(.active) {
+  color: var(--text-main);
+}
+
+.unit-btn.active {
+  background: #ffffff;
+  color: var(--primary);
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+}
+
+/* Заголовок выбора формата бумаги и быстрые чипсы */
+.paper-header-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 6px;
+}
+
+.paper-quick-chips {
+  display: flex;
+  gap: 6px;
+}
+
+.paper-chip-btn {
+  background: #f1f5f9;
+  border: 1px solid var(--border);
+  font-size: 0.78rem;
+  font-weight: 600;
+  color: var(--text-muted);
+  padding: 6px 12px;
+  min-height: 34px;
+  border-radius: 14px;
+  cursor: pointer;
+  transition: all 0.15s ease;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  user-select: none;
+}
+
+.paper-chip-btn:hover:not(.active) {
+  background: #e2e8f0;
+  color: var(--text-main);
+}
+
+.paper-chip-btn.active {
+  background: var(--primary);
+  color: #ffffff;
+  border-color: var(--primary);
+}
+
+/* Стилизация выпадающего списка выбора бумаги */
+.form-select {
+  width: 100%;
+  padding: 8px 12px;
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+  background: #ffffff;
+  color: var(--text-main);
+  font-size: 0.88rem;
+  font-family: inherit;
+  outline: none;
+  cursor: pointer;
+  transition: border-color 0.15s ease;
+}
+
+.form-select:focus {
+  border-color: var(--primary);
+  box-shadow: 0 0 0 2px rgba(37, 99, 235, 0.15);
+}
+
 /* Скрытый, но доступный для мобильного браузера input[type=file] */
 .visually-hidden-input {
   position: absolute !important;
@@ -1587,6 +1694,26 @@ input.input-has-error {
   .lang-switch-btn {
     min-height: 38px;
     padding: 6px 12px;
+    font-size: 0.82rem;
+  }
+
+  .unit-switch {
+    padding: 3px;
+  }
+
+  .unit-btn {
+    min-height: 38px;
+    padding: 6px 14px;
+    font-size: 0.85rem;
+  }
+
+  .paper-quick-chips {
+    gap: 6px;
+  }
+
+  .paper-chip-btn {
+    min-height: 36px;
+    padding: 6px 13px;
     font-size: 0.82rem;
   }
 
