@@ -419,10 +419,27 @@ function getSafeStorage(): { getItem(key: string): string | null; setItem(key: s
 
 /**
  * Определение исходного языка приложения:
- * 1. Сохраненный выбор в localStorage ('ru' или 'en')
- * 2. Язык браузера/системы пользователя (navigator.languages / navigator.language)
+ * 1. Явный URL-параметр (?lang=ru или ?lang=en)
+ * 2. Сохраненный выбор в localStorage ('ru' или 'en')
+ * 3. Язык браузера/системы устройства (navigator.languages / navigator.language)
  */
 export function detectInitialLanguage(): Language {
+  // 1. Приоритет: явный URL параметр
+  if (typeof window !== 'undefined' && window.location?.search) {
+    try {
+      const params = new URLSearchParams(window.location.search);
+      const urlLang = params.get('lang')?.toLowerCase();
+      if (urlLang === 'ru' || urlLang === 'en') {
+        const storage = getSafeStorage();
+        storage?.setItem(STORAGE_LANG_KEY, urlLang);
+        return urlLang;
+      }
+    } catch {
+      // игнорируем
+    }
+  }
+
+  // 2. Приоритет: сохраненный выбор в localStorage
   const storage = getSafeStorage();
   if (storage) {
     try {
@@ -435,7 +452,7 @@ export function detectInitialLanguage(): Language {
     }
   }
 
-  // Проверяем список предпочтительных языков браузера
+  // 3. Приоритет: предпочтительные языки браузера/системы пользователя
   if (typeof navigator !== 'undefined') {
     const langs: readonly string[] = navigator.languages && navigator.languages.length > 0
       ? navigator.languages
@@ -460,6 +477,17 @@ let currentLanguage: Language = detectInitialLanguage();
 // Первоначальная синхронизация lang у <html> при загрузке страницы
 if (typeof document !== 'undefined' && document.documentElement) {
   document.documentElement.lang = currentLanguage;
+}
+
+// Автоматическая реакция на смену языка в настройках системы/браузера
+if (typeof window !== 'undefined') {
+  window.addEventListener('languagechange', () => {
+    const storage = getSafeStorage();
+    // Если пользователь вручную не зафиксировал выбор в localStorage, мгновенно адаптируем язык под систему
+    if (!storage?.getItem(STORAGE_LANG_KEY)) {
+      setLanguage(detectInitialLanguage());
+    }
+  });
 }
 
 /**
