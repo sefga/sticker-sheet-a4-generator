@@ -97,7 +97,7 @@ async function runAudit() {
 
     console.log(`После клика EN: Title="${titleText}", DownloadBtn="${downloadBtnText}", SelectImage="${selectImageText}", WidthLabel="${widthLabelText}", html[lang]="${htmlLang}", localStorage="${savedLang}"`);
 
-    if (titleText !== 'Sticker Sheet A4 Generator' || savedLang !== 'en' || htmlLang !== 'en') {
+    if (titleText !== 'A4 Sticker Sheet Maker' || savedLang !== 'en' || htmlLang !== 'en') {
       throw new Error(`Ошибка переключения на EN! Получено: title=${titleText}, lang=${savedLang}`);
     }
 
@@ -110,7 +110,7 @@ async function runAudit() {
     const reloadedTitle = await page.$eval('[data-i18n="appTitle"]', (el) => el.textContent.trim());
     const reloadedEnActive = await page.$eval('#btnLangEn', (el) => el.classList.contains('active'));
     console.log(`После перезагрузки: Title="${reloadedTitle}", EN кнопка активна: ${reloadedEnActive}`);
-    if (reloadedTitle !== 'Sticker Sheet A4 Generator' || !reloadedEnActive) {
+    if (reloadedTitle !== 'A4 Sticker Sheet Maker' || !reloadedEnActive) {
       throw new Error('Выбор языка не сохранился после перезагрузки страницы!');
     }
 
@@ -177,7 +177,7 @@ async function runAudit() {
     const autoEnActive = await enBrowserPage.$eval('#btnLangEn', (el) => el.classList.contains('active'));
 
     console.log(`Автодетект для en-US: Title="${autoTitle}", html[lang]="${autoHtmlLang}", EN active=${autoEnActive}`);
-    if (autoTitle !== 'Sticker Sheet A4 Generator' || !autoEnActive) {
+    if (autoTitle !== 'A4 Sticker Sheet Maker' || !autoEnActive) {
       throw new Error(`Автодетект не сработал для иностранного пользователя! Получено: ${autoTitle}`);
     }
 

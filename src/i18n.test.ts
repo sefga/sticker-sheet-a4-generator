@@ -45,7 +45,7 @@ describe('i18n module', () => {
 
   it('должен возвращать английский текст после переключения на en', () => {
     setLanguage('en');
-    expect(t('appTitle')).toBe('Sticker Sheet A4 Generator');
+    expect(t('appTitle')).toBe('A4 Sticker Sheet Maker');
     expect(t('btnSelectImage')).toBe('Choose Image');
     expect(t('lblWidth')).toBe('Width (mm)');
   });
@@ -118,7 +118,7 @@ describe('i18n module', () => {
     setLanguage('en');
     applyTranslations(fakeRoot as any);
 
-    expect(items[0].textContent).toBe('Sticker Sheet A4 Generator');
+    expect(items[0].textContent).toBe('A4 Sticker Sheet Maker');
     expect(items[1].placeholder).toBe('AUTO or number');
     expect(items[2].title).toBe('Reset crop');
   });

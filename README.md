@@ -1,11 +1,11 @@
-# Sticker Sheet A4 Generator (Генератор раскладки наклеек на листе A4)
+# StickerFit — A4 Sticker Sheet Maker (Генератор раскладки наклеек на листе A4)
 
 [![Deploy to GitHub Pages](https://github.com/sefga/sticker-sheet-a4-generator/actions/workflows/deploy.yml/badge.svg)](https://github.com/sefga/sticker-sheet-a4-generator/actions/workflows/deploy.yml)
 [![Vercel Deployment](https://img.shields.io/badge/Vercel-Live%20Demo-black?logo=vercel)](https://sticker-sheet-a4-generator.vercel.app)
 [![Deploy to Netlify](https://www.netlify.com/img/deploy/button.svg)](https://app.netlify.com/start/deploy?repository=https://github.com/sefga/sticker-sheet-a4-generator)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 
-Автономное клиентское веб-приложение для автоматической подготовки и верстки листов A4 со стикерами для печати с физической точностью геометрии (в миллиметрах).
+**StickerFit** — автономное клиентское веб-приложение для автоматической подготовки, оптимальной компоновки и верстки листов A4 со стикерами для печати с физической точностью геометрии (в миллиметрах). 100% Client-Side Privacy: изображения обрабатываются только в браузере и никуда не передаются.
 
 ---
 

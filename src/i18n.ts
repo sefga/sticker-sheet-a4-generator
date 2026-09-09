@@ -10,14 +10,17 @@ export const STORAGE_LANG_KEY = 'sticker_sheet_lang';
 
 export const translations = {
   ru: {
-    // Шапка
+    // Шапка и бренд
+    brandName: 'StickerFit',
     appTitle: 'Раскладка наклеек A4',
     appSubtitle: 'Онлайн верстка и печать стикеров в миллиметрах',
     itemsBadge: '{count} шт.',
+    btnGuide: '📖 Справка & FAQ',
 
     // Мобильные вкладки
     tabControls: '⚙️ Параметры',
     tabPreview: '📄 Превью листа',
+    tabGuide: '📖 Справка',
 
     // Секция 1: Изображение
     secImageTitle: '1. Изображение стикера',
@@ -138,17 +141,68 @@ export const translations = {
     // Алерт ошибок
     alertNoStickers: 'Нет стикеров для размещения на листе.',
     alertImageError: 'Ошибка загрузки изображения: {error}',
+
+    // SEO & GEO Content Hub (Справочный центр и FAQ)
+    hubHeroTitle: 'A4 Sticker Sheet Maker',
+    hubHeroSubtitle: 'Загрузите стикер, укажите точные физические размеры в миллиметрах, и StickerFit автоматически заполнит лист А4 максимальным количеством копий. Экспортируйте макет для печати со 100% масштабом.',
+    hubPrivacyBadge: '🛡️ 100% Конфиденциальность: Ваши изображения обрабатываются только в браузере и не покидают устройство',
+
+    hubHowTitle: 'Как работает StickerFit',
+    hubStep1Title: '1. Загрузите стикер',
+    hubStep1Desc: 'Выберите изображение (PNG, JPG, WebP) из галереи, камеры или вставьте из буфера обмена.',
+    hubStep2Title: '2. Укажите размеры (мм)',
+    hubStep2Desc: 'Задайте ширину и высоту в миллиметрах. При необходимости используйте кадрирование и поворот.',
+    hubStep3Title: '3. Авто-раскладка на А4',
+    hubStep3Desc: 'Умный алгоритм рассчитает экономичную сетку и проверит автоповорот на 90° для максимума копий.',
+    hubStep4Title: '4. Печать 1:1 в PDF',
+    hubStep4Desc: 'Скачайте готовый векторный PDF с метками реза и вылетами Bleed. Печатайте в масштабе 100%.',
+
+    hubCalcTitle: 'Сколько стикеров помещается на листе А4?',
+    hubCalcDesc: 'Стандартный лист бумаги A4 имеет физический размер 210 × 297 мм. Алгоритм рассчитывает вместимость по формуле с учетом полей и зазоров:',
+    hubFormulaCols: 'Колонки = ⌊(Ширина области + Зазор) / (Ширина стикера + Зазор)⌋',
+    hubFormulaRows: 'Строки = ⌊(Высота области + Зазор) / (Высота стикера + Зазор)⌋',
+    hubFormulaTotal: 'Всего стикеров = Колонки × Строки',
+
+    hubSizesTitle: 'Таблица популярных размеров стикеров на А4',
+    hubSizesColSize: 'Размер (мм)',
+    hubSizesColUsage: 'Назначение',
+    hubSizesColMax: 'Вместимость на А4',
+    hubSize1Usage: 'Круглые пломбы, иконки, мини-стикеры',
+    hubSize2Usage: 'Товарные логотипы, этикетки для упаковки',
+    hubSize3Usage: 'Стандартные квадратные брендовые наклейки',
+    hubSize4Usage: 'Размер банковской карты / визитки',
+    hubSize5Usage: 'Транспортные и упаковочные наклейки',
+
+    hubScaleTitle: 'Печать в масштабе 1:1: почему это критично',
+    hubScaleDesc: 'Диалоги печати в браузерах часто по умолчанию включают режим «По размеру страницы» (Fit to Page), сжимая макет на 3–7% и искажая физические миллиметры. Всегда выбирайте масштаб «100%» или «Реальный размер» (Actual size).',
+
+    hubFaqTitle: 'Часто задаваемые вопросы (FAQ)',
+    faqQ1: 'Что такое StickerFit?',
+    faqA1: 'StickerFit — это бесплатный онлайн-генератор раскладки наклеек на листе А4. Он автоматически рассчитывает сетку по миллиметрам и генерирует векторный PDF 1:1 для печати.',
+    faqQ2: 'Каков точный размер листа бумаги формата А4?',
+    faqA2: 'Международный стандарт бумаги A4 имеет точные размеры 210 × 297 мм (8.27 × 11.69 дюймов).',
+    faqQ3: 'Как распечатать стикеры в точном физическом размере?',
+    faqA3: 'Всегда выбирайте «100%» или «Реальный размер» (Actual size) в диалоге принтера. Не используйте «По размеру страницы». Для проверки принтера можно распечатать наш встроенный калибровочный лист.',
+    faqQ4: 'Какое разрешение изображения нужно для качественной печати?',
+    faqA4: 'Для полиграфической четкости рекомендуется от 300 DPI. StickerFit автоматически рассчитывает эффективный DPI для указанных миллиметров и отображает цветовую плашку качества.',
+    faqQ5: 'Умеет ли StickerFit поворачивать стикеры для экономии бумаги?',
+    faqA5: 'Да! При включенном автоповороте StickerFit сравнивает варианты 0° и 90° и выбирает тот, в котором на лист помещается больше стикеров.',
+    faqQ6: 'Сохраняются ли мои изображения на сервере?',
+    faqA6: 'Нет! Вся обработка, кадрирование и сборка PDF происходят на 100% локально в вашем браузере. Файлы никогда не отправляются на удаленный сервер, гарантируя абсолютную конфиденциальность.',
   },
 
   en: {
-    // Header
-    appTitle: 'Sticker Sheet A4 Generator',
+    // Header & Brand
+    brandName: 'StickerFit',
+    appTitle: 'A4 Sticker Sheet Maker',
     appSubtitle: 'Online sticker layout & print preparation in millimeters',
     itemsBadge: '{count} pcs',
+    btnGuide: '📖 Guide & FAQ',
 
     // Mobile tabs
     tabControls: '⚙️ Settings',
     tabPreview: '📄 Sheet Preview',
+    tabGuide: '📖 Guide',
 
     // Section 1: Image
     secImageTitle: '1. Sticker Image',
@@ -269,6 +323,54 @@ export const translations = {
     // Alerts
     alertNoStickers: 'No stickers to place on the sheet.',
     alertImageError: 'Image loading error: {error}',
+
+    // SEO & GEO Content Hub (Documentation & FAQ)
+    hubHeroTitle: 'A4 Sticker Sheet Maker',
+    hubHeroSubtitle: 'Upload a sticker, enter its exact dimensions, and StickerFit automatically fills an A4 sheet with the maximum number of copies. Export a print-ready layout without changing the sticker dimensions.',
+    hubPrivacyBadge: '🛡️ 100% Client-Side Privacy: Your images are processed entirely in your browser and never leave your device',
+
+    hubHowTitle: 'How StickerFit Works',
+    hubStep1Title: '1. Upload Sticker',
+    hubStep1Desc: 'Select any sticker image (PNG, JPG, WebP) from your files, camera or paste directly from clipboard.',
+    hubStep2Title: '2. Set Exact Dimensions',
+    hubStep2Desc: 'Enter target width and height in millimeters (mm). Crop, rotate or lock aspect ratio as required.',
+    hubStep3Title: '3. Auto-Fit on A4 Sheet',
+    hubStep3Desc: 'The smart layout engine calculates optimal grid rows/columns and tests 90° rotation to maximize sheet capacity.',
+    hubStep4Title: '4. Print 1:1 Vector PDF',
+    hubStep4Desc: 'Download your print-ready vector PDF with optional cut marks and bleed margins. Always print at 100% scale.',
+
+    hubCalcTitle: 'How Many Stickers Fit on an A4 Sheet?',
+    hubCalcDesc: 'Standard international A4 paper measures 210 × 297 mm. The formula calculates total copies based on margins and gaps:',
+    hubFormulaCols: 'Columns = ⌊(Usable Width + Gap) / (Sticker Width + Gap)⌋',
+    hubFormulaRows: 'Rows = ⌊(Usable Height + Gap) / (Sticker Height + Gap)⌋',
+    hubFormulaTotal: 'Total Stickers = Columns × Rows',
+
+    hubSizesTitle: 'Popular Sticker Sizes Reference on A4',
+    hubSizesColSize: 'Size (mm)',
+    hubSizesColUsage: 'Recommended Use',
+    hubSizesColMax: 'Max Copies on A4',
+    hubSize1Usage: 'Small circular seals, icons, journal stickers',
+    hubSize2Usage: 'Product logo labels, packaging seals',
+    hubSize3Usage: 'Standard square branding stickers',
+    hubSize4Usage: 'Credit card / ID badge / business card size',
+    hubSize5Usage: 'Shipping labels, large package stickers',
+
+    hubScaleTitle: 'Print at Exact 1:1 Scale: Why 100% Matters',
+    hubScaleDesc: 'Desktop and mobile print dialogs often default to "Fit to Page" or "Shrink to Fit". This shrinks your document by 3–7%, distorting the physical millimeters. Always ensure "100%" or "Actual Size" is selected in your printer settings.',
+
+    hubFaqTitle: 'Frequently Asked Questions (FAQ)',
+    faqQ1: 'What is StickerFit?',
+    faqA1: 'StickerFit is an online sticker sheet layout tool and PDF generator. It automatically arranges copies of a sticker on an A4 page using exact physical millimeter dimensions and prepares the layout for printing.',
+    faqQ2: 'What size is an A4 sticker sheet?',
+    faqA2: 'International standard A4 paper measures exactly 210 × 297 mm (8.27 × 11.69 inches). StickerFit computes placement using these exact physical boundaries.',
+    faqQ3: 'How do I ensure stickers print at their exact physical size?',
+    faqA3: 'Always choose "100%" or "Actual Size" in your print dialog. Never use "Fit to Page". You can also print our calibration test page to verify printer geometry with a physical ruler.',
+    faqQ4: 'What resolution should my sticker artwork have?',
+    faqA4: 'For sharp, professional results, use artwork with at least 300 DPI. StickerFit dynamically calculates the effective DPI for your chosen dimensions and warns you if the resolution is too low.',
+    faqQ5: 'Can StickerFit auto-rotate stickers to fit more copies?',
+    faqA5: 'Yes! When "Auto-rotate" is enabled, StickerFit compares both 0° and 90° orientations and automatically chooses whichever packs more stickers onto the sheet.',
+    faqQ6: 'Are my uploaded images saved or sent to any server?',
+    faqA6: 'No. All processing, cropping, and PDF rendering take place 100% locally in your web browser. Your images never leave your device, ensuring complete privacy.',
   },
 } as const;
 

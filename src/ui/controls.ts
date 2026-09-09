@@ -293,27 +293,51 @@ export class UIController {
       }
     });
 
-    // 9. Мобильные табы (Параметры / Превью)
+    // 9. Мобильные табы (Параметры / Превью / Справка)
     const tabBtnControls = document.getElementById('tabBtnControls');
     const tabBtnPreview = document.getElementById('tabBtnPreview');
+    const tabBtnGuide = document.getElementById('tabBtnGuide');
+    const btnGuideLink = document.getElementById('btnGuideLink');
     const btnMobileDownloadPdf = document.getElementById('btnMobileDownloadPdf');
 
     // По умолчанию на мобильных активны параметры
     document.body.classList.add('tab-active-controls');
 
-    tabBtnControls?.addEventListener('click', () => {
-      document.body.classList.remove('tab-active-preview');
-      document.body.classList.add('tab-active-controls');
-      tabBtnControls.classList.add('active');
-      tabBtnPreview?.classList.remove('active');
-    });
-
-    tabBtnPreview?.addEventListener('click', () => {
-      document.body.classList.remove('tab-active-controls');
-      document.body.classList.add('tab-active-preview');
-      tabBtnPreview.classList.add('active');
+    const activateTab = (tab: 'controls' | 'preview' | 'guide') => {
+      document.body.classList.remove('tab-active-controls', 'tab-active-preview', 'tab-active-guide');
       tabBtnControls?.classList.remove('active');
-      window.scrollTo({ top: 0, behavior: 'smooth' });
+      tabBtnPreview?.classList.remove('active');
+      tabBtnGuide?.classList.remove('active');
+
+      if (tab === 'controls') {
+        document.body.classList.add('tab-active-controls');
+        tabBtnControls?.classList.add('active');
+      } else if (tab === 'preview') {
+        document.body.classList.add('tab-active-preview');
+        tabBtnPreview?.classList.add('active');
+        window.scrollTo({ top: 0, behavior: 'smooth' });
+      } else if (tab === 'guide') {
+        document.body.classList.add('tab-active-guide');
+        tabBtnGuide?.classList.add('active');
+        window.scrollTo({ top: 0, behavior: 'smooth' });
+      }
+    };
+
+    tabBtnControls?.addEventListener('click', () => activateTab('controls'));
+    tabBtnPreview?.addEventListener('click', () => activateTab('preview'));
+    tabBtnGuide?.addEventListener('click', () => activateTab('guide'));
+
+    btnGuideLink?.addEventListener('click', (e) => {
+      if (window.innerWidth <= 1024) {
+        e.preventDefault();
+        activateTab('guide');
+      } else {
+        const guideSection = document.getElementById('guideSection');
+        if (guideSection) {
+          e.preventDefault();
+          guideSection.scrollIntoView({ behavior: 'smooth' });
+        }
+      }
     });
 
     btnMobileDownloadPdf?.addEventListener('click', () => this.handleDownloadPdf());

@@ -1,5 +1,19 @@
+# StickerFit robots.txt - Optimized for Search Engines & Generative AI (GEO)
+
 User-agent: *
 Allow: /
+Disallow: /uploads/
+Disallow: /temp/
+Disallow: /sessions/
+Disallow: /private/
+
+# Explicitly allow OpenAI ChatGPT Search Bot for discovery & citation
+User-agent: OAI-SearchBot
+Allow: /
+
+# Prevent automated AI scrapers from bulk data training
+User-agent: GPTBot
+Disallow: /
 
 # Sitemaps
 Sitemap: https://sticker-sheet-a4-generator.vercel.app/sitemap.xml

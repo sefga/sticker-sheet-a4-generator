@@ -64,8 +64,27 @@ body {
   flex-wrap: wrap;
 }
 
+.brand-badge-wrap {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.brand-tag {
+  font-size: 0.72rem;
+  font-weight: 800;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  background: linear-gradient(135deg, #2563eb, #1d4ed8);
+  color: #ffffff;
+  padding: 3px 8px;
+  border-radius: 6px;
+  box-shadow: 0 1px 2px rgba(37, 99, 235, 0.25);
+  white-space: nowrap;
+}
+
 .sidebar-header h1 {
-  font-size: 1.15rem;
+  font-size: 1.12rem;
   font-weight: 700;
   color: var(--text-main);
   line-height: 1.2;
@@ -79,6 +98,35 @@ body {
   border-radius: 9999px;
   font-weight: 600;
   white-space: nowrap;
+}
+
+.header-controls {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-shrink: 0;
+}
+
+.btn-guide-link {
+  text-decoration: none;
+  font-size: 0.75rem;
+  font-weight: 600;
+  color: var(--text-muted);
+  background: #f8fafc;
+  border: 1px solid var(--border);
+  padding: 5px 9px;
+  border-radius: 8px;
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  transition: all 0.15s ease-in-out;
+  white-space: nowrap;
+}
+
+.btn-guide-link:hover {
+  background: #f1f5f9;
+  color: var(--primary);
+  border-color: #cbd5e1;
 }
 
 /* Компактный и стильный переключатель RU | EN */
@@ -103,6 +151,7 @@ body {
   cursor: pointer;
   transition: all 0.15s ease-in-out;
   line-height: 1.2;
+  min-height: 28px;
 }
 
 .lang-switch-btn:hover:not(.active) {
@@ -471,14 +520,17 @@ select:focus {
   line-height: 1.4;
 }
 
-/* Правая область — Live Preview A4 */
+/* Правая область — Live Preview A4 + Content Hub */
 .preview-area {
   flex: 1;
   display: flex;
   flex-direction: column;
   background: #cbd5e1;
   height: 100%;
-  overflow: hidden;
+  overflow-y: auto;
+  overflow-x: hidden;
+  scroll-behavior: smooth;
+  position: relative;
 }
 
 .preview-header {
@@ -488,6 +540,9 @@ select:focus {
   display: flex;
   align-items: center;
   justify-content: space-between;
+  position: sticky;
+  top: 0;
+  z-index: 20;
 }
 
 .preview-stats-bar {
@@ -518,13 +573,15 @@ select:focus {
   white-space: nowrap;
 }
 
-.preview-container {
+.sheet-viewport-wrapper {
   flex: 1;
+  min-height: calc(100vh - 65px);
   display: flex;
   align-items: center;
   justify-content: center;
   padding: 30px;
-  overflow: auto;
+  box-sizing: border-box;
+  flex-shrink: 0;
 }
 
 .sheet-shadow-wrapper {
@@ -550,6 +607,241 @@ select:focus {
   width: 100%;
   height: 100%;
   display: block;
+}
+
+/* SEO & GEO Content Hub (Документация, калькулятор и FAQ) */
+.content-hub {
+  background: #ffffff;
+  border-top: 1px solid var(--border);
+  padding: 48px 40px;
+  width: 100%;
+  max-width: 960px;
+  margin: 0 auto;
+  box-sizing: border-box;
+  box-shadow: 0 -4px 20px rgba(0, 0, 0, 0.04);
+}
+
+.content-hub-header {
+  margin-bottom: 32px;
+}
+
+.hub-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 0.8rem;
+  font-weight: 600;
+  color: #15803d;
+  background: #f0fdf4;
+  border: 1px solid #bbf7d0;
+  padding: 4px 14px;
+  border-radius: 9999px;
+  margin-bottom: 12px;
+}
+
+.hub-main-title {
+  font-size: 1.65rem;
+  font-weight: 800;
+  color: var(--text-main);
+  letter-spacing: -0.02em;
+  line-height: 1.25;
+  margin-bottom: 10px;
+}
+
+.hub-main-desc {
+  font-size: 0.95rem;
+  color: var(--text-muted);
+  line-height: 1.6;
+  max-width: 720px;
+}
+
+.hub-section {
+  margin-top: 36px;
+}
+
+.hub-section h3 {
+  font-size: 1.18rem;
+  font-weight: 700;
+  color: var(--text-main);
+  margin-bottom: 12px;
+}
+
+.hub-section p {
+  font-size: 0.9rem;
+  color: var(--text-muted);
+  line-height: 1.6;
+}
+
+.hub-steps-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 16px;
+  margin-top: 16px;
+}
+
+.hub-step-card {
+  background: var(--bg-app);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-md);
+  padding: 20px 18px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  transition: transform 0.15s ease, box-shadow 0.15s ease;
+}
+
+.hub-step-card:hover {
+  transform: translateY(-2px);
+  box-shadow: var(--shadow-md);
+}
+
+.hub-step-card .step-num {
+  width: 28px;
+  height: 28px;
+  border-radius: 50%;
+  background: var(--primary);
+  color: #ffffff;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 700;
+  font-size: 0.85rem;
+}
+
+.hub-step-card h4 {
+  font-size: 0.95rem;
+  font-weight: 700;
+  color: var(--text-main);
+  margin-top: 2px;
+}
+
+.hub-step-card p {
+  font-size: 0.84rem;
+  color: var(--text-muted);
+  line-height: 1.5;
+  margin: 0;
+}
+
+.formula-box {
+  background: #0f172a;
+  color: #e2e8f0;
+  padding: 18px 20px;
+  border-radius: var(--radius-md);
+  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+  font-size: 0.88rem;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  margin-top: 14px;
+}
+
+.formula-box .formula-line code {
+  color: #94a3b8;
+}
+
+.formula-box .formula-line.highlight code {
+  color: #38bdf8;
+  font-weight: 700;
+}
+
+.table-responsive {
+  overflow-x: auto;
+  margin-top: 14px;
+  border-radius: var(--radius-md);
+  border: 1px solid var(--border);
+}
+
+.reference-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 0.88rem;
+  text-align: left;
+}
+
+.reference-table th,
+.reference-table td {
+  padding: 12px 16px;
+  border-bottom: 1px solid var(--border);
+}
+
+.reference-table th {
+  background: #f8fafc;
+  font-weight: 600;
+  color: var(--text-main);
+}
+
+.reference-table tr:last-child td {
+  border-bottom: none;
+}
+
+.table-badge {
+  display: inline-block;
+  background: var(--primary-light);
+  color: var(--primary);
+  font-weight: 700;
+  padding: 2px 8px;
+  border-radius: 4px;
+  font-size: 0.82rem;
+}
+
+.faq-list {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  margin-top: 14px;
+}
+
+.faq-item {
+  border: 1px solid var(--border);
+  border-radius: var(--radius-md);
+  background: #f8fafc;
+  overflow: hidden;
+  transition: border-color 0.15s ease;
+}
+
+.faq-item[open] {
+  border-color: #cbd5e1;
+  background: #ffffff;
+}
+
+.faq-item summary {
+  padding: 14px 18px;
+  font-weight: 600;
+  color: var(--text-main);
+  font-size: 0.92rem;
+  cursor: pointer;
+  user-select: none;
+  transition: background 0.15s ease;
+}
+
+.faq-item summary:hover {
+  background: #f1f5f9;
+}
+
+.faq-item p {
+  padding: 0 18px 16px 18px;
+  font-size: 0.88rem;
+  color: var(--text-muted);
+  line-height: 1.6;
+  margin: 0;
+}
+
+.content-hub-footer {
+  margin-top: 48px;
+  padding-top: 24px;
+  border-top: 1px solid var(--border);
+  font-size: 0.82rem;
+  color: var(--text-muted);
+  text-align: center;
+}
+
+.content-hub-footer a {
+  color: var(--primary);
+  text-decoration: none;
+}
+
+.content-hub-footer a:hover {
+  text-decoration: underline;
 }
 
 /* Модальное окно кадрирования (Crop Modal) */
@@ -784,8 +1076,9 @@ select:focus {
     padding: 3px 6px;
   }
 
-  .preview-container {
-    padding: 12px 12px 90px 12px; /* Запас снизу под плавающий бар действий */
+  .sheet-viewport-wrapper {
+    min-height: auto;
+    padding: 14px 12px 90px 12px; /* Запас снизу под плавающий бар действий */
   }
 
   .sheet-shadow-wrapper {
@@ -797,12 +1090,45 @@ select:focus {
     display: none !important;
   }
 
+  body.tab-active-controls .sidebar-content {
+    display: flex !important;
+  }
+
   body.tab-active-preview .sidebar-content {
     display: none !important;
   }
 
   body.tab-active-preview .preview-area {
     display: flex !important;
+  }
+
+  body.tab-active-preview .content-hub {
+    display: none !important;
+  }
+
+  body.tab-active-preview .sheet-viewport-wrapper {
+    display: flex !important;
+  }
+
+  body.tab-active-guide .sidebar-content {
+    display: none !important;
+  }
+
+  body.tab-active-guide .preview-area {
+    display: flex !important;
+  }
+
+  body.tab-active-guide .sheet-viewport-wrapper {
+    display: none !important;
+  }
+
+  body.tab-active-guide .content-hub {
+    display: block !important;
+    padding: 24px 16px 90px 16px;
+  }
+
+  body.tab-active-guide .mobile-sticky-bar {
+    display: none !important;
   }
 
   /* Сенсорные зоны (Touch Targets >= 44px) */
