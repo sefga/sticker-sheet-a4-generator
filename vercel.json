@@ -1,5 +1,18 @@
 {
   "buildCommand": "npm run build",
   "outputDirectory": "dist",
-  "framework": "vite"
+  "framework": "vite",
+  "redirects": [
+    {
+      "source": "/:path*",
+      "has": [
+        {
+          "type": "host",
+          "value": "sticker-sheet-a4-generator.vercel.app"
+        }
+      ],
+      "destination": "https://stickerfit.vercel.app/:path*",
+      "permanent": true
+    }
+  ]
 }

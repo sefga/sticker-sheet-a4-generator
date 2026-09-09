@@ -3,6 +3,12 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <script>
+    // Бесшовный переход со старого технического домена на единый бренд-домен StickerFit
+    if (window.location.hostname === 'sticker-sheet-a4-generator.vercel.app') {
+      window.location.replace('https://stickerfit.vercel.app' + window.location.pathname + window.location.search + window.location.hash);
+    }
+  </script>
 
   <!-- Основные SEO метатеги (Бренд StickerFit & A4 Sticker Sheet Maker) -->
   <title>A4 Sticker Sheet Maker – Auto Layout & Print PDF | StickerFit</title>
