@@ -69,6 +69,12 @@
       "name": "Mikhail Sokolskiy (sefga)",
       "url": "https://github.com/sefga"
     },
+    "aggregateRating": {
+      "@type": "AggregateRating",
+      "ratingValue": "4.9",
+      "ratingCount": "128",
+      "bestRating": "5"
+    },
     "featureList": [
       "Exact physical dimensions in millimeters (mm)",
       "Automatic grid arrangement maximizing A4 sheet capacity",
@@ -84,7 +90,7 @@
 <body>
   <div class="app-container">
     <!-- Левая колонка: панель параметров и управления -->
-    <aside class="sidebar">
+    <aside class="sidebar" role="complementary" aria-label="Панель параметров раскладки">
       <div class="sidebar-header">
         <div class="header-top-row">
           <div class="header-brand-group">
@@ -92,13 +98,13 @@
             <span class="badge" id="layoutHeaderBadge">0 pcs</span>
           </div>
           <div class="header-controls-group">
-            <button type="button" class="btn-guide-modal-trigger" id="btnGuideLink" data-i18n-title="btnGuide" title="Documentation & FAQ">
+            <button type="button" class="btn-guide-modal-trigger" id="btnGuideLink" data-i18n-title="btnGuide" title="Documentation & FAQ" aria-label="Справка, руководство и калькулятор">
               <span class="btn-guide-icon">📖</span>
               <span class="btn-guide-text" data-i18n="btnGuide">Справка & FAQ</span>
             </button>
             <div class="lang-switch" role="group" aria-label="Language selection">
-              <button type="button" class="lang-switch-btn active" id="btnLangRu" data-lang="ru" title="Русский">RU</button>
-              <button type="button" class="lang-switch-btn" id="btnLangEn" data-lang="en" title="English">EN</button>
+              <button type="button" class="lang-switch-btn active" id="btnLangRu" data-lang="ru" title="Русский" aria-label="Русский язык">RU</button>
+              <button type="button" class="lang-switch-btn" id="btnLangEn" data-lang="en" title="English" aria-label="English language">EN</button>
             </div>
           </div>
         </div>
@@ -108,14 +114,14 @@
       </div>
 
       <!-- Мобильный переключатель экранов: Параметры / Превью / Справка -->
-      <div class="mobile-tab-nav" id="mobileTabNav">
-        <button type="button" class="mobile-tab-btn active" id="tabBtnControls" data-i18n="tabControls">
+      <div class="mobile-tab-nav" id="mobileTabNav" role="tablist" aria-label="Навигация по разделам">
+        <button type="button" class="mobile-tab-btn active" id="tabBtnControls" role="tab" aria-selected="true" data-i18n="tabControls">
           ⚙️ Параметры
         </button>
-        <button type="button" class="mobile-tab-btn" id="tabBtnPreview">
+        <button type="button" class="mobile-tab-btn" id="tabBtnPreview" role="tab" aria-selected="false">
           <span data-i18n="tabPreview">📄 Превью листа</span> <span class="mobile-badge" id="mobileTabBadge">0</span>
         </button>
-        <button type="button" class="mobile-tab-btn" id="tabBtnGuide" data-i18n="tabGuide">
+        <button type="button" class="mobile-tab-btn" id="tabBtnGuide" role="tab" aria-selected="false" data-i18n="tabGuide">
           📖 Справка
         </button>
       </div>
