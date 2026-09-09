@@ -62,7 +62,7 @@ export const translations = {
     explainSizingFit: '<strong>Вписать целиком:</strong> Полное изображение с сохранением пропорций, без обрезки деталей.',
 
     // Секция 3: Параметры листа
-    secPageTitle: '3. Лист бумаги и поля',
+    secPageTitle: '3. Лист бумаги',
     lblPaperFormat: 'Формат бумаги',
     lblCustomPaperWidth: 'Ширина листа ({unit})',
     lblCustomPaperHeight: 'Высота листа ({unit})',
@@ -72,7 +72,10 @@ export const translations = {
     paperGroupCustom: 'Пользовательский',
     paperChipA4: 'A4',
     paperChipLetter: 'Letter',
-    paperChipCustom: 'Свой размер',
+    paperChipCustom: 'Свой',
+    paperChipOther: 'Ещё ▾',
+    paperChipOtherTitle: 'Другие форматы бумаги (A3, A5, фото, этикетки)',
+    lblOtherPaperFormats: 'Другой формат бумаги:',
     lblOrientation: 'Ориентация страницы',
     lblOrientPortrait: 'Книжная',
     lblOrientLandscape: 'Альбомная',
@@ -283,7 +286,7 @@ export const translations = {
     explainSizingFit: '<strong>Fit (Whole image):</strong> Entire image fits without cutting any details. Borders appear if aspect ratios differ.',
 
     // Section 3: Sheet Settings
-    secPageTitle: '3. Paper Sheet & Margins',
+    secPageTitle: '3. Paper Sheet',
     lblPaperFormat: 'Paper Standard',
     lblCustomPaperWidth: 'Sheet width ({unit})',
     lblCustomPaperHeight: 'Sheet height ({unit})',
@@ -294,6 +297,9 @@ export const translations = {
     paperChipA4: 'A4',
     paperChipLetter: 'Letter',
     paperChipCustom: 'Custom',
+    paperChipOther: 'More ▾',
+    paperChipOtherTitle: 'More paper standards (A3, A5, photos, labels)',
+    lblOtherPaperFormats: 'Other paper standard:',
     lblOrientation: 'Page orientation',
     lblOrientPortrait: 'Portrait',
     lblOrientLandscape: 'Landscape',
@@ -408,7 +414,7 @@ export const translations = {
     // SEO & GEO Content Hub (Documentation & FAQ)
     hubHeroTitle: 'A4 Sticker Sheet Maker',
     hubHeroSubtitle: 'Upload a sticker, enter its exact dimensions, and StickerFit automatically fills an A4 sheet with the maximum number of copies. Export a print-ready layout without changing the sticker dimensions.',
-    hubPrivacyBadge: '🛡️ 100% Client-Side Privacy: Your images are processed entirely in your browser and never leave your device',
+    hubPrivacyBadge: '100% Client-Side Privacy: Your images are processed entirely in your browser and never leave your device',
 
     hubHowTitle: 'How StickerFit Works',
     hubStep1Title: '1. Upload Sticker',

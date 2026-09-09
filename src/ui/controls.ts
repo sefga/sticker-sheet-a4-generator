@@ -9,7 +9,7 @@ import { createCalibrationPdf } from '../pdf/calibrationPage';
 import { renderPreviewSvg } from '../preview/previewRenderer';
 import { roundMm } from '../units/mm';
 import { Unit, toMm, fromMm, formatUnitValue, getUnitSymbol } from '../units/units';
-import { getPaperFormat } from '../units/paperFormats';
+import { getPaperFormat, getAppTitleForFormat } from '../units/paperFormats';
 import { setLanguage, t, applyTranslations, onLanguageChange, TranslationKey } from '../i18n';
 import { trackEvent } from '../analytics';
 
@@ -31,6 +31,7 @@ export class UIController {
     applyTranslations();
     onLanguageChange(() => {
       const state = store.getState();
+      this.updateAppHeaderTitle(state.paperFormatId);
       this.updateLockRatioHint(state.lockAspectRatio);
       this.updateSizingExplanation(state.sizingMode);
       this.updateUnitLabels(state.unit);
@@ -316,25 +317,48 @@ export class UIController {
     const chipA4 = document.getElementById('chipPaperA4');
     const chipLetter = document.getElementById('chipPaperLetter');
     const chipCustom = document.getElementById('chipPaperCustom');
+    const chipMore = document.getElementById('chipPaperMore');
+    const morePaperGroup = document.getElementById('morePaperGroup');
 
     paperSelect?.addEventListener('change', async () => {
-      store.update({ paperFormatId: paperSelect.value });
+      const val = paperSelect.value;
+      store.update({ paperFormatId: val });
+      if (val === 'a4' || val === 'letter' || val === 'custom') {
+        if (morePaperGroup) morePaperGroup.style.display = 'none';
+      }
       await this.recalculateArtwork();
     });
 
     chipA4?.addEventListener('click', async () => {
+      if (morePaperGroup) morePaperGroup.style.display = 'none';
       store.update({ paperFormatId: 'a4' });
       await this.recalculateArtwork();
     });
 
     chipLetter?.addEventListener('click', async () => {
+      if (morePaperGroup) morePaperGroup.style.display = 'none';
       store.update({ paperFormatId: 'letter' });
       await this.recalculateArtwork();
     });
 
     chipCustom?.addEventListener('click', async () => {
+      if (morePaperGroup) morePaperGroup.style.display = 'none';
       store.update({ paperFormatId: 'custom' });
       await this.recalculateArtwork();
+    });
+
+    chipMore?.addEventListener('click', () => {
+      if (!morePaperGroup) return;
+      const isVisible = morePaperGroup.style.display !== 'none';
+      if (isVisible) {
+        const curId = store.getState().paperFormatId;
+        if (curId === 'a4' || curId === 'letter' || curId === 'custom') {
+          morePaperGroup.style.display = 'none';
+        }
+      } else {
+        morePaperGroup.style.display = 'block';
+        paperSelect?.focus();
+      }
     });
 
     const customW = document.getElementById('customPageWidth') as HTMLInputElement;
@@ -939,7 +963,9 @@ export class UIController {
     });
     this.updateUnitLabels(state.unit);
 
-    // 2. Формат бумаги
+    // 2. Формат бумаги и динамический заголовок
+    this.updateAppHeaderTitle(state.paperFormatId);
+
     const paperSelect = document.getElementById('paperFormatSelect') as HTMLSelectElement;
     if (paperSelect && document.activeElement !== paperSelect) {
       paperSelect.value = state.paperFormatId;
@@ -947,9 +973,27 @@ export class UIController {
     const chipA4 = document.getElementById('chipPaperA4');
     const chipLetter = document.getElementById('chipPaperLetter');
     const chipCustom = document.getElementById('chipPaperCustom');
+    const chipMore = document.getElementById('chipPaperMore');
+    const morePaperGroup = document.getElementById('morePaperGroup');
+
+    const isCommon = state.paperFormatId === 'a4' || state.paperFormatId === 'letter' || state.paperFormatId === 'custom';
     chipA4?.classList.toggle('active', state.paperFormatId === 'a4');
     chipLetter?.classList.toggle('active', state.paperFormatId === 'letter');
     chipCustom?.classList.toggle('active', state.paperFormatId === 'custom');
+    chipMore?.classList.toggle('active', !isCommon);
+
+    if (chipMore) {
+      if (!isCommon) {
+        const fmt = getPaperFormat(state.paperFormatId);
+        chipMore.textContent = `${fmt.name} ▾`;
+      } else {
+        chipMore.textContent = t('paperChipOther');
+      }
+    }
+
+    if (morePaperGroup && !isCommon) {
+      morePaperGroup.style.display = 'block';
+    }
 
     const customPaperGroup = document.getElementById('customPaperGroup');
     if (customPaperGroup) {
@@ -1009,6 +1053,19 @@ export class UIController {
     if (btnCrop) {
       btnCrop.disabled = !state.loadedImage;
     }
+  }
+
+  /**
+   * Динамическое обновление заголовка приложения в шапке под текущий формат бумаги
+   * Устраняет противоречие: когда выбран US Letter или 10x15, в шапке отображается реальный стандарт, а не "A4".
+   */
+  private updateAppHeaderTitle(paperFormatId?: string) {
+    const titleEl = document.getElementById('headerAppTitle') || document.querySelector('.header-app-title');
+    if (!titleEl) return;
+    const formatId = paperFormatId || store.getState().paperFormatId || 'a4';
+    const lang = (localStorage.getItem('sticker_sheet_lang') as 'ru' | 'en') || 'ru';
+    const newTitle = getAppTitleForFormat(formatId, lang);
+    titleEl.textContent = newTitle;
   }
 
   /**
@@ -1126,7 +1183,7 @@ export class UIController {
             <div><strong>${t('statStickerRotation')}</strong> ${layout.selectedRotation === 90 ? t('statRotated90') : t('statNoRotation')}</div>
           </div>
           <div class="recommendation-box">
-            💡 ${this.getLocalizedRecommendation(layout, state)}
+            ${this.getLocalizedRecommendation(layout, state)}
           </div>
         </div>
       `;
@@ -1143,27 +1200,27 @@ export class UIController {
 
       previewHeaderStats.innerHTML = `
         <span class="stat-chip" title="${t('chipSheet')}">
-          <span class="stat-chip-icon" aria-hidden="true">📄</span>
+          <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="4" y="2" width="16" height="20" rx="2"></rect><line x1="8" y1="6" x2="16" y2="6"></line><line x1="8" y1="10" x2="16" y2="10"></line></svg>
           <span class="stat-chip-label">${t('chipSheet')}:</span>
           <span class="stat-chip-val">${paperName} ${formatUnitValue(pageDim.widthMm, state.unit)} × ${formatUnitValue(pageDim.heightMm, state.unit)} ${unitSym}</span>
         </span>
         <span class="stat-chip" title="${t('chipSticker')}">
-          <span class="stat-chip-icon" aria-hidden="true">🏷️</span>
+          <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="3" width="18" height="18" rx="2"></rect></svg>
           <span class="stat-chip-label">${t('chipSticker')}:</span>
           <span class="stat-chip-val">${formatUnitValue(state.stickerWidthMm, state.unit)} × ${formatUnitValue(state.stickerHeightMm, state.unit)} ${unitSym}</span>
         </span>
         <span class="stat-chip stat-chip-accent" title="${t('chipGrid')}">
-          <span class="stat-chip-icon" aria-hidden="true">▦</span>
+          <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="3" width="7" height="7"></rect><rect x="14" y="3" width="7" height="7"></rect><rect x="14" y="14" width="7" height="7"></rect><rect x="3" y="14" width="7" height="7"></rect></svg>
           <span class="stat-chip-label">${t('chipGrid')}:</span>
           <span class="stat-chip-val">${layout.columns} × ${layout.rows} (${layout.actualCopies} ${pcsSuffix})</span>
         </span>
         <span class="stat-chip" title="${t('chipMargins')}">
-          <span class="stat-chip-icon" aria-hidden="true">📐</span>
+          <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 3v18M19 3v18M3 5h18M3 19h18"></path></svg>
           <span class="stat-chip-label">${t('chipMargins')}:</span>
           <span class="stat-chip-val">${formatUnitValue(state.margins.top, state.unit)} ${unitSym}</span>
         </span>
         <span class="stat-chip" title="${t('chipGap')}">
-          <span class="stat-chip-icon" aria-hidden="true">↔️</span>
+          <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polyline points="15 3 21 3 21 9"></polyline><polyline points="9 21 3 21 3 15"></polyline><line x1="21" y1="3" x2="14" y2="10"></line><line x1="3" y1="21" x2="10" y2="14"></line></svg>
           <span class="stat-chip-label">${t('chipGap')}:</span>
           <span class="stat-chip-val">${formatUnitValue(state.gapX, state.unit)} ${unitSym}</span>
         </span>

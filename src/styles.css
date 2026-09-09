@@ -256,45 +256,64 @@ body {
   box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
 }
 
-/* Заголовок выбора формата бумаги и быстрые чипсы */
-.paper-header-row {
-  display: flex;
+/* Сегментированный переключатель формата бумаги в заголовке Секции 3 */
+.paper-switch {
+  display: inline-flex;
   align-items: center;
-  justify-content: space-between;
-  margin-bottom: 6px;
-}
-
-.paper-quick-chips {
-  display: flex;
-  gap: 6px;
+  background: #f1f5f9;
+  border: 1px solid var(--border);
+  border-radius: 20px;
+  padding: 3px;
+  flex-shrink: 0;
+  gap: 2px;
 }
 
 .paper-chip-btn {
-  background: #f1f5f9;
-  border: 1px solid var(--border);
-  font-size: 0.78rem;
+  background: transparent;
+  border: none;
+  font-size: 0.8rem;
   font-weight: 600;
   color: var(--text-muted);
-  padding: 6px 12px;
-  min-height: 34px;
-  border-radius: 14px;
+  padding: 6px 11px;
+  min-height: 36px;
+  border-radius: 17px;
   cursor: pointer;
-  transition: all 0.15s ease;
+  transition: all 0.15s ease-in-out;
+  line-height: 1.2;
   display: inline-flex;
   align-items: center;
   justify-content: center;
   user-select: none;
+  white-space: nowrap;
 }
 
 .paper-chip-btn:hover:not(.active) {
-  background: #e2e8f0;
   color: var(--text-main);
+  background: rgba(0, 0, 0, 0.04);
 }
 
 .paper-chip-btn.active {
-  background: var(--primary);
-  color: #ffffff;
-  border-color: var(--primary);
+  background: #ffffff;
+  color: var(--primary);
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+}
+
+/* Блок дополнительных стандартов бумаги (раскрывается по 'Ещё ▾') */
+.more-paper-group {
+  background: #f8fafc;
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+  padding: 10px 12px;
+  margin-top: 8px;
+  animation: fadeIn 0.15s ease-in-out;
+}
+
+.field-sublabel {
+  display: block;
+  font-size: 0.78rem;
+  font-weight: 600;
+  color: var(--text-muted);
+  margin-bottom: 6px;
 }
 
 /* Стилизация выпадающего списка выбора бумаги */

@@ -163,3 +163,40 @@ export function calculatePageDimensions(
   }
   return { widthMm: minDim, heightMm: maxDim };
 }
+
+/**
+ * Получение динамического заголовка приложения для выбранного формата бумаги
+ * Устраняет когнитивный диссонанс, когда при выборе Letter или 10x15 в шапке было написано A4.
+ */
+export function getAppTitleForFormat(formatId: string, lang: 'ru' | 'en'): string {
+  const fId = (formatId || 'a4').toLowerCase();
+  if (lang === 'ru') {
+    if (fId === 'a4') return 'Раскладка наклеек A4';
+    if (fId === 'letter') return 'Раскладка наклеек Letter';
+    if (fId === 'custom') return 'Раскладка наклеек (свой размер)';
+    if (fId === 'a3') return 'Раскладка наклеек A3';
+    if (fId === 'a5') return 'Раскладка наклеек A5';
+    if (fId === 'a6') return 'Раскладка наклеек A6';
+    if (fId === 'legal') return 'Раскладка наклеек Legal';
+    if (fId === 'tabloid') return 'Раскладка наклеек Tabloid';
+    if (fId === 'half_letter') return 'Раскладка наклеек Half Letter';
+    if (fId === 'label_4x6') return 'Раскладка наклеек 4 × 6"';
+    if (fId === 'photo_10x15') return 'Раскладка наклеек 10 × 15 см';
+    const fmt = getPaperFormat(formatId);
+    return `Раскладка наклеек ${fmt.name}`;
+  } else {
+    if (fId === 'a4') return 'A4 Sticker Sheet Maker';
+    if (fId === 'letter') return 'Letter Sticker Sheet Maker';
+    if (fId === 'custom') return 'Custom Sticker Sheet Maker';
+    if (fId === 'a3') return 'A3 Sticker Sheet Maker';
+    if (fId === 'a5') return 'A5 Sticker Sheet Maker';
+    if (fId === 'a6') return 'A6 Sticker Sheet Maker';
+    if (fId === 'legal') return 'US Legal Sticker Sheet Maker';
+    if (fId === 'tabloid') return 'US Tabloid Sticker Sheet Maker';
+    if (fId === 'half_letter') return 'Half Letter Sticker Sheet Maker';
+    if (fId === 'label_4x6') return '4 × 6" Label Sticker Sheet Maker';
+    if (fId === 'photo_10x15') return '10 × 15 cm Photo Sticker Sheet Maker';
+    const fmt = getPaperFormat(formatId);
+    return `${fmt.name} Sticker Sheet Maker`;
+  }
+}

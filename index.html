@@ -45,7 +45,7 @@
   <meta name="twitter:image" content="https://stickerfit.vercel.app/og-image.svg" />
 
   <!-- Favicon & Touch Icon -->
-  <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>🏷️</text></svg>">
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><rect width=%22100%22 height=%22100%22 rx=%2222%22 fill=%22%232563eb%22/><rect x=%2226%22 y=%2226%22 width=%2248%22 height=%2248%22 rx=%228%22 fill=%22none%22 stroke=%22%23ffffff%22 stroke-width=%228%22/><circle cx=%2260%22 cy=%2240%22 r=%225%22 fill=%22%23ffffff%22/></svg>">
   <meta name="theme-color" content="#2563eb" />
 
   <!-- Структурированные данные Schema.org (JSON-LD WebApplication) -->
@@ -108,7 +108,7 @@
           </div>
         </div>
         <div class="header-title-row">
-          <h1 class="header-app-title" data-i18n="appTitle">A4 Sticker Sheet Maker</h1>
+          <h1 class="header-app-title" id="headerAppTitle" data-i18n="appTitle">A4 Sticker Sheet Maker</h1>
         </div>
       </div>
 
@@ -204,18 +204,19 @@
 
         <!-- 3. Лист бумаги и поля -->
         <section class="panel-section">
-          <div class="section-title" data-i18n="secPageTitle">3. Лист бумаги и поля</div>
-
-          <!-- Выбор формата бумаги -->
-          <div class="form-col">
-            <div class="paper-header-row">
-              <label for="paperFormatSelect" data-i18n="lblPaperFormat">Формат бумаги</label>
-              <div class="paper-quick-chips" role="group" aria-label="Быстрый выбор бумаги">
-                <button type="button" class="paper-chip-btn active" id="chipPaperA4" data-paper="a4">A4</button>
-                <button type="button" class="paper-chip-btn" id="chipPaperLetter" data-paper="letter">Letter</button>
-                <button type="button" class="paper-chip-btn" id="chipPaperCustom" data-paper="custom">Свой</button>
-              </div>
+          <div class="section-title-row">
+            <div class="section-title" data-i18n="secPageTitle">3. Лист бумаги</div>
+            <div class="paper-switch unit-switch" role="group" aria-label="Формат бумаги">
+              <button type="button" class="paper-chip-btn unit-btn active" id="chipPaperA4" data-paper="a4" title="A4 (210 × 297 мм)">A4</button>
+              <button type="button" class="paper-chip-btn unit-btn" id="chipPaperLetter" data-paper="letter" title="US Letter (8.5 × 11 in)">Letter</button>
+              <button type="button" class="paper-chip-btn unit-btn" id="chipPaperCustom" data-paper="custom" title="Свой размер листа" data-i18n="paperChipCustom">Свой</button>
+              <button type="button" class="paper-chip-btn unit-btn" id="chipPaperMore" data-paper="more" data-i18n-title="paperChipOtherTitle" title="Другие форматы бумаги" data-i18n="paperChipOther">Ещё ▾</button>
             </div>
+          </div>
+
+          <!-- Блок дополнительных форматов бумаги (раскрывается при клике 'Ещё ▾' или если выбран редкий формат) -->
+          <div id="morePaperGroup" class="more-paper-group" style="display: none; margin-top: 10px;">
+            <label for="paperFormatSelect" class="field-sublabel" data-i18n="lblOtherPaperFormats">Другой формат бумаги:</label>
             <select id="paperFormatSelect" class="form-select">
               <optgroup label="Международные (ISO 216)" data-i18n-label="paperGroupIso">
                 <option value="a4" selected>A4 (210 × 297 мм)</option>
@@ -237,17 +238,17 @@
                 <option value="custom">Пользовательский размер (Custom)</option>
               </optgroup>
             </select>
+          </div>
 
-            <!-- Блок ввода пользовательского размера листа -->
-            <div id="customPaperGroup" class="form-row" style="display: none; margin-top: 8px;">
-              <div class="form-col">
-                <label for="customPageWidth" id="lblCustomPageWidth" data-i18n="lblCustomPaperWidth">Ширина листа (мм)</label>
-                <input type="text" id="customPageWidth" value="210" inputmode="decimal" autocomplete="off" />
-              </div>
-              <div class="form-col">
-                <label for="customPageHeight" id="lblCustomPageHeight" data-i18n="lblCustomPaperHeight">Высота листа (мм)</label>
-                <input type="text" id="customPageHeight" value="297" inputmode="decimal" autocomplete="off" />
-              </div>
+          <!-- Блок ввода пользовательского размера листа -->
+          <div id="customPaperGroup" class="form-row" style="display: none; margin-top: 8px;">
+            <div class="form-col">
+              <label for="customPageWidth" id="lblCustomPageWidth" data-i18n="lblCustomPaperWidth">Ширина листа (мм)</label>
+              <input type="text" id="customPageWidth" value="210" inputmode="decimal" autocomplete="off" />
+            </div>
+            <div class="form-col">
+              <label for="customPageHeight" id="lblCustomPageHeight" data-i18n="lblCustomPaperHeight">Высота листа (мм)</label>
+              <input type="text" id="customPageHeight" value="297" inputmode="decimal" autocomplete="off" />
             </div>
           </div>
 
@@ -454,7 +455,9 @@
             <span class="guide-modal-logo">StickerFit</span>
             <span class="guide-modal-subtitle" data-i18n="guideModalSub">Справочный центр и калькулятор</span>
           </div>
-          <button type="button" class="guide-modal-close" id="btnGuideModalClose" data-i18n-title="btnGuideCloseAria" aria-label="Закрыть справку" title="Закрыть окно">✕</button>
+          <button type="button" class="guide-modal-close" id="btnGuideModalClose" data-i18n-title="btnGuideCloseAria" aria-label="Закрыть справку" title="Закрыть окно">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>
+          </button>
         </div>
         <div class="guide-modal-scroll">
           <!-- SEO & GEO Content Hub (Справочный центр, калькулятор и FAQ) -->
@@ -588,7 +591,7 @@
         <!-- Быстрый выход: кнопка закрытия внизу гайда -->
         <div class="guide-done-wrapper">
           <button type="button" class="btn btn-primary btn-guide-done-bottom" id="btnGuideDoneBottom" data-i18n="btnGuideDone">
-            ✓ Понятно, вернуться к раскладке
+            Понятно, вернуться к раскладке
           </button>
         </div>
 
