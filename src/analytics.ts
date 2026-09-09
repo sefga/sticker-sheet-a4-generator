@@ -9,21 +9,27 @@
  * - Безопасная очередь: если скрипт заблокирован AdBlock, ничего не падает и не ломается
  */
 
+import { inject, track } from '@vercel/analytics';
+
 declare global {
   interface Window {
-    va?: (...args: any[]) => void;
-    vaq?: any[];
     ym?: (...args: any[]) => void;
   }
 }
 
-// Инициализируем очередь Vercel Analytics в глобальной области
-if (typeof window !== 'undefined') {
-  window.va =
-    window.va ||
-    function () {
-      (window.vaq = window.vaq || []).push(arguments);
-    };
+/**
+ * Инициализация Vercel Web Analytics
+ */
+export function initAnalytics(): void {
+  try {
+    if (typeof window !== 'undefined') {
+      inject({
+        mode: 'auto',
+      });
+    }
+  } catch {
+    // Изолировано: аналитика не должна прерывать работу UI
+  }
 }
 
 export type AnalyticsEvent =
@@ -59,13 +65,8 @@ export type AnalyticsEvent =
  */
 export function trackEvent(event: AnalyticsEvent): void {
   try {
-    // 1. Отправка в Vercel Web Analytics
-    if (typeof window !== 'undefined' && typeof window.va === 'function') {
-      window.va('event', {
-        name: event.name,
-        data: 'data' in event ? event.data : undefined,
-      });
-    }
+    // 1. Отправка в Vercel Web Analytics через официальный SDK
+    track(event.name, 'data' in event ? event.data : undefined);
 
     // 2. Отправка в Яндекс.Метрику (если в будущем подключен счетчик)
     if (typeof window !== 'undefined' && typeof window.ym === 'function') {

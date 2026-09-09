@@ -37,6 +37,7 @@
     "deploy:netlify": "npx netlify-cli deploy --prod --dir=dist"
   },
   "dependencies": {
+    "@vercel/analytics": "^2.0.1",
     "cropperjs": "^1.6.2",
     "pdf-lib": "^1.17.1"
   },
