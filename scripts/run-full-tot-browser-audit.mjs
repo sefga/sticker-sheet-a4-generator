@@ -209,6 +209,16 @@ export async function runFullTotBrowserAudit() {
       const titleA3 = titleEl ? titleEl.textContent : '';
       const chipMoreText = chipMore ? chipMore.textContent : '';
 
+      // Выбор PeriPage 57 мм из термопринтеров
+      if (paperSelect) {
+        paperSelect.value = 'peripage_57';
+        paperSelect.dispatchEvent(new Event('change', { bubbles: true }));
+      }
+      await new Promise(r => setTimeout(r, 120));
+      const titlePeriPage = titleEl ? titleEl.textContent : '';
+      const marginAllInput = document.getElementById('marginAll');
+      const periPageMarginsZero = marginAllInput ? marginAllInput.value === '0' || marginAllInput.value === '0.0' : false;
+
       // Возврат на A4
       chipA4.click();
       await new Promise(r => setTimeout(r, 120));
@@ -219,6 +229,7 @@ export async function runFullTotBrowserAudit() {
       const dynamicTitleWorking = titleLetter.includes('Letter') && 
                                   titleCustom.includes('свой размер') && 
                                   titleA3.includes('A3') && 
+                                  titlePeriPage.includes('PeriPage') &&
                                   titleA4.includes('A4');
 
       return {
@@ -227,9 +238,11 @@ export async function runFullTotBrowserAudit() {
         customPaperWorking: customVisible && customHidden,
         morePaperWorking: moreGroupVisible && moreGroupHidden && chipMoreText.includes('A3'),
         dynamicTitleWorking,
+        periPageMarginsZero,
         titleA4,
         titleLetter,
         titleA3,
+        titlePeriPage,
       };
     });
 
@@ -248,7 +261,9 @@ export async function runFullTotBrowserAudit() {
     if (!pass2Data.morePaperWorking) pass2Defects.push('Кнопка "Ещё ▾" или выпадающий список других форматов работают некорректно.');
     else pass2Highlights.push('Кнопка "Ещё ▾" плавно раскрывает полный каталог стандартов и обновляет бейдж (A3 ▾).');
     if (!pass2Data.dynamicTitleWorking) pass2Defects.push('Заголовок страницы не синхронизируется с выбранным форматом бумаги.');
-    else pass2Highlights.push(`Динамический заголовок страницы: "${pass2Data.titleA4}" → "${pass2Data.titleLetter}" → "${pass2Data.titleA3}" (когнитивный диссонанс A4 полностью устранен).`);
+    else pass2Highlights.push(`Динамический заголовок страницы: "${pass2Data.titleA4}" → "${pass2Data.titleLetter}" → "${pass2Data.titlePeriPage}" (термопринтеры PeriPage выделены).`);
+    if (!pass2Data.periPageMarginsZero) pass2Defects.push('Поля листа не сбрасываются в 0 мм при выборе термопринтера PeriPage.');
+    else pass2Highlights.push('Умные поля: автоматический сброс полей в 0 мм для термопечати в край рулона.');
 
     auditReport.passes.pass2 = {
       agent: 'Агент 2: Понятность терминов, единицы измерения и бумага',

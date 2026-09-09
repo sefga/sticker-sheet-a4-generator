@@ -86,11 +86,37 @@ describe('Paper Formats Module (Стандарты бумаги и кастом�
     });
   });
 
+  describe('Термопринтеры и этикетки (PeriPage, Niimbot, маркетплейсы)', () => {
+    it('PeriPage 57 мм рулон строго 57 × 80 мм', () => {
+      const p57 = getPaperFormat('peripage_57');
+      expect(p57.widthMm).toBe(57);
+      expect(p57.heightMm).toBe(80);
+      expect(p57.group).toBe('thermal');
+    });
+
+    it('Термоэтикетка 58 × 40 мм (WB, Ozon)', () => {
+      const wb = getPaperFormat('label_58x40');
+      expect(wb.widthMm).toBe(58);
+      expect(wb.heightMm).toBe(40);
+      expect(wb.group).toBe('thermal');
+    });
+
+    it('Этикетка Niimbot / Phomemo 50 × 30 мм', () => {
+      const nb = getPaperFormat('label_50x30');
+      expect(nb.widthMm).toBe(50);
+      expect(nb.heightMm).toBe(30);
+      expect(nb.group).toBe('thermal');
+    });
+  });
+
   describe('Динамический заголовок страницы getAppTitleForFormat', () => {
     it('Корректно формирует заголовок на русском языке для всех типов форматов', () => {
       expect(getAppTitleForFormat('a4', 'ru')).toBe('Раскладка наклеек A4');
       expect(getAppTitleForFormat('letter', 'ru')).toBe('Раскладка наклеек Letter');
       expect(getAppTitleForFormat('a3', 'ru')).toBe('Раскладка наклеек A3');
+      expect(getAppTitleForFormat('peripage_57', 'ru')).toBe('Раскладка наклеек PeriPage 57 мм');
+      expect(getAppTitleForFormat('label_58x40', 'ru')).toBe('Раскладка наклеек 58 × 40 мм');
+      expect(getAppTitleForFormat('label_50x30', 'ru')).toBe('Раскладка наклеек 50 × 30 мм');
       expect(getAppTitleForFormat('photo_10x15', 'ru')).toBe('Раскладка наклеек 10 × 15 см');
       expect(getAppTitleForFormat('label_4x6', 'ru')).toBe('Раскладка наклеек 4 × 6"');
       expect(getAppTitleForFormat('custom', 'ru')).toBe('Раскладка наклеек (свой размер)');
@@ -100,6 +126,9 @@ describe('Paper Formats Module (Стандарты бумаги и кастом�
       expect(getAppTitleForFormat('a4', 'en')).toBe('A4 Sticker Sheet Maker');
       expect(getAppTitleForFormat('letter', 'en')).toBe('Letter Sticker Sheet Maker');
       expect(getAppTitleForFormat('a3', 'en')).toBe('A3 Sticker Sheet Maker');
+      expect(getAppTitleForFormat('peripage_57', 'en')).toBe('PeriPage 57 mm Sticker Maker');
+      expect(getAppTitleForFormat('label_58x40', 'en')).toBe('58 × 40 mm Thermal Label Maker');
+      expect(getAppTitleForFormat('label_50x30', 'en')).toBe('50 × 30 mm Thermal Label Maker');
       expect(getAppTitleForFormat('photo_10x15', 'en')).toBe('10 × 15 cm Photo Sticker Sheet Maker');
       expect(getAppTitleForFormat('label_4x6', 'en')).toBe('4 × 6" Label Sticker Sheet Maker');
       expect(getAppTitleForFormat('custom', 'en')).toBe('Custom Sticker Sheet Maker');

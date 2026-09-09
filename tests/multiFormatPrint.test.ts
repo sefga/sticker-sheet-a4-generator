@@ -137,4 +137,62 @@ describe('Multi-Format Layout & PDF Generation (US Letter, A3, Custom, 4x6)', ()
     expect(layout.hasError).toBe(false);
     expect(layout.totalCapacity).toBeGreaterThan(0);
   });
+
+  it('Карманный термопринтер PeriPage 57 мм (57 × 80 мм) с полями 0 мм', async () => {
+    const dim = calculatePageDimensions('peripage_57', 0, 0, 'portrait');
+    expect(dim.widthMm).toBe(57);
+    expect(dim.heightMm).toBe(80);
+
+    // Раскладка мини-стикеров 25 × 25 мм на рулон 57 мм с полями 0 мм и зазором 1 мм
+    const layout = calculateLayout({
+      pageWidthMm: dim.widthMm,
+      pageHeightMm: dim.heightMm,
+      stickerWidthMm: 25,
+      stickerHeightMm: 25,
+      margins: { top: 0, bottom: 0, left: 0, right: 0 },
+      gapX: 1,
+      gapY: 1,
+      allowRotation: false,
+    });
+
+    expect(layout.hasError).toBe(false);
+    // 57 мм / 26 мм = 2 колонки; 80 мм / 26 мм = 3 строки -> 6 стикеров на отрезке рулона!
+    expect(layout.columns).toBe(2);
+    expect(layout.rows).toBe(3);
+    expect(layout.totalCapacity).toBe(6);
+
+    const pdfBytes = await generateStickerSheetPdf({
+      pageWidthMm: dim.widthMm,
+      pageHeightMm: dim.heightMm,
+      layout,
+    });
+
+    const doc = await PDFDocument.load(pdfBytes);
+    const page = doc.getPages()[0];
+    const { width, height } = page.getSize();
+
+    expect(pointsToMm(width)).toBeCloseTo(57, 1);
+    expect(pointsToMm(height)).toBeCloseTo(80, 1);
+  });
+
+  it('Маркетплейс термоэтикетка 58 × 40 мм (WB / Ozon)', async () => {
+    // Термоэтикетка 58 × 40 мм шире, чем выше (альбомная ориентация)
+    const dim = calculatePageDimensions('label_58x40', 0, 0, 'landscape');
+    expect(dim.widthMm).toBe(58);
+    expect(dim.heightMm).toBe(40);
+
+    const layout = calculateLayout({
+      pageWidthMm: dim.widthMm,
+      pageHeightMm: dim.heightMm,
+      stickerWidthMm: 58,
+      stickerHeightMm: 40,
+      margins: { top: 0, bottom: 0, left: 0, right: 0 },
+      gapX: 0,
+      gapY: 0,
+      allowRotation: false,
+    });
+
+    expect(layout.hasError).toBe(false);
+    expect(layout.totalCapacity).toBe(1);
+  });
 });

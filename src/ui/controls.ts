@@ -322,7 +322,18 @@ export class UIController {
 
     paperSelect?.addEventListener('change', async () => {
       const val = paperSelect.value;
-      store.update({ paperFormatId: val });
+      const fmt = getPaperFormat(val);
+      const updates: any = { paperFormatId: val };
+
+      // Для термопринтеров (рулоны 57 мм, этикетки 58x40, 50x30) автоматически ставим поля 0 мм для печати в край
+      if (fmt.group === 'thermal') {
+        const curMargins = store.getState().margins;
+        if (curMargins.top === 5 && curMargins.bottom === 5 && curMargins.left === 5 && curMargins.right === 5) {
+          updates.margins = { top: 0, bottom: 0, left: 0, right: 0 };
+        }
+      }
+
+      store.update(updates);
       if (val === 'a4' || val === 'letter' || val === 'custom') {
         if (morePaperGroup) morePaperGroup.style.display = 'none';
       }

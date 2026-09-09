@@ -1,6 +1,6 @@
 import { PageOrientation } from '../state';
 
-export type PaperGroup = 'iso' | 'ansi' | 'photo_label' | 'custom';
+export type PaperGroup = 'iso' | 'ansi' | 'photo' | 'photo_label' | 'thermal' | 'custom';
 
 export interface PaperFormat {
   id: string;
@@ -89,20 +89,49 @@ export const PAPER_FORMATS: PaperFormat[] = [
     descriptionEn: '5.5 × 8.5 in (139.7 × 215.9 mm)',
   },
 
-  // Этикетки и фото
+  // Термопринтеры и этикетки (PeriPage, Paperang, Niimbot, маркетплейсы)
+  {
+    id: 'peripage_57',
+    name: 'PeriPage 57 мм',
+    group: 'thermal',
+    widthMm: 57,
+    heightMm: 80,
+    descriptionRu: '57 × 80 мм (рулон PeriPage, Paperang, Phomemo)',
+    descriptionEn: '57 × 80 mm (PeriPage / mini pocket printer roll)',
+  },
+  {
+    id: 'label_58x40',
+    name: '58 × 40 мм (Термоэтикетка)',
+    group: 'thermal',
+    widthMm: 58,
+    heightMm: 40,
+    descriptionRu: '58 × 40 мм (маркетплейсы WB, Ozon, ценники)',
+    descriptionEn: '58 × 40 mm (thermal barcode / marketplace label)',
+  },
+  {
+    id: 'label_50x30',
+    name: '50 × 30 мм (Niimbot / Phomemo)',
+    group: 'thermal',
+    widthMm: 50,
+    heightMm: 30,
+    descriptionRu: '50 × 30 мм (этикетка Niimbot B21/B1, Phomemo M110)',
+    descriptionEn: '50 × 30 mm (Niimbot / Phomemo label)',
+  },
   {
     id: 'label_4x6',
-    name: '4 × 6" (Термоэтикетка)',
-    group: 'photo_label',
+    name: '4 × 6" (100 × 150 мм)',
+    group: 'thermal',
     widthMm: 101.6,
     heightMm: 152.4,
-    descriptionRu: '101.6 × 152.4 мм (4 × 6 дюймов)',
+    descriptionRu: '101.6 × 152.4 мм (транспортная этикетка Ozon, WB, СДЭК)',
     descriptionEn: '101.6 × 152.4 mm (4 × 6 in shipping label)',
   },
+
+  // Фотобумага
   {
     id: 'photo_10x15',
     name: '10 × 15 см (Фото)',
-    group: 'photo_label',
+    group: 'photo',
     widthMm: 100,
     heightMm: 150,
     descriptionRu: '100 × 150 мм (стандартное фото)',
@@ -180,6 +209,9 @@ export function getAppTitleForFormat(formatId: string, lang: 'ru' | 'en'): strin
     if (fId === 'legal') return 'Раскладка наклеек Legal';
     if (fId === 'tabloid') return 'Раскладка наклеек Tabloid';
     if (fId === 'half_letter') return 'Раскладка наклеек Half Letter';
+    if (fId === 'peripage_57') return 'Раскладка наклеек PeriPage 57 мм';
+    if (fId === 'label_58x40') return 'Раскладка наклеек 58 × 40 мм';
+    if (fId === 'label_50x30') return 'Раскладка наклеек 50 × 30 мм';
     if (fId === 'label_4x6') return 'Раскладка наклеек 4 × 6"';
     if (fId === 'photo_10x15') return 'Раскладка наклеек 10 × 15 см';
     const fmt = getPaperFormat(formatId);
@@ -194,6 +226,9 @@ export function getAppTitleForFormat(formatId: string, lang: 'ru' | 'en'): strin
     if (fId === 'legal') return 'US Legal Sticker Sheet Maker';
     if (fId === 'tabloid') return 'US Tabloid Sticker Sheet Maker';
     if (fId === 'half_letter') return 'Half Letter Sticker Sheet Maker';
+    if (fId === 'peripage_57') return 'PeriPage 57 mm Sticker Maker';
+    if (fId === 'label_58x40') return '58 × 40 mm Thermal Label Maker';
+    if (fId === 'label_50x30') return '50 × 30 mm Thermal Label Maker';
     if (fId === 'label_4x6') return '4 × 6" Label Sticker Sheet Maker';
     if (fId === 'photo_10x15') return '10 × 15 cm Photo Sticker Sheet Maker';
     const fmt = getPaperFormat(formatId);
