@@ -1,0 +1,44 @@
+# StickerFit — A4 Sticker Sheet Maker
+
+> Free, privacy-first web application that calculates optimal sticker layout on standard A4 sheets (210 × 297 mm) with exact millimeter precision and generates 1:1 print-ready vector PDF files.
+
+## Overview
+- Website: https://stickerfit.vercel.app/
+- Source Code: https://github.com/sefga/stickerfit
+- License: MIT
+- Primary Use Case: Arrange arbitrary sticker sizes on A4 paper for printing and cutting.
+
+## Key Capabilities
+- Exact physical dimensions in millimeters (mm).
+- Automatic grid calculation maximizing total sticker yield per page.
+- 90° orientation rotation optimization for maximum sheet capacity.
+- Print-ready vector 1:1 PDF export (A4 300+ DPI target quality).
+- Bleed support (0 to 3 mm) and professional cutting marks.
+- 100% client-side: user images are processed locally and never uploaded to any server.
+- Bilingual interface: English and Russian.
+
+## Smart Deeplink URL Parameters
+External AI agents and users can open pre-configured layouts directly by supplying query parameters:
+
+### Parameters
+- `width` or `w` (number, 5 to 297): Sticker width in millimeters. E.g. `?width=50`
+- `height` or `h` (number, 5 to 297): Sticker height in millimeters. E.g. `?height=50`
+- `orientation` or `orient` ('portrait' | 'landscape'): Sheet orientation. E.g. `?orientation=landscape`
+- `gap` or `g` (number, 0 to 50): Uniform gap between stickers in mm. E.g. `?gap=2`
+- `gapX` (number, 0 to 50): Horizontal gap between stickers in mm.
+- `gapY` (number, 0 to 50): Vertical gap between stickers in mm.
+- `margin` or `m` (number, 0 to 50): Uniform page margin in mm. E.g. `?margin=5`
+- `marginTop`, `marginBottom`, `marginLeft`, `marginRight` (number, 0 to 50): Individual page margins.
+- `copies` or `c` (number | 'auto'): Desired number of stickers on the sheet. E.g. `?copies=20` or `?copies=auto`
+- `rotation` or `rot` ('true' | 'false' | '1' | '0'): Allow 90° sticker rotation to maximize capacity.
+- `sizing` or `mode` ('fill' | 'fit'): Image sizing mode inside sticker box.
+- `bleed` (number, 0 | 1 | 2 | 3): Bleed margin in millimeters.
+- `lang` ('en' | 'ru'): Interface language.
+
+### Example URLs for ChatGPT & AI Assistants
+- 50×50 mm square stickers (auto layout):
+  https://stickerfit.vercel.app/?width=50&height=50&gap=2
+- 70×40 mm stickers with 10 mm margins on landscape A4:
+  https://stickerfit.vercel.app/?width=70&height=40&margin=10&orientation=landscape
+- 85×54 mm standard business card / badge size:
+  https://stickerfit.vercel.app/?width=54&height=85&gap=3

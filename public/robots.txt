@@ -11,9 +11,13 @@ Disallow: /private/
 User-agent: OAI-SearchBot
 Allow: /
 
-# Prevent automated AI scrapers from bulk data training
+# Prevent automated AI scrapers from bulk data training, but allow reading llms.txt
 User-agent: GPTBot
+Allow: /llms.txt
 Disallow: /
+
+# Direct LLM discovery
+Allow: /llms.txt
 
 # Sitemaps
 Sitemap: https://stickerfit.vercel.app/sitemap.xml

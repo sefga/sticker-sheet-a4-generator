@@ -121,11 +121,11 @@ export const translations = {
     // Превью зона
     previewLoading: 'Загрузка листа A4...',
     previewScale: 'Масштаб печати: 100%',
-    chipSheet: 'Лист:',
-    chipSticker: 'Стикер:',
-    chipGrid: 'Сетка:',
-    chipMargins: 'Поля:',
-    chipGap: 'Зазор:',
+    chipSheet: 'Лист',
+    chipSticker: 'Стикер',
+    chipGrid: 'Сетка',
+    chipMargins: 'Поля',
+    chipGap: 'Зазор',
     previewMm: 'мм',
     previewStickerPlaceholder: '#{idx} ({w}×{h} мм)',
 
@@ -318,11 +318,11 @@ export const translations = {
     // Preview area
     previewLoading: 'Loading A4 sheet...',
     previewScale: 'Print scale: 100%',
-    chipSheet: 'Sheet:',
-    chipSticker: 'Sticker:',
-    chipGrid: 'Grid:',
-    chipMargins: 'Margins:',
-    chipGap: 'Gap:',
+    chipSheet: 'Sheet',
+    chipSticker: 'Sticker',
+    chipGrid: 'Grid',
+    chipMargins: 'Margins',
+    chipGap: 'Gap',
     previewMm: 'mm',
     previewStickerPlaceholder: '#{idx} ({w}×{h} mm)',
 

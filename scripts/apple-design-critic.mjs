@@ -8,7 +8,10 @@ const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 const distDir = path.resolve(__dirname, '../dist');
 const CHROME_PATH = 'C:\\Program Files\\Google\\Chrome\\Application\\chrome.exe';
-const artifactDir = 'C:\\Users\\sokol\\.gemini\\antigravity\\brain\\374f1080-c01c-4fbe-bb09-a58f02ae06e7';
+const artifactDir = process.env.ARTIFACT_DIR || 'C:\\Users\\sokol\\.gemini\\antigravity\\brain\\67c6c949-429d-46c6-ac07-409c23eca07d';
+if (!fs.existsSync(artifactDir)) {
+  fs.mkdirSync(artifactDir, { recursive: true });
+}
 
 function startServer(port = 4182) {
   const mimeTypes = {
@@ -129,6 +132,11 @@ async function runAppleDesignCritic() {
         badgeVisible: !!badge && badge.offsetWidth > 0,
         guideBtnVisible: !!guideBtn && guideBtn.offsetWidth > 0,
         langSwitchVisible: !!langSwitch && langSwitch.offsetWidth > 0,
+        hasStatsBar: !!document.getElementById('previewHeaderStats'),
+        chipsCount: document.querySelectorAll('.preview-stats-bar .stat-chip').length,
+        hasStuckColonText: /(Sheet|Лист|Sticker|Стикер|Grid|Сетка|Margins|Поля|Gap|Зазор):[^\s]/.test(
+          document.getElementById('previewHeaderStats')?.textContent || ''
+        ),
       };
     });
 
@@ -142,6 +150,12 @@ async function runAppleDesignCritic() {
     if (!typographyCheck.brandTagVisible || !typographyCheck.guideBtnVisible) {
       typoScore -= 5;
       critique.defects.push('Элементы управления в шапке скрыты или имеют нулевой размер');
+    }
+    if (typographyCheck.hasStuckColonText) {
+      typoScore -= 5;
+      critique.defects.push('Обнаружено типографическое слипание в характеристиках листа (отсутствует пробел после двоеточия)');
+    } else if (typographyCheck.chipsCount >= 5) {
+      critique.highlights.push('Характеристики листа оформлены в виде аккуратных чипов Apple HIG без типографического слипания');
     }
     critique.categories['Typography & Header Balance'] = { score: typoScore, max: 20 };
 

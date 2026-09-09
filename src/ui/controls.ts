@@ -987,19 +987,36 @@ export class UIController {
       `;
     }
 
-    // Обновление информационной полосы над превью
+    // Обновление информационной полосы над превью (Apple HIG Capsule Chips)
     const previewHeaderStats = document.getElementById('previewHeaderStats');
     if (previewHeaderStats) {
+      const pcsSuffix = t('previewMm') === 'мм' ? 'шт.' : 'pcs';
       previewHeaderStats.innerHTML = `
-        <span class="stat-chip"><strong>${t('chipSheet')}</strong> A4 ${pageDim.widthMm} × ${pageDim.heightMm} ${t('previewMm')}</span>
-        <span class="stat-dot">•</span>
-        <span class="stat-chip"><strong>${t('chipSticker')}</strong> ${state.stickerWidthMm} × ${state.stickerHeightMm} ${t('previewMm')}</span>
-        <span class="stat-dot">•</span>
-        <span class="stat-chip"><strong>${t('chipGrid')}</strong> ${layout.columns} × ${layout.rows}</span>
-        <span class="stat-dot">•</span>
-        <span class="stat-chip"><strong>${t('chipMargins')}</strong> ${state.margins.top} ${t('previewMm')}</span>
-        <span class="stat-dot">•</span>
-        <span class="stat-chip"><strong>${t('chipGap')}</strong> ${state.gapX} ${t('previewMm')}</span>
+        <span class="stat-chip" title="${t('chipSheet')}">
+          <span class="stat-chip-icon" aria-hidden="true">📄</span>
+          <span class="stat-chip-label">${t('chipSheet')}:</span>
+          <span class="stat-chip-val">A4 ${pageDim.widthMm} × ${pageDim.heightMm} ${t('previewMm')}</span>
+        </span>
+        <span class="stat-chip" title="${t('chipSticker')}">
+          <span class="stat-chip-icon" aria-hidden="true">🏷️</span>
+          <span class="stat-chip-label">${t('chipSticker')}:</span>
+          <span class="stat-chip-val">${state.stickerWidthMm} × ${state.stickerHeightMm} ${t('previewMm')}</span>
+        </span>
+        <span class="stat-chip stat-chip-accent" title="${t('chipGrid')}">
+          <span class="stat-chip-icon" aria-hidden="true">▦</span>
+          <span class="stat-chip-label">${t('chipGrid')}:</span>
+          <span class="stat-chip-val">${layout.columns} × ${layout.rows} (${layout.actualCopies} ${pcsSuffix})</span>
+        </span>
+        <span class="stat-chip" title="${t('chipMargins')}">
+          <span class="stat-chip-icon" aria-hidden="true">📐</span>
+          <span class="stat-chip-label">${t('chipMargins')}:</span>
+          <span class="stat-chip-val">${state.margins.top} ${t('previewMm')}</span>
+        </span>
+        <span class="stat-chip" title="${t('chipGap')}">
+          <span class="stat-chip-icon" aria-hidden="true">↔️</span>
+          <span class="stat-chip-label">${t('chipGap')}:</span>
+          <span class="stat-chip-val">${state.gapX} ${t('previewMm')}</span>
+        </span>
       `;
     }
 

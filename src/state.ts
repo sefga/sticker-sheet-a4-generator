@@ -3,6 +3,7 @@ import { Margins } from './layout/layoutEngine';
 import { CutMarksConfig, DEFAULT_CUT_MARKS_CONFIG } from './pdf/cutMarks';
 import { CropData, CroppedResult, SizingMode } from './image/cropEngine';
 import { LoadedImage } from './image/imageLoader';
+import { parseUrlSettings } from './urlParams';
 
 export type PageOrientation = 'portrait' | 'landscape';
 
@@ -53,11 +54,12 @@ export const DEFAULT_SETTINGS: AppSettings = {
 };
 
 function loadSettings(): AppSettings {
+  let settings: AppSettings = { ...DEFAULT_SETTINGS };
   try {
     const raw = localStorage.getItem(STORAGE_KEY);
     if (raw) {
       const parsed = JSON.parse(raw);
-      return {
+      settings = {
         ...DEFAULT_SETTINGS,
         ...parsed,
         margins: { ...DEFAULT_SETTINGS.margins, ...(parsed.margins || {}) },
@@ -67,7 +69,19 @@ function loadSettings(): AppSettings {
   } catch (e) {
     console.warn('Не удалось загрузить настройки из LocalStorage:', e);
   }
-  return { ...DEFAULT_SETTINGS };
+
+  // Применяем параметры из адресной строки (Smart Deeplinks от ChatGPT/поиска), если они переданы
+  if (typeof window !== 'undefined' && window.location?.search) {
+    const urlOverrides = parseUrlSettings(window.location.search);
+    settings = {
+      ...settings,
+      ...urlOverrides,
+      margins: { ...settings.margins, ...(urlOverrides.margins || {}) },
+      cutMarks: { ...settings.cutMarks, ...(urlOverrides.cutMarks || {}) },
+    };
+  }
+
+  return settings;
 }
 
 export function saveSettings(settings: AppSettings): void {

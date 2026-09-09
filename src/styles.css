@@ -628,10 +628,8 @@ input.input-has-error {
 }
 
 .preview-stats-bar {
-  font-size: 0.82rem;
-  color: var(--text-muted);
   display: flex;
-  gap: 8px;
+  gap: 6px;
   align-items: center;
   flex-wrap: wrap;
 }
@@ -639,20 +637,77 @@ input.input-has-error {
 .preview-stats-bar .stat-chip {
   display: inline-flex;
   align-items: center;
+  gap: 5px;
+  padding: 4px 9px;
+  font-size: 0.77rem;
+  line-height: 1.2;
+  background: #f8fafc;
+  border: 1px solid #e2e8f0;
+  border-radius: 6px;
+  color: #334155;
+  transition: all 0.18s cubic-bezier(0.16, 1, 0.3, 1);
+  user-select: none;
 }
 
-.preview-stats-bar .stat-dot {
-  color: #94a3b8;
+.preview-stats-bar .stat-chip:hover {
+  background: #f1f5f9;
+  border-color: #cbd5e1;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.04);
+}
+
+.preview-stats-bar .stat-chip-icon {
+  font-size: 0.8rem;
+  line-height: 1;
+  opacity: 0.85;
+}
+
+.preview-stats-bar .stat-chip-label {
+  font-weight: 500;
+  color: #64748b;
+  letter-spacing: 0.01em;
+}
+
+.preview-stats-bar .stat-chip-val {
+  font-weight: 600;
+  color: #0f172a;
+}
+
+.preview-stats-bar .stat-chip-accent {
+  background: #eff6ff;
+  border-color: #bfdbfe;
+}
+
+.preview-stats-bar .stat-chip-accent .stat-chip-label {
+  color: #2563eb;
+}
+
+.preview-stats-bar .stat-chip-accent .stat-chip-val {
+  color: #1d4ed8;
+}
+
+.preview-stats-bar .stat-chip-accent:hover {
+  background: #dbeafe;
+  border-color: #93c5fd;
 }
 
 .scale-badge {
-  font-size: 0.8rem;
+  font-size: 0.77rem;
   font-weight: 600;
-  color: var(--text-muted);
-  background: #f1f5f9;
-  padding: 4px 8px;
-  border-radius: 4px;
+  color: #475569;
+  background: #f8fafc;
+  padding: 4px 10px;
+  border-radius: 6px;
+  border: 1px solid #e2e8f0;
   white-space: nowrap;
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  transition: all 0.18s ease;
+}
+
+.scale-badge:hover {
+  background: #f1f5f9;
+  border-color: #cbd5e1;
 }
 
 .sheet-viewport-wrapper {
