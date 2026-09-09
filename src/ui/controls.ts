@@ -9,6 +9,7 @@ import { createCalibrationPdf } from '../pdf/calibrationPage';
 import { renderPreviewSvg } from '../preview/previewRenderer';
 import { roundMm } from '../units/mm';
 import { setLanguage, t, applyTranslations, onLanguageChange, TranslationKey } from '../i18n';
+import { trackEvent } from '../analytics';
 
 export class UIController {
   private currentLayout: LayoutResult | null = null;
@@ -555,6 +556,15 @@ export class UIController {
       });
       await this.recalculateArtwork();
 
+      // Фиксация шага воронки: пользователь выбрал и загрузил стикер
+      trackEvent({
+        name: 'sticker_uploaded',
+        data: {
+          format: file.type,
+          sizeBytes: file.size,
+        },
+      });
+
       // На мобильных устройствах (<= 768px) после успешной загрузки фото
       // автоматически переключаем на вкладку «Превью листа»,
       // чтобы пользователь сразу увидел разложенные стикеры
@@ -668,6 +678,18 @@ export class UIController {
 
     const filename = `stickers-${state.stickerWidthMm}x${state.stickerHeightMm}mm-${this.currentLayout.actualCopies}pcs.pdf`;
     downloadPdfBlob(pdfBytes, filename);
+
+    // Фиксация ключевой конверсии: пользователь успешно скачал готовый лист PDF
+    trackEvent({
+      name: 'pdf_downloaded',
+      data: {
+        widthMm: state.stickerWidthMm,
+        heightMm: state.stickerHeightMm,
+        copies: this.currentLayout.actualCopies,
+        bleedMm: state.bleedMm,
+        orientation: state.pageOrientation,
+      },
+    });
   }
 
   /**
@@ -693,6 +715,14 @@ export class UIController {
     });
 
     openPdfForPrint(pdfBytes);
+
+    // Фиксация действия: отправка на прямую печать
+    trackEvent({
+      name: 'print_initiated',
+      data: {
+        copies: this.currentLayout.actualCopies,
+      },
+    });
   }
 
   /**
@@ -701,6 +731,11 @@ export class UIController {
   private async handleCalibrationPdf() {
     const pdfBytes = await createCalibrationPdf();
     downloadPdfBlob(pdfBytes, 'calibration-sheet-a4.pdf');
+
+    // Фиксация действия: калибровка масштаба
+    trackEvent({
+      name: 'calibration_downloaded',
+    });
   }
 
   /**
