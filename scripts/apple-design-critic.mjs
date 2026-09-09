@@ -137,6 +137,10 @@ async function runAppleDesignCritic() {
         hasStuckColonText: /(Sheet|Лист|Sticker|Стикер|Grid|Сетка|Margins|Поля|Gap|Зазор):[^\s]/.test(
           document.getElementById('previewHeaderStats')?.textContent || ''
         ),
+        headerExportVisible: (() => {
+          const btn = document.getElementById('btnHeaderDownloadPdf');
+          return !!btn && btn.offsetWidth > 0 && btn.offsetHeight > 0;
+        })(),
       };
     });
 
@@ -156,6 +160,12 @@ async function runAppleDesignCritic() {
       critique.defects.push('Обнаружено типографическое слипание в характеристиках листа (отсутствует пробел после двоеточия)');
     } else if (typographyCheck.chipsCount >= 5) {
       critique.highlights.push('Характеристики листа оформлены в виде аккуратных чипов Apple HIG без типографического слипания');
+    }
+    if (typographyCheck.headerExportVisible) {
+      critique.highlights.push('Ключевая кнопка экспорта PDF продублирована в правом верхнем углу шапки холста');
+    } else {
+      typoScore -= 5;
+      critique.defects.push('Кнопка быстрого экспорта PDF в шапке отсутствует или скрыта');
     }
     critique.categories['Typography & Header Balance'] = { score: typoScore, max: 20 };
 

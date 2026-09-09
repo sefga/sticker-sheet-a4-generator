@@ -454,6 +454,7 @@ export class UIController {
 
     // 8. Кнопки экспорта
     document.getElementById('btnDownloadPdf')?.addEventListener('click', () => this.handleDownloadPdf());
+    document.getElementById('btnHeaderDownloadPdf')?.addEventListener('click', () => this.handleDownloadPdf());
     document.getElementById('btnPrintPdf')?.addEventListener('click', () => this.handlePrintPdf());
     document.getElementById('btnCalibrationPdf')?.addEventListener('click', () => this.handleCalibrationPdf());
     document.getElementById('btnResetSettings')?.addEventListener('click', () => {

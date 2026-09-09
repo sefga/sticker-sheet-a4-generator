@@ -113,6 +113,7 @@ export const translations = {
     // Секция 6: Экспорт и печать
     secExportTitle: '6. Экспорт и печать',
     btnDownloadPdf: 'Скачать PDF для печати',
+    btnDownloadPdfShort: 'Скачать PDF',
     btnPrintPdf: '🖨️ Печать',
     printNotice: '💡 <strong>Важно при печати:</strong> В диалоге принтера обязательно установите масштаб <strong>«100%»</strong> или <strong>«Реальный размер»</strong> (Actual size). Не используйте режим «По размеру страницы» (Fit to page), чтобы сохранить точные размеры наклеек в мм!',
     btnCalibrationPdf: '📏 Проверить масштаб принтера (Калибровка A4)',
@@ -310,6 +311,7 @@ export const translations = {
     // Section 6: Export & Print
     secExportTitle: '6. Export & Print',
     btnDownloadPdf: 'Download Print-Ready PDF',
+    btnDownloadPdfShort: 'Download PDF',
     btnPrintPdf: '🖨️ Print',
     printNotice: '💡 <strong>Important when printing:</strong> In your printer dialog, always select <strong>«100%»</strong> or <strong>«Actual size»</strong>. Do not use «Fit to page» or «Shrink to fit» to preserve exact physical sticker dimensions in millimeters!',
     btnCalibrationPdf: '📏 Check Printer Scale (A4 Calibration)',
