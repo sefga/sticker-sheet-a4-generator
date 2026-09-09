@@ -16,6 +16,8 @@ export const translations = {
     appSubtitle: 'Онлайн верстка и печать стикеров в миллиметрах',
     itemsBadge: '{count} шт.',
     btnGuide: '📖 Справка & FAQ',
+    guideModalTitle: 'Справка & Руководство StickerFit',
+    guideModalSub: 'Справочный центр и калькулятор',
 
     // Мобильные вкладки
     tabControls: '⚙️ Параметры',
@@ -198,6 +200,8 @@ export const translations = {
     appSubtitle: 'Online sticker layout & print preparation in millimeters',
     itemsBadge: '{count} pcs',
     btnGuide: '📖 Guide & FAQ',
+    guideModalTitle: 'StickerFit Guide & Documentation',
+    guideModalSub: 'Help Center & Grid Calculator',
 
     // Mobile tabs
     tabControls: '⚙️ Settings',

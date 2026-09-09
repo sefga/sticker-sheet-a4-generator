@@ -303,6 +303,19 @@ export class UIController {
     // По умолчанию на мобильных активны параметры
     document.body.classList.add('tab-active-controls');
 
+    const guideModalBackdrop = document.getElementById('guideModalBackdrop');
+    const btnGuideModalClose = document.getElementById('btnGuideModalClose');
+
+    const openGuideModal = () => {
+      guideModalBackdrop?.classList.add('open');
+      guideModalBackdrop?.setAttribute('aria-hidden', 'false');
+    };
+
+    const closeGuideModal = () => {
+      guideModalBackdrop?.classList.remove('open');
+      guideModalBackdrop?.setAttribute('aria-hidden', 'true');
+    };
+
     const activateTab = (tab: 'controls' | 'preview' | 'guide') => {
       document.body.classList.remove('tab-active-controls', 'tab-active-preview', 'tab-active-guide');
       tabBtnControls?.classList.remove('active');
@@ -327,16 +340,34 @@ export class UIController {
     tabBtnPreview?.addEventListener('click', () => activateTab('preview'));
     tabBtnGuide?.addEventListener('click', () => activateTab('guide'));
 
+    // Открытие модального окна Справки на десктопе или переключение таба на мобильных
     btnGuideLink?.addEventListener('click', (e) => {
+      e.preventDefault();
       if (window.innerWidth <= 1024) {
-        e.preventDefault();
         activateTab('guide');
       } else {
-        const guideSection = document.getElementById('guideSection');
-        if (guideSection) {
-          e.preventDefault();
-          guideSection.scrollIntoView({ behavior: 'smooth' });
-        }
+        openGuideModal();
+      }
+    });
+
+    // Закрытие модального окна Справки
+    btnGuideModalClose?.addEventListener('click', () => {
+      if (window.innerWidth <= 1024) {
+        activateTab('controls');
+      } else {
+        closeGuideModal();
+      }
+    });
+
+    guideModalBackdrop?.addEventListener('click', (e) => {
+      if (e.target === guideModalBackdrop) {
+        closeGuideModal();
+      }
+    });
+
+    window.addEventListener('keydown', (e) => {
+      if (e.key === 'Escape' && guideModalBackdrop?.classList.contains('open')) {
+        closeGuideModal();
       }
     });
 

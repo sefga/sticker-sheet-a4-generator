@@ -86,19 +86,24 @@
     <!-- Левая колонка: панель параметров и управления -->
     <aside class="sidebar">
       <div class="sidebar-header">
-        <div class="header-brand">
-          <div class="brand-badge-wrap">
+        <div class="header-top-row">
+          <div class="header-brand-group">
             <span class="brand-tag">StickerFit</span>
-            <h1 data-i18n="appTitle">A4 Sticker Sheet Maker</h1>
+            <span class="badge" id="layoutHeaderBadge">0 pcs</span>
           </div>
-          <span class="badge" id="layoutHeaderBadge">0 pcs</span>
+          <div class="header-controls-group">
+            <button type="button" class="btn-guide-modal-trigger" id="btnGuideLink" data-i18n-title="btnGuide" title="Documentation & FAQ">
+              <span class="btn-guide-icon">📖</span>
+              <span class="btn-guide-text" data-i18n="btnGuide">Справка & FAQ</span>
+            </button>
+            <div class="lang-switch" role="group" aria-label="Language selection">
+              <button type="button" class="lang-switch-btn active" id="btnLangRu" data-lang="ru" title="Русский">RU</button>
+              <button type="button" class="lang-switch-btn" id="btnLangEn" data-lang="en" title="English">EN</button>
+            </div>
+          </div>
         </div>
-        <div class="header-controls">
-          <a href="#guideSection" class="btn-guide-link" id="btnGuideLink" data-i18n="btnGuide" title="Documentation & FAQ">📖 Справка & FAQ</a>
-          <div class="lang-switch" role="group" aria-label="Language selection">
-            <button type="button" class="lang-switch-btn active" id="btnLangRu" data-lang="ru" title="Русский">RU</button>
-            <button type="button" class="lang-switch-btn" id="btnLangEn" data-lang="en" title="English">EN</button>
-          </div>
+        <div class="header-title-row">
+          <h1 class="header-app-title" data-i18n="appTitle">A4 Sticker Sheet Maker</h1>
         </div>
       </div>
 
@@ -348,11 +353,23 @@
           <!-- SVG динамически рендерится через previewRenderer.ts -->
         </div>
       </div>
+    </main>
 
-      <!-- SEO & GEO Content Hub (Справочный центр, калькулятор и FAQ) -->
-      <article class="content-hub" id="guideSection">
-        <header class="content-hub-header">
-          <div class="hub-pill" data-i18n="hubPrivacyBadge">🛡️ 100% Client-Side Privacy: Your images never leave your device</div>
+    <!-- Модальное окно руководства, калькулятора и FAQ (Apple Help Sheet) -->
+    <div class="guide-modal-backdrop" id="guideModalBackdrop" aria-hidden="true">
+      <div class="guide-modal-window" role="dialog" aria-modal="true" aria-labelledby="guideHeroTitle">
+        <div class="guide-modal-header">
+          <div class="guide-modal-title-wrap">
+            <span class="guide-modal-logo">🏷️ StickerFit</span>
+            <span class="guide-modal-subtitle" data-i18n="guideModalSub">Справочный центр и калькулятор</span>
+          </div>
+          <button type="button" class="guide-modal-close" id="btnGuideModalClose" aria-label="Закрыть справку">✕</button>
+        </div>
+        <div class="guide-modal-scroll">
+          <!-- SEO & GEO Content Hub (Справочный центр, калькулятор и FAQ) -->
+          <article class="content-hub" id="guideSection">
+            <header class="content-hub-header">
+              <div class="hub-pill" data-i18n="hubPrivacyBadge">🛡️ 100% Client-Side Privacy: Your images never leave your device</div>
           <h2 class="hub-main-title" data-i18n="hubHeroTitle">A4 Sticker Sheet Maker</h2>
           <p class="hub-main-desc" data-i18n="hubHeroSubtitle">
             Upload a sticker, enter its exact dimensions, and StickerFit automatically fills an A4 sheet with the maximum number of copies. Export a print-ready layout without changing the sticker dimensions.
@@ -481,8 +498,10 @@
         <footer class="content-hub-footer">
           <div>© 2026 StickerFit. Open source on <a href="https://github.com/sefga/stickerfit" target="_blank" rel="noopener">GitHub</a>.</div>
         </footer>
-      </article>
-    </main>
+          </article>
+        </div>
+      </div>
+    </div>
 
     <!-- Мобильная плавающая панель действий -->
     <div class="mobile-sticky-bar" id="mobileStickyBar">

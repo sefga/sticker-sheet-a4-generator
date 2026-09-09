@@ -28,6 +28,8 @@
     "build": "tsc && vite build",
     "preview": "vite preview",
     "test": "vitest run",
+    "critic": "node scripts/apple-design-critic.mjs",
+    "eval": "vitest run && tsc && vite build && node scripts/apple-design-critic.mjs",
     "deploy:netlify": "npx netlify-cli deploy --prod --dir=dist"
   },
   "dependencies": {
