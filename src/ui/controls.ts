@@ -26,7 +26,11 @@ export class UIController {
     this.initLanguageSwitch();
     applyTranslations();
     onLanguageChange(() => {
-      this.render(store.getState());
+      const state = store.getState();
+      this.updateLockRatioHint(state.lockAspectRatio);
+      this.updateSizingExplanation(state.sizingMode);
+      this.validateStickerDimensions();
+      this.render(state);
     });
     store.subscribe((state) => this.render(state));
   }
@@ -48,11 +52,12 @@ export class UIController {
       getFallback: () => number;
       onCommit: (val: number) => void | Promise<void>;
       debounceMs?: number;
+      onInput?: (parsed: number | null, raw: string) => void;
     }
   ) {
     if (!input) return;
 
-    const { min = 0, max = 1000, getFallback, onCommit, debounceMs = 450 } = options;
+    const { min = 0, max = 1000, getFallback, onCommit, debounceMs = 450, onInput } = options;
     let timer: any = null;
 
     const parseVal = (raw: string): number | null => {
@@ -87,12 +92,19 @@ export class UIController {
         }
       }
 
+      if (onInput) {
+        onInput(finalVal, input.value);
+      }
+
       await onCommit(finalVal);
     };
 
     input.addEventListener('input', () => {
       if (timer) clearTimeout(timer);
       const parsed = parseVal(input.value);
+      if (onInput) {
+        onInput(parsed, input.value);
+      }
       // Если значение валидно и не меньше допустимого порога, взводим таймер
       if (parsed !== null && parsed >= (min || 0)) {
         timer = setTimeout(() => commit(false), debounceMs);
@@ -213,6 +225,9 @@ export class UIController {
       min: 5,
       max: 297,
       getFallback: () => store.getState().stickerWidthMm,
+      onInput: (parsed) => {
+        this.validateStickerDimensions(parsed, null);
+      },
       onCommit: async (newWidth) => {
         const state = store.getState();
         if (state.lockAspectRatio && state.stickerWidthMm > 0) {
@@ -223,6 +238,7 @@ export class UIController {
         } else {
           store.update({ stickerWidthMm: newWidth });
         }
+        this.validateStickerDimensions();
         await this.recalculateArtwork();
       },
     });
@@ -231,6 +247,9 @@ export class UIController {
       min: 5,
       max: 297,
       getFallback: () => store.getState().stickerHeightMm,
+      onInput: (parsed) => {
+        this.validateStickerDimensions(null, parsed);
+      },
       onCommit: async (newHeight) => {
         const state = store.getState();
         if (state.lockAspectRatio && state.stickerHeightMm > 0) {
@@ -241,17 +260,21 @@ export class UIController {
         } else {
           store.update({ stickerHeightMm: newHeight });
         }
+        this.validateStickerDimensions();
         await this.recalculateArtwork();
       },
     });
 
     lockRatioToggle?.addEventListener('change', () => {
-      store.update({ lockAspectRatio: lockRatioToggle.checked });
+      const isLocked = lockRatioToggle.checked;
+      store.update({ lockAspectRatio: isLocked });
+      this.updateLockRatioHint(isLocked);
     });
 
     sizingFillBtn?.addEventListener('change', async () => {
       if (sizingFillBtn.checked) {
         store.update({ sizingMode: 'fill' });
+        this.updateSizingExplanation('fill');
         await this.recalculateArtwork();
       }
     });
@@ -259,6 +282,7 @@ export class UIController {
     sizingFitBtn?.addEventListener('change', async () => {
       if (sizingFitBtn.checked) {
         store.update({ sizingMode: 'fit' });
+        this.updateSizingExplanation('fit');
         await this.recalculateArtwork();
       }
     });
@@ -749,9 +773,13 @@ export class UIController {
     setVal('stickerWidth', state.stickerWidthMm);
     setVal('stickerHeight', state.stickerHeightMm);
     setChecked('lockAspectRatio', state.lockAspectRatio);
+    this.updateLockRatioHint(state.lockAspectRatio);
 
     setChecked('sizingFill', state.sizingMode === 'fill');
     setChecked('sizingFit', state.sizingMode === 'fit');
+    this.updateSizingExplanation(state.sizingMode);
+
+    this.validateStickerDimensions(state.stickerWidthMm, state.stickerHeightMm);
 
     setChecked('orientPortrait', state.pageOrientation === 'portrait');
     setChecked('orientLandscape', state.pageOrientation === 'landscape');
@@ -968,6 +996,75 @@ export class UIController {
         return t('recEnableRotation', { rot: layout.alternativeCapacity, orig: layout.totalCapacity });
       }
       return t('recPlacedNoRotation', { orig: layout.totalCapacity });
+    }
+  }
+
+  /**
+   * Обновление динамической подсказки о связывании размеров
+   */
+  private updateLockRatioHint(locked: boolean) {
+    const hintEl = document.getElementById('lockRatioHint');
+    if (hintEl) {
+      hintEl.textContent = t(locked ? 'hintLockRatioOn' : 'hintLockRatioOff');
+    }
+  }
+
+  /**
+   * Обновление интерактивного описания выбранного режима заполнения
+   */
+  private updateSizingExplanation(mode: 'fill' | 'fit') {
+    const explainEl = document.getElementById('sizingExplanation');
+    if (explainEl) {
+      explainEl.innerHTML = t(mode === 'fill' ? 'explainSizingFill' : 'explainSizingFit');
+    }
+  }
+
+  /**
+   * Инлайн-валидация размеров стикера: защита от некорректных размеров (>304 мм, больше листа A4, < 5 мм)
+   */
+  private validateStickerDimensions(widthOverride?: number | null, heightOverride?: number | null) {
+    const errorBanner = document.getElementById('stickerSizeError');
+    const inputWidth = document.getElementById('stickerWidth') as HTMLInputElement;
+    const inputHeight = document.getElementById('stickerHeight') as HTMLInputElement;
+
+    const parseNum = (val: string): number | null => {
+      const sanitized = val.trim().replace(',', '.');
+      if (!sanitized) return null;
+      const num = parseFloat(sanitized);
+      return isNaN(num) ? null : num;
+    };
+
+    const w = widthOverride !== undefined ? widthOverride : (inputWidth ? parseNum(inputWidth.value) : null);
+    const h = heightOverride !== undefined ? heightOverride : (inputHeight ? parseNum(inputHeight.value) : null);
+
+    const maxSheetDim = 297; // Максимальный габарит листа A4
+    let errorMessage: string | null = null;
+    let hasErrorW = false;
+    let hasErrorH = false;
+
+    if (w !== null && w > maxSheetDim) {
+      errorMessage = t('errSizeExceedsSheet', { val: w, max: maxSheetDim });
+      hasErrorW = true;
+    } else if (h !== null && h > maxSheetDim) {
+      errorMessage = t('errSizeExceedsSheet', { val: h, max: maxSheetDim });
+      hasErrorH = true;
+    } else if ((w !== null && w < 5 && w > 0) || (h !== null && h < 5 && h > 0)) {
+      errorMessage = t('errSizeTooSmall');
+      if (w !== null && w < 5) hasErrorW = true;
+      if (h !== null && h < 5) hasErrorH = true;
+    }
+
+    if (inputWidth) inputWidth.classList.toggle('input-has-error', hasErrorW);
+    if (inputHeight) inputHeight.classList.toggle('input-has-error', hasErrorH);
+
+    if (errorBanner) {
+      if (errorMessage) {
+        errorBanner.textContent = errorMessage;
+        errorBanner.style.display = 'block';
+      } else {
+        errorBanner.style.display = 'none';
+        errorBanner.textContent = '';
+      }
     }
   }
 }

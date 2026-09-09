@@ -39,7 +39,7 @@ export const DEFAULT_SETTINGS: AppSettings = {
   pageOrientation: 'portrait',
   stickerWidthMm: 54.0,
   stickerHeightMm: 85.0,
-  lockAspectRatio: true,
+  lockAspectRatio: false,
   sizingMode: 'fill',
   margins: { top: 5, bottom: 5, left: 5, right: 5 },
   linkMargins: true,

@@ -152,6 +152,7 @@
         </section>
 
         <!-- 2. Размер стикера -->
+        <!-- 2. Размер стикера -->
         <section class="panel-section">
           <div class="section-title" data-i18n="secSizeTitle">2. Размер стикера</div>
           <div class="form-row">
@@ -165,18 +166,26 @@
             </div>
           </div>
 
-          <label class="checkbox-label">
-            <input type="checkbox" id="lockAspectRatio" checked />
-            <span data-i18n="lblLockRatio">🔒 Сохранять пропорции</span>
-          </label>
+          <!-- Инлайн-предупреждение при некорректном размере (> 304 мм или больше листа) -->
+          <div class="field-error-banner" id="stickerSizeError" style="display: none;"></div>
 
-          <div class="form-col">
-            <label data-i18n="lblSizingMode">Режим заполнения</label>
+          <label class="checkbox-label" style="margin-top: 6px;">
+            <input type="checkbox" id="lockAspectRatio" />
+            <span data-i18n="lblLockRatio">🔗 Связать ширину и высоту</span>
+          </label>
+          <div class="field-hint" id="lockRatioHint" data-i18n="hintLockRatioOff">Размеры независимы: можно свободно задавать любую ширину и высоту.</div>
+
+          <div class="form-col" style="margin-top: 12px;">
+            <label data-i18n="lblSizingMode">Режим заполнения стикера</label>
             <div class="segmented-control">
               <input type="radio" id="sizingFill" name="sizingMode" value="fill" checked />
-              <label for="sizingFill" data-i18n="lblSizingFill" data-i18n-title="titleSizingFill" title="Изображение полностью заполняет стикер (лишнее обрезается)">Crop / Fill</label>
+              <label for="sizingFill" data-i18n="lblSizingFill" data-i18n-title="titleSizingFill" title="Изображение полностью заполняет стикер (лишнее обрезается)">Заполнить (обрезка)</label>
               <input type="radio" id="sizingFit" name="sizingMode" value="fit" />
-              <label for="sizingFit" data-i18n="lblSizingFit" data-i18n-title="titleSizingFit" title="Всё изображение помещается целиком внутри заданного размера">Fit</label>
+              <label for="sizingFit" data-i18n="lblSizingFit" data-i18n-title="titleSizingFit" title="Всё изображение помещается целиком внутри заданного размера">Вписать целиком</label>
+            </div>
+            <!-- Интерактивная карточка с понятным пояснением выбранного режима -->
+            <div class="sizing-explanation" id="sizingExplanation" data-i18n="explainSizingFill">
+              ✂️ <strong>Заполнить (обрезка):</strong> фото занимает весь стикер без белых полос. Лишние края кадрируются. Выбирайте, если нужен стикер «под обрез» без рамок.
             </div>
           </div>
         </section>
@@ -226,6 +235,10 @@
                 <input type="text" id="marginRight" value="5.0" inputmode="decimal" autocomplete="off" />
               </div>
             </div>
+
+            <div class="section-tip" data-i18n="tipPaperMargins">
+              💡 <strong>Поля листа:</strong> стандартная белая кромка принтера (3–5 мм). При 0 мм требуется принтер с поддержкой печати «в край» (borderless).
+            </div>
           </div>
 
           <!-- Предупреждение о printable area < 3 мм -->
@@ -254,6 +267,10 @@
                 <input type="text" id="gapY" value="3.0" inputmode="decimal" autocomplete="off" />
               </div>
             </div>
+
+            <div class="section-tip" data-i18n="tipGaps">
+              💡 <strong>Зазор:</strong> 0 мм — резка ножом по линейке встык (1 рез = 2 стикера); 2–4 мм — резка ножницами или плоттером.
+            </div>
           </div>
         </section>
 
@@ -265,6 +282,9 @@
             <input type="checkbox" id="allowRotation" checked />
             <span data-i18n="lblAllowRotation">☑ Автоматически выбрать наиболее экономичную ориентацию</span>
           </label>
+          <div class="field-hint" data-i18n="tipAutoRotate" style="margin-left: 24px; margin-bottom: 10px;">
+            💡 <strong>Умный поворот:</strong> система автоматически повернет стикеры на 90°, если так на лист поместится больше штук.
+          </div>
 
           <div class="form-row">
             <div class="form-col" style="flex: 2;">
