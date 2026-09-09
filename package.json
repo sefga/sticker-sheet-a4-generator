@@ -2,12 +2,30 @@
   "name": "sticker-sheet-a4-generator",
   "private": true,
   "version": "1.0.0",
+  "description": "Автоматический генератор раскладки наклеек на листе A4 для печати с физической точностью в миллиметрах",
+  "homepage": "https://sticker-sheet-a4-generator.vercel.app",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/sefga/sticker-sheet-a4-generator.git"
+  },
+  "keywords": [
+    "stickers",
+    "sticker-sheet",
+    "print-ready",
+    "a4",
+    "pdf",
+    "cropperjs",
+    "vite",
+    "typescript"
+  ],
+  "author": "Михаил Сокольский (sefga)",
   "type": "module",
   "scripts": {
     "dev": "vite",
     "build": "tsc && vite build",
     "preview": "vite preview",
-    "test": "vitest run"
+    "test": "vitest run",
+    "deploy:netlify": "npx netlify-cli deploy --prod --dir=dist"
   },
   "dependencies": {
     "cropperjs": "^1.6.2",

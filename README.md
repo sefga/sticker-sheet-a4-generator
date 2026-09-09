@@ -3,13 +3,20 @@
 [![Deploy to GitHub Pages](https://github.com/sefga/sticker-sheet-a4-generator/actions/workflows/deploy.yml/badge.svg)](https://github.com/sefga/sticker-sheet-a4-generator/actions/workflows/deploy.yml)
 [![Vercel Deployment](https://img.shields.io/badge/Vercel-Live%20Demo-black?logo=vercel)](https://sticker-sheet-a4-generator.vercel.app)
 [![Deploy to Netlify](https://www.netlify.com/img/deploy/button.svg)](https://app.netlify.com/start/deploy?repository=https://github.com/sefga/sticker-sheet-a4-generator)
-
-> 🌐 **Онлайн-версии приложения:**
-> - **GitHub Pages:** [https://sefga.github.io/sticker-sheet-a4-generator/](https://sefga.github.io/sticker-sheet-a4-generator/)
-> - **Vercel:** [https://sticker-sheet-a4-generator.vercel.app](https://sticker-sheet-a4-generator.vercel.app)
-> - **Netlify:** [Развернуть в 1 клик (Deploy to Netlify)](https://app.netlify.com/start/deploy?repository=https://github.com/sefga/sticker-sheet-a4-generator)
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 
 Автономное клиентское веб-приложение для автоматической подготовки и верстки листов A4 со стикерами для печати с физической точностью геометрии (в миллиметрах).
+
+---
+
+## 🌐 Ссылки на сервисы и онлайн-доступ
+
+| Сервис / Платформа | Статус | Прямая ссылка | Назначение |
+|:---|:---:|:---|:---|
+| **Vercel (Основной домен)** | 🟢 Live | [sticker-sheet-a4-generator.vercel.app](https://sticker-sheet-a4-generator.vercel.app) | Основной канонический production CDN |
+| **GitHub Pages (Зеркало)** | 🟢 Live | [sefga.github.io/sticker-sheet-a4-generator](https://sefga.github.io/sticker-sheet-a4-generator/) | Официальное зеркало на GitHub Pages |
+| **Netlify (1-Click Deploy)** | 🟢 Ready | [Развернуть на Netlify в 1 клик](https://app.netlify.com/start/deploy?repository=https://github.com/sefga/sticker-sheet-a4-generator) | Мгновенный импорт и запуск на Netlify CDN |
+| **Исходный код (GitHub)** | 🟢 Public | [github.com/sefga/sticker-sheet-a4-generator](https://github.com/sefga/sticker-sheet-a4-generator) | Открытый репозиторий проекта |
 
 ---
 
@@ -116,3 +123,77 @@ src/
     controls.ts          # Контроллер элементов интерфейса и событий формы
     cropDialog.ts        # Модальное окно кадрирования Cropper.js
 ```
+
+---
+
+## ☁️ Как опубликовать на Netlify и Автоматизация в 1 клик
+
+В проект уже добавлен файл конфигурации [netlify.toml](file:///c:/Desk/автоматизация%20разкалдки%20наклеек/netlify.toml), определяющий команду сборки `npm run build`, каталог `dist` и SPA-редиректы.
+
+### Вариант 1. В 1 клик через веб (Рекомендуется)
+Нажмите на кнопку ниже, войдите через свой GitHub — Netlify автоматически клонирует репозиторий, запустит сборку и выделит постоянный онлайн-домен `.netlify.app` с автообновлением при каждом `git push`:
+
+[![Deploy to Netlify](https://www.netlify.com/img/deploy/button.svg)](https://app.netlify.com/start/deploy?repository=https://github.com/sefga/sticker-sheet-a4-generator)
+
+### Вариант 2. Через Netlify CLI из консоли
+1. Однократный вход в аккаунт:
+   ```bash
+   npx netlify-cli login
+   ```
+2. Развертывание в production в 1 команду:
+   ```bash
+   npm run deploy:netlify
+   ```
+   *(или `npx netlify-cli deploy --prod --dir=dist`)*.
+
+---
+
+## 🤖 Netlify Model Context Protocol (MCP) для ИИ-Агентов
+
+Для полной автоматизации деплоя и управления сайтами в **1 клик силами ИИ-агентов** (включая Antigravity, Claude Desktop, Cursor) существует официальный протокол **MCP (Model Context Protocol)** от Netlify.
+
+### Как настроить Netlify MCP сервер:
+1. Получите Personal Access Token в личном кабинете Netlify: `User Settings -> Applications -> Personal access tokens`.
+2. Добавьте MCP-сервер в конфигурацию агента (например, в `claude_desktop_config.json` или конфигурацию Antigravity MCP):
+
+```json
+{
+  "mcpServers": {
+    "netlify": {
+      "command": "npx",
+      "args": ["-y", "@netlify/mcp"],
+      "env": {
+        "NETLIFY_AUTH_TOKEN": "ваш_персональный_токен_netlify"
+      }
+    }
+  }
+}
+```
+
+### Что может ИИ-агент через Netlify MCP в 1 клик:
+* `listSites` — получать список всех проектов пользователя;
+* `createSite` — создавать новые сайты без открытия браузера;
+* `deploySite` — загружать собранные артефакты `dist/` в production;
+* `getDeploy` — проверять статус сборки и доступность URL;
+* `configureSite` — настраивать переменные окружения, кастомные домены и заголовки.
+
+---
+
+## 🔍 SEO & GEO Оптимизация страницы
+
+Проект полностью оптимизирован для индексации поисковыми системами (Яндекс, Google, Bing, Mail.ru) и привлекательного сниппета в социальных сетях:
+
+1. **Региональный GEO-таргетинг (GEO Meta Tags)**:
+   - `geo.region: RU`
+   - `geo.placename: Москва, Россия`
+   - `geo.position / ICBM: 55.7558; 37.6176` (географическая привязка к региону).
+2. **Семантическая микроразметка Schema.org (JSON-LD)**:
+   - Внедрена схема `WebApplication` / `DesignApplication` с описанием бесплатных функций кадрирования, контроля DPI, раскладки на листе A4 и генерации PDF 1:1.
+3. **Open Graph & Twitter Cards**:
+   - При отправке ссылки в **Telegram, WhatsApp, VK, Twitter** генерируется привлекательное превью с брендовым векторным баннером [public/og-image.svg](file:///c:/Desk/автоматизация%20разкалдки%20наклеек/public/og-image.svg).
+4. **Канонический URL (`canonical`)**:
+   - Адрес `https://sticker-sheet-a4-generator.vercel.app/` назначен основным каноническим доменом, что объединяет ссылочную массу и исключает санкции за дублирование зеркал на GitHub Pages и Netlify.
+5. **Файлы для поисковых краулеров**:
+   - [public/robots.txt](file:///c:/Desk/автоматизация%20разкалдки наклеек/public/robots.txt) — правила индексации для всех роботов.
+   - [public/sitemap.xml](file:///c:/Desk/автоматизация%20разкалдки наклеек/public/sitemap.xml) — карта сайта с приоритетом 1.0.
+

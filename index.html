@@ -3,8 +3,78 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Генератор раскладки наклеек A4 (Sticker Sheet A4 Generator)</title>
+
+  <!-- Основные SEO метатеги -->
+  <title>Генератор раскладки наклеек A4 — Онлайн верстка и печать стикеров в миллиметрах</title>
+  <meta name="description" content="Бесплатный онлайн-генератор раскладки наклеек на листе А4 для печати. Автоматическое заполнение, точные физические размеры в миллиметрах, расчет DPI, кадрирование Cropper.js и экспорт в полиграфический векторный PDF со 100% масштабом." />
+  <meta name="keywords" content="раскладка наклеек а4, печать наклеек а4, генератор стикеров, раскладка стикеров онлайн, верстка стикеров а4, печать стикеров в миллиметрах, этикетки а4, pdf для печати наклеек, метки реза, кадрирование наклеек, sticker sheet a4 generator, печать наклеек москва" />
+  <meta name="author" content="Михаил Сокольский (sefga)" />
+  <meta name="robots" content="index, follow, max-image-preview:large, max-snippet:-1, max-video-preview:-1" />
+  <link rel="canonical" href="https://sticker-sheet-a4-generator.vercel.app/" />
+
+  <!-- Региональные GEO метатеги (GEO-таргетинг Яндекс и Google) -->
+  <meta name="geo.region" content="RU" />
+  <meta name="geo.placename" content="Москва, Россия" />
+  <meta name="geo.position" content="55.7558;37.6176" />
+  <meta name="ICBM" content="55.7558, 37.6176" />
+  <meta name="language" content="Russian" />
+
+  <!-- Open Graph / Facebook / VK / Telegram -->
+  <meta property="og:type" content="website" />
+  <meta property="og:url" content="https://sticker-sheet-a4-generator.vercel.app/" />
+  <meta property="og:title" content="Генератор раскладки наклеек на листе A4 — Точная печать в мм" />
+  <meta property="og:description" content="Автоматическая подготовка листов А4 со стикерами для печати. Точные физические размеры (мм), расчет DPI, метки реза, экспорт в векторный PDF 1:1." />
+  <meta property="og:image" content="https://sticker-sheet-a4-generator.vercel.app/og-image.svg" />
+  <meta property="og:image:width" content="1200" />
+  <meta property="og:image:height" content="630" />
+  <meta property="og:site_name" content="Sticker Sheet A4 Generator" />
+  <meta property="og:locale" content="ru_RU" />
+
+  <!-- Twitter Card -->
+  <meta name="twitter:card" content="summary_large_image" />
+  <meta name="twitter:title" content="Генератор раскладки наклеек на листе A4 — Точная печать в мм" />
+  <meta name="twitter:description" content="Автоматическая подготовка листов А4 со стикерами для печати. Точные размеры (мм), расчет DPI, метки реза, экспорт в PDF 1:1." />
+  <meta name="twitter:image" content="https://sticker-sheet-a4-generator.vercel.app/og-image.svg" />
+
+  <!-- Favicon & Touch Icon -->
   <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>🏷️</text></svg>">
+  <meta name="theme-color" content="#2563eb" />
+
+  <!-- Структурированные данные Schema.org (JSON-LD) для богатых сниппетов -->
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "WebApplication",
+    "name": "Sticker Sheet A4 Generator",
+    "alternateName": "Генератор раскладки наклеек на листе A4",
+    "url": "https://sticker-sheet-a4-generator.vercel.app/",
+    "applicationCategory": "DesignApplication",
+    "operatingSystem": "Any",
+    "inLanguage": "ru",
+    "description": "Автономное веб-приложение для подготовки и верстки листов А4 с наклейками для печати с физической точностью геометрии в миллиметрах.",
+    "browserRequirements": "Requires JavaScript. Requires HTML5 Canvas & SVG.",
+    "softwareVersion": "1.0.0",
+    "offers": {
+      "@type": "Offer",
+      "price": "0",
+      "priceCurrency": "RUB"
+    },
+    "author": {
+      "@type": "Person",
+      "name": "Михаил Сокольский",
+      "url": "https://github.com/sefga"
+    },
+    "featureList": [
+      "Кадрирование изображений с сохранением оригинального разрешения",
+      "Математически точный расчет сетки раскладки на листе A4",
+      "Автоматический выбор экономичной ориентации листа (автоповорот 90°)",
+      "Проверка качества печати и расчет эффективного DPI",
+      "Полиграфические метки реза (Cut marks) и вылеты под обрез (Bleed)",
+      "Экспорт в полиграфический векторный PDF в масштабе 100%",
+      "Калибровочный лист A4 с контрольными линейками"
+    ]
+  }
+  </script>
 </head>
 <body>
   <div class="app-container">
