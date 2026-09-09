@@ -195,19 +195,24 @@ export async function runFullTotBrowserAudit() {
       const customVisible = customPaperGroup && window.getComputedStyle(customPaperGroup).display !== 'none';
       const titleCustom = titleEl ? titleEl.textContent : '';
 
-      // Проверка кнопки 'Ещё ▾' и выпадающего списка
+      // Проверка кнопки 'Все принтеры ▾' и открытия каталога
       chipMore.click();
-      await new Promise(r => setTimeout(r, 120));
-      const moreGroupVisible = morePaperGroup && window.getComputedStyle(morePaperGroup).display !== 'none';
+      await new Promise(r => setTimeout(r, 150));
+      const catalogModal = document.getElementById('paperCatalogModal');
+      const catalogModalOpen = catalogModal && catalogModal.classList.contains('open');
 
-      // Выбор A3 из выпадающего списка
+      // Закрываем модальное окно каталога
+      const btnCloseCat = document.getElementById('btnClosePaperCatalog');
+      if (btnCloseCat) btnCloseCat.click();
+      await new Promise(r => setTimeout(r, 120));
+
+      // Выбор A3 из селекта
       if (paperSelect) {
         paperSelect.value = 'a3';
         paperSelect.dispatchEvent(new Event('change', { bubbles: true }));
       }
       await new Promise(r => setTimeout(r, 120));
       const titleA3 = titleEl ? titleEl.textContent : '';
-      const chipMoreText = chipMore ? chipMore.textContent : '';
 
       // Выбор PeriPage 57 мм из термопринтеров
       if (paperSelect) {
@@ -223,7 +228,6 @@ export async function runFullTotBrowserAudit() {
       chipA4.click();
       await new Promise(r => setTimeout(r, 120));
       const customHidden = customPaperGroup && window.getComputedStyle(customPaperGroup).display === 'none';
-      const moreGroupHidden = morePaperGroup && window.getComputedStyle(morePaperGroup).display === 'none';
       const titleA4 = titleEl ? titleEl.textContent : '';
 
       const dynamicTitleWorking = titleLetter.includes('Letter') && 
@@ -236,7 +240,7 @@ export async function runFullTotBrowserAudit() {
         unitConversionAccurate,
         labelsUpdated: lblCmW.includes('см') && (lblInW.includes('дюйм') || lblInW.includes('in')),
         customPaperWorking: customVisible && customHidden,
-        morePaperWorking: moreGroupVisible && moreGroupHidden && chipMoreText.includes('A3'),
+        morePaperWorking: catalogModalOpen,
         dynamicTitleWorking,
         periPageMarginsZero,
         titleA4,
@@ -258,8 +262,8 @@ export async function runFullTotBrowserAudit() {
     else pass2Highlights.push('Текстовые метки динамически показывают текущую единицу ({unit}).');
     if (!pass2Data.customPaperWorking) pass2Defects.push('Блок кастомного размера листа бумаги не реагирует на чипсы.');
     else pass2Highlights.push('Быстрые чипсы бумаги (A4, Letter, Свой) работают мгновенно в 1 клик.');
-    if (!pass2Data.morePaperWorking) pass2Defects.push('Кнопка "Ещё ▾" или выпадающий список других форматов работают некорректно.');
-    else pass2Highlights.push('Кнопка "Ещё ▾" плавно раскрывает полный каталог стандартов и обновляет бейдж (A3 ▾).');
+    if (!pass2Data.morePaperWorking) pass2Defects.push('Кнопка "Все принтеры ▾" или каталог принтеров работают некорректно.');
+    else pass2Highlights.push('Кнопка "Все принтеры ▾" плавно открывает интерактивный каталог принтеров и стандартов.');
     if (!pass2Data.dynamicTitleWorking) pass2Defects.push('Заголовок страницы не синхронизируется с выбранным форматом бумаги.');
     else pass2Highlights.push(`Динамический заголовок страницы: "${pass2Data.titleA4}" → "${pass2Data.titleLetter}" → "${pass2Data.titlePeriPage}" (термопринтеры PeriPage выделены).`);
     if (!pass2Data.periPageMarginsZero) pass2Defects.push('Поля листа не сбрасываются в 0 мм при выборе термопринтера PeriPage.');

@@ -10,6 +10,7 @@ export interface PaperFormat {
   heightMm: number;
   descriptionRu: string;
   descriptionEn: string;
+  keywords?: string[];
 }
 
 export const PAPER_FORMATS: PaperFormat[] = [
@@ -22,6 +23,7 @@ export const PAPER_FORMATS: PaperFormat[] = [
     heightMm: 297,
     descriptionRu: '210 × 297 мм (стандартный офисный)',
     descriptionEn: '210 × 297 mm (standard office)',
+    keywords: ['а4', 'a4', 'офис', 'стандарт', 'принтер', 'лист'],
   },
   {
     id: 'a3',
@@ -31,6 +33,7 @@ export const PAPER_FORMATS: PaperFormat[] = [
     heightMm: 420,
     descriptionRu: '297 × 420 мм (вдвое больше A4)',
     descriptionEn: '297 × 420 mm (double A4)',
+    keywords: ['а3', 'a3', 'плакат', 'чертеж'],
   },
   {
     id: 'a5',
@@ -40,6 +43,7 @@ export const PAPER_FORMATS: PaperFormat[] = [
     heightMm: 210,
     descriptionRu: '148 × 210 мм (половина A4)',
     descriptionEn: '148 × 210 mm (half A4)',
+    keywords: ['а5', 'a5', 'блокнот'],
   },
   {
     id: 'a6',
@@ -49,6 +53,7 @@ export const PAPER_FORMATS: PaperFormat[] = [
     heightMm: 148,
     descriptionRu: '105 × 148 мм (открытка)',
     descriptionEn: '105 × 148 mm (postcard size)',
+    keywords: ['а6', 'a6', 'открытка'],
   },
 
   // Североамериканские форматы ANSI
@@ -60,6 +65,7 @@ export const PAPER_FORMATS: PaperFormat[] = [
     heightMm: 279.4,
     descriptionRu: '8.5 × 11 дюймов (215.9 × 279.4 мм)',
     descriptionEn: '8.5 × 11 in (215.9 × 279.4 mm)',
+    keywords: ['letter', 'леттер', 'usa', 'сша'],
   },
   {
     id: 'legal',
@@ -69,6 +75,7 @@ export const PAPER_FORMATS: PaperFormat[] = [
     heightMm: 355.6,
     descriptionRu: '8.5 × 14 дюймов (215.9 × 355.6 мм)',
     descriptionEn: '8.5 × 14 in (215.9 × 355.6 mm)',
+    keywords: ['legal', 'лигал'],
   },
   {
     id: 'tabloid',
@@ -78,6 +85,7 @@ export const PAPER_FORMATS: PaperFormat[] = [
     heightMm: 431.8,
     descriptionRu: '11 × 17 дюймов (279.4 × 431.8 мм)',
     descriptionEn: '11 × 17 in (279.4 × 431.8 mm)',
+    keywords: ['tabloid', 'таблоид', 'ledger'],
   },
   {
     id: 'half_letter',
@@ -87,6 +95,7 @@ export const PAPER_FORMATS: PaperFormat[] = [
     heightMm: 215.9,
     descriptionRu: '5.5 × 8.5 дюймов (139.7 × 215.9 мм)',
     descriptionEn: '5.5 × 8.5 in (139.7 × 215.9 mm)',
+    keywords: ['half letter', 'половина'],
   },
 
   // Термопринтеры и этикетки (PeriPage, Paperang, Niimbot, маркетплейсы)
@@ -96,8 +105,9 @@ export const PAPER_FORMATS: PaperFormat[] = [
     group: 'thermal',
     widthMm: 57,
     heightMm: 80,
-    descriptionRu: '57 × 80 мм (рулон PeriPage, Paperang, Phomemo)',
-    descriptionEn: '57 × 80 mm (PeriPage / mini pocket printer roll)',
+    descriptionRu: '57 × 80 мм (рулон PeriPage, Paperang, Phomemo, чековый принтер)',
+    descriptionEn: '57 × 80 mm (PeriPage, Paperang, Phomemo mini pocket printer roll)',
+    keywords: ['peripage', 'перипейдж', 'paperang', 'phomemo', 'фомемо', 'термо', 'рулон', 'чек'],
   },
   {
     id: 'label_58x40',
@@ -105,8 +115,9 @@ export const PAPER_FORMATS: PaperFormat[] = [
     group: 'thermal',
     widthMm: 58,
     heightMm: 40,
-    descriptionRu: '58 × 40 мм (маркетплейсы WB, Ozon, ценники)',
-    descriptionEn: '58 × 40 mm (thermal barcode / marketplace label)',
+    descriptionRu: '58 × 40 мм (маркетплейсы Wildberries, WB, Ozon, ценники)',
+    descriptionEn: '58 × 40 mm (Wildberries, WB, Ozon barcode & marketplace label)',
+    keywords: ['wildberries', 'вайлдберриз', 'вб', 'wb', 'ozon', 'озон', 'термоэтикетка', 'ценник', 'barcode', 'этикетка'],
   },
   {
     id: 'label_50x30',
@@ -116,6 +127,7 @@ export const PAPER_FORMATS: PaperFormat[] = [
     heightMm: 30,
     descriptionRu: '50 × 30 мм (этикетка Niimbot B21/B1, Phomemo M110)',
     descriptionEn: '50 × 30 mm (Niimbot / Phomemo label)',
+    keywords: ['niimbot', 'нимбот', 'phomemo', 'фомемо', 'b21', 'b1', 'm110', 'маркиратор'],
   },
   {
     id: 'label_4x6',
@@ -123,8 +135,9 @@ export const PAPER_FORMATS: PaperFormat[] = [
     group: 'thermal',
     widthMm: 101.6,
     heightMm: 152.4,
-    descriptionRu: '101.6 × 152.4 мм (транспортная этикетка Ozon, WB, СДЭК)',
-    descriptionEn: '101.6 × 152.4 mm (4 × 6 in shipping label)',
+    descriptionRu: '101.6 × 152.4 мм (транспортная этикетка Wildberries, Ozon, WB, СДЭК)',
+    descriptionEn: '101.6 × 152.4 mm (4 × 6 in shipping label Wildberries, Ozon, WB)',
+    keywords: ['wildberries', 'вайлдберриз', 'ozon', 'озон', 'сдэк', 'cdek', 'транспортная', 'логистика', '4x6'],
   },
 
   // Фотобумага
@@ -136,6 +149,7 @@ export const PAPER_FORMATS: PaperFormat[] = [
     heightMm: 150,
     descriptionRu: '100 × 150 мм (стандартное фото)',
     descriptionEn: '100 × 150 mm (photo print)',
+    keywords: ['фото', 'photo', '10x15', 'глянец', 'эпсон', 'epson'],
   },
 
   // Пользовательский размер
@@ -147,6 +161,7 @@ export const PAPER_FORMATS: PaperFormat[] = [
     heightMm: 297,
     descriptionRu: 'Любой произвольный размер листа',
     descriptionEn: 'Custom sheet dimension',
+    keywords: ['свой', 'пользовательский', 'произвольный', 'custom'],
   },
 ];
 

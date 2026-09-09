@@ -9,13 +9,15 @@ import { createCalibrationPdf } from '../pdf/calibrationPage';
 import { renderPreviewSvg } from '../preview/previewRenderer';
 import { roundMm } from '../units/mm';
 import { Unit, toMm, fromMm, formatUnitValue, getUnitSymbol } from '../units/units';
-import { getPaperFormat, getAppTitleForFormat } from '../units/paperFormats';
+import { PAPER_FORMATS, getPaperFormat, getAppTitleForFormat } from '../units/paperFormats';
 import { setLanguage, t, applyTranslations, onLanguageChange, TranslationKey } from '../i18n';
 import { trackEvent } from '../analytics';
 
 export class UIController {
   private currentLayout: LayoutResult | null = null;
   private isProcessingImage: boolean = false;
+  private activeCatalogCategory: string = 'all';
+  private catalogSearchQuery: string = '';
   private lastArtworkCache: {
     imageSrc: string;
     cropJson: string;
@@ -312,65 +314,8 @@ export class UIController {
       }
     });
 
-    // 3. Формат бумаги (Paper Format, Chips, Custom Dimensions)
-    const paperSelect = document.getElementById('paperFormatSelect') as HTMLSelectElement;
-    const chipA4 = document.getElementById('chipPaperA4');
-    const chipLetter = document.getElementById('chipPaperLetter');
-    const chipCustom = document.getElementById('chipPaperCustom');
-    const chipMore = document.getElementById('chipPaperMore');
-    const morePaperGroup = document.getElementById('morePaperGroup');
-
-    paperSelect?.addEventListener('change', async () => {
-      const val = paperSelect.value;
-      const fmt = getPaperFormat(val);
-      const updates: any = { paperFormatId: val };
-
-      // Для термопринтеров (рулоны 57 мм, этикетки 58x40, 50x30) автоматически ставим поля 0 мм для печати в край
-      if (fmt.group === 'thermal') {
-        const curMargins = store.getState().margins;
-        if (curMargins.top === 5 && curMargins.bottom === 5 && curMargins.left === 5 && curMargins.right === 5) {
-          updates.margins = { top: 0, bottom: 0, left: 0, right: 0 };
-        }
-      }
-
-      store.update(updates);
-      if (val === 'a4' || val === 'letter' || val === 'custom') {
-        if (morePaperGroup) morePaperGroup.style.display = 'none';
-      }
-      await this.recalculateArtwork();
-    });
-
-    chipA4?.addEventListener('click', async () => {
-      if (morePaperGroup) morePaperGroup.style.display = 'none';
-      store.update({ paperFormatId: 'a4' });
-      await this.recalculateArtwork();
-    });
-
-    chipLetter?.addEventListener('click', async () => {
-      if (morePaperGroup) morePaperGroup.style.display = 'none';
-      store.update({ paperFormatId: 'letter' });
-      await this.recalculateArtwork();
-    });
-
-    chipCustom?.addEventListener('click', async () => {
-      if (morePaperGroup) morePaperGroup.style.display = 'none';
-      store.update({ paperFormatId: 'custom' });
-      await this.recalculateArtwork();
-    });
-
-    chipMore?.addEventListener('click', () => {
-      if (!morePaperGroup) return;
-      const isVisible = morePaperGroup.style.display !== 'none';
-      if (isVisible) {
-        const curId = store.getState().paperFormatId;
-        if (curId === 'a4' || curId === 'letter' || curId === 'custom') {
-          morePaperGroup.style.display = 'none';
-        }
-      } else {
-        morePaperGroup.style.display = 'block';
-        paperSelect?.focus();
-      }
-    });
+    // 3. Формат бумаги и дизайнерский каталог принтеров
+    this.initPaperCatalog();
 
     const customW = document.getElementById('customPageWidth') as HTMLInputElement;
     const customH = document.getElementById('customPageHeight') as HTMLInputElement;
@@ -983,18 +928,28 @@ export class UIController {
     }
     const chipA4 = document.getElementById('chipPaperA4');
     const chipLetter = document.getElementById('chipPaperLetter');
+    const chipWb = document.getElementById('chipPaperWb');
+    const chipPeriPage = document.getElementById('chipPaperPeriPage');
     const chipCustom = document.getElementById('chipPaperCustom');
     const chipMore = document.getElementById('chipPaperMore');
     const morePaperGroup = document.getElementById('morePaperGroup');
 
-    const isCommon = state.paperFormatId === 'a4' || state.paperFormatId === 'letter' || state.paperFormatId === 'custom';
+    const isTopFormat =
+      state.paperFormatId === 'a4' ||
+      state.paperFormatId === 'letter' ||
+      state.paperFormatId === 'label_58x40' ||
+      state.paperFormatId === 'peripage_57' ||
+      state.paperFormatId === 'custom';
+
     chipA4?.classList.toggle('active', state.paperFormatId === 'a4');
     chipLetter?.classList.toggle('active', state.paperFormatId === 'letter');
+    chipWb?.classList.toggle('active', state.paperFormatId === 'label_58x40');
+    chipPeriPage?.classList.toggle('active', state.paperFormatId === 'peripage_57');
     chipCustom?.classList.toggle('active', state.paperFormatId === 'custom');
-    chipMore?.classList.toggle('active', !isCommon);
+    chipMore?.classList.toggle('active', !isTopFormat);
 
     if (chipMore) {
-      if (!isCommon) {
+      if (!isTopFormat) {
         const fmt = getPaperFormat(state.paperFormatId);
         chipMore.textContent = `${fmt.name} ▾`;
       } else {
@@ -1002,9 +957,12 @@ export class UIController {
       }
     }
 
-    if (morePaperGroup && !isCommon) {
+    if (morePaperGroup && !isTopFormat) {
       morePaperGroup.style.display = 'block';
     }
+
+    // Обновление сводной дизайнерской карточки бумаги и принтера
+    this.updatePaperSummaryCard(state);
 
     const customPaperGroup = document.getElementById('customPaperGroup');
     if (customPaperGroup) {
@@ -1391,4 +1349,362 @@ export class UIController {
       }
     }
   }
+
+  /**
+   * Инициализация дизайнерского селектора бумаги и принтеров
+   */
+  private initPaperCatalog() {
+    const chipA4 = document.getElementById('chipPaperA4');
+    const chipLetter = document.getElementById('chipPaperLetter');
+    const chipWb = document.getElementById('chipPaperWb');
+    const chipPeriPage = document.getElementById('chipPaperPeriPage');
+    const chipCustom = document.getElementById('chipPaperCustom');
+    const chipMore = document.getElementById('chipPaperMore');
+    const btnOpenCatalogLink = document.getElementById('btnOpenCatalogLink');
+
+    const paperSelect = document.getElementById('paperFormatSelect') as HTMLSelectElement;
+    const morePaperGroup = document.getElementById('morePaperGroup');
+
+    // Быстрые чипсы
+    chipA4?.addEventListener('click', () => {
+      if (morePaperGroup) morePaperGroup.style.display = 'none';
+      this.selectPaperFormat('a4');
+    });
+    chipLetter?.addEventListener('click', () => {
+      if (morePaperGroup) morePaperGroup.style.display = 'none';
+      this.selectPaperFormat('letter');
+    });
+    chipWb?.addEventListener('click', () => {
+      if (morePaperGroup) morePaperGroup.style.display = 'none';
+      this.selectPaperFormat('label_58x40');
+    });
+    chipPeriPage?.addEventListener('click', () => {
+      if (morePaperGroup) morePaperGroup.style.display = 'none';
+      this.selectPaperFormat('peripage_57');
+    });
+    chipCustom?.addEventListener('click', () => {
+      if (morePaperGroup) morePaperGroup.style.display = 'none';
+      this.selectPaperFormat('custom');
+    });
+
+    // Открытие дизайнерского каталога
+    chipMore?.addEventListener('click', () => {
+      if (morePaperGroup) morePaperGroup.style.display = 'block';
+      this.openPaperCatalog();
+    });
+    btnOpenCatalogLink?.addEventListener('click', () => {
+      if (morePaperGroup) morePaperGroup.style.display = 'block';
+      this.openPaperCatalog();
+    });
+
+    // Синхронизация нативного селекта (для обратной совместимости)
+    paperSelect?.addEventListener('change', () => {
+      this.selectPaperFormat(paperSelect.value);
+    });
+
+    // Закрытие каталога
+    const btnClose = document.getElementById('btnClosePaperCatalog');
+    const btnDone = document.getElementById('btnDonePaperCatalog');
+    const backdrop = document.getElementById('paperCatalogBackdrop');
+
+    btnClose?.addEventListener('click', () => this.closePaperCatalog());
+    btnDone?.addEventListener('click', () => this.closePaperCatalog());
+    backdrop?.addEventListener('click', () => this.closePaperCatalog());
+
+    // Клавиатура: Escape закрывает каталог
+    window.addEventListener('keydown', (e: KeyboardEvent) => {
+      const modal = document.getElementById('paperCatalogModal');
+      if (e.key === 'Escape' && modal && modal.classList.contains('open')) {
+        this.closePaperCatalog();
+      }
+    });
+
+    // Живой поиск в каталоге
+    const searchInput = document.getElementById('paperCatalogSearch') as HTMLInputElement;
+    const btnClearSearch = document.getElementById('btnClearPaperSearch');
+
+    searchInput?.addEventListener('input', () => {
+      this.catalogSearchQuery = searchInput.value.trim().toLowerCase();
+      if (btnClearSearch) {
+        btnClearSearch.style.display = this.catalogSearchQuery ? 'flex' : 'none';
+      }
+      this.renderCatalogCards();
+    });
+
+    btnClearSearch?.addEventListener('click', () => {
+      if (searchInput) {
+        searchInput.value = '';
+        searchInput.focus();
+      }
+      this.catalogSearchQuery = '';
+      if (btnClearSearch) btnClearSearch.style.display = 'none';
+      this.renderCatalogCards();
+    });
+
+    // Табы категорий
+    const tabs = document.querySelectorAll('.catalog-tab');
+    tabs.forEach((tab) => {
+      tab.addEventListener('click', () => {
+        tabs.forEach((t) => t.classList.remove('active'));
+        tab.classList.add('active');
+        this.activeCatalogCategory = (tab as HTMLElement).dataset.cat || 'all';
+        this.renderCatalogCards();
+      });
+    });
+  }
+
+  /**
+   * Открытие дизайнерского каталога форматов и принтеров
+   */
+  public openPaperCatalog() {
+    const modal = document.getElementById('paperCatalogModal');
+    if (!modal) return;
+
+    modal.style.display = 'flex';
+    requestAnimationFrame(() => {
+      modal.classList.add('open');
+    });
+    document.body.style.overflow = 'hidden';
+
+    // Рендерим актуальные карточки с текущими единицами и языком
+    this.renderCatalogCards();
+
+    // На десктопе даем фокус на поиск
+    if (window.innerWidth > 768) {
+      setTimeout(() => {
+        const searchInput = document.getElementById('paperCatalogSearch') as HTMLInputElement;
+        searchInput?.focus();
+      }, 100);
+    }
+  }
+
+  /**
+   * Закрытие каталога форматов
+   */
+  public closePaperCatalog() {
+    const modal = document.getElementById('paperCatalogModal');
+    if (!modal) return;
+
+    modal.classList.remove('open');
+    setTimeout(() => {
+      modal.style.display = 'none';
+      document.body.style.overflow = '';
+    }, 200);
+  }
+
+  /**
+   * Применение выбранного формата бумаги и принтера
+   * Включает логику "Smart Zero Margins": для рулонов/термопринтеров ставит поля 0 мм
+   */
+  public async selectPaperFormat(formatId: string) {
+    const curFormat = getPaperFormat(store.getState().paperFormatId);
+    const newFormat = getPaperFormat(formatId);
+    const updates: any = { paperFormatId: formatId };
+
+    const curMargins = store.getState().margins;
+    const isCurStandard = curMargins.top === 5 && curMargins.bottom === 5 && curMargins.left === 5 && curMargins.right === 5;
+    const isCurZero = curMargins.top === 0 && curMargins.bottom === 0 && curMargins.left === 0 && curMargins.right === 0;
+
+    if (newFormat.group === 'thermal') {
+      // При переходе на термопринтер сбрасываем поля в 0 мм для печати в край рулона
+      if (isCurStandard) {
+        updates.margins = { top: 0, bottom: 0, left: 0, right: 0 };
+      }
+    } else if (newFormat.group === 'iso' || newFormat.group === 'ansi') {
+      // При возврате с термопринтера на офисный лист восстанавливаем рекомендуемые поля 5 мм
+      if (curFormat.group === 'thermal' && isCurZero) {
+        updates.margins = { top: 5, bottom: 5, left: 5, right: 5 };
+      }
+    }
+
+    store.update(updates);
+
+    // Скрываем блок customPaperGroup если не custom
+    const customPaperGroup = document.getElementById('customPaperGroup');
+    if (customPaperGroup) {
+      customPaperGroup.style.display = formatId === 'custom' ? 'flex' : 'none';
+    }
+
+    // Скрываем блок morePaperGroup для стандартных
+    const morePaperGroup = document.getElementById('morePaperGroup');
+    if (morePaperGroup && (formatId === 'a4' || formatId === 'letter' || formatId === 'label_58x40' || formatId === 'peripage_57' || formatId === 'custom')) {
+      morePaperGroup.style.display = 'none';
+    }
+
+    await this.recalculateArtwork();
+  }
+
+  /**
+   * Отрисовка списка карточек в дизайнерском каталоге
+   */
+  private renderCatalogCards() {
+    const grid = document.getElementById('paperCatalogCardsGrid');
+    const noResults = document.getElementById('catalogNoResults');
+    if (!grid) return;
+
+    grid.innerHTML = '';
+    const state = store.getState();
+    const lang = (localStorage.getItem('sticker_sheet_lang') as 'ru' | 'en') || 'ru';
+    const unitSymbol = getUnitSymbol(state.unit, lang);
+    const query = this.catalogSearchQuery;
+    const activeCat = this.activeCatalogCategory;
+
+    let matchedCount = 0;
+
+    PAPER_FORMATS.forEach((fmt) => {
+      // Фильтр по категории
+      if (activeCat !== 'all') {
+        if (activeCat === 'custom' && fmt.id !== 'custom') return;
+        if (activeCat !== 'custom' && fmt.group !== activeCat) return;
+      }
+
+      // Фильтр по поисковому запросу
+      if (query) {
+        const descRu = (fmt.descriptionRu || '').toLowerCase();
+        const descEn = (fmt.descriptionEn || '').toLowerCase();
+        const name = fmt.name.toLowerCase();
+        const id = fmt.id.toLowerCase();
+        const kw = (fmt.keywords || []).join(' ').toLowerCase();
+        const terms = `${name} ${id} ${descRu} ${descEn} ${kw}`;
+        if (!terms.includes(query)) return;
+      }
+
+      matchedCount++;
+
+      const isSelected = state.paperFormatId.toLowerCase() === fmt.id.toLowerCase();
+      const card = document.createElement('div');
+      card.className = `catalog-card ${isSelected ? 'active' : ''}`;
+      card.setAttribute('role', 'option');
+      card.setAttribute('aria-selected', isSelected ? 'true' : 'false');
+      card.setAttribute('tabindex', '0');
+
+      // SVG Иконка
+      const iconSvg = getPaperFormatSvgIcon(fmt.group, fmt.id);
+
+      // Размеры
+      let dimText = '';
+      if (fmt.id === 'custom') {
+        const w = formatUnitValue(state.customPageWidthMm, state.unit);
+        const h = formatUnitValue(state.customPageHeightMm, state.unit);
+        dimText = `${w} × ${h} ${unitSymbol}`;
+      } else {
+        const w = formatUnitValue(fmt.widthMm, state.unit);
+        const h = formatUnitValue(fmt.heightMm, state.unit);
+        dimText = `${w} × ${h} ${unitSymbol}`;
+      }
+
+      // Бейджи
+      const badgesHtml: string[] = [];
+      if (fmt.id === 'a4' || fmt.id === 'label_58x40' || fmt.id === 'peripage_57') {
+        badgesHtml.push(`<span class="card-badge card-badge-popular">${t('badgePopular')}</span>`);
+      }
+      if (fmt.group === 'thermal') {
+        badgesHtml.push(`<span class="card-badge card-badge-roll">${t('badgeRoll')}</span>`);
+        badgesHtml.push(`<span class="card-badge card-badge-zero">${t('badgeZeroMargins')}</span>`);
+      }
+
+      const desc = lang === 'ru' ? fmt.descriptionRu : fmt.descriptionEn;
+      const displayName = lang === 'ru' ? fmt.name : fmt.name.replace('мм', 'mm');
+
+      card.innerHTML = `
+        <div class="card-header-row">
+          <div class="card-title-wrap">
+            <span class="card-icon" aria-hidden="true">${iconSvg}</span>
+            <span class="card-name">${displayName}</span>
+          </div>
+          <div class="card-badges">
+            ${badgesHtml.join('')}
+          </div>
+        </div>
+        <div class="card-dimensions">${dimText}</div>
+        <div class="card-description">${desc}</div>
+      `;
+
+      const selectThis = async () => {
+        await this.selectPaperFormat(fmt.id);
+        this.closePaperCatalog();
+      };
+
+      card.addEventListener('click', selectThis);
+      card.addEventListener('keydown', (e: KeyboardEvent) => {
+        if (e.key === 'Enter' || e.key === ' ') {
+          e.preventDefault();
+          selectThis();
+        }
+      });
+
+      grid.appendChild(card);
+    });
+
+    if (noResults) {
+      noResults.style.display = matchedCount === 0 ? 'block' : 'none';
+    }
+  }
+
+  /**
+   * Обновление информативной карточки активного формата бумаги и принтера
+   */
+  private updatePaperSummaryCard(state: AppState) {
+    const cardTitle = document.getElementById('paperSummaryTitle');
+    const cardDesc = document.getElementById('paperSummaryDesc');
+    const cardIcon = document.getElementById('paperSummaryIcon');
+    const badgeMargins = document.getElementById('badgeSmartMargins');
+
+    const fmt = getPaperFormat(state.paperFormatId);
+    const lang = (localStorage.getItem('sticker_sheet_lang') as 'ru' | 'en') || 'ru';
+    const unitSymbol = getUnitSymbol(state.unit, lang);
+    const wVal = formatUnitValue(state.paperFormatId === 'custom' ? state.customPageWidthMm : fmt.widthMm, state.unit);
+    const hVal = formatUnitValue(state.paperFormatId === 'custom' ? state.customPageHeightMm : fmt.heightMm, state.unit);
+
+    if (cardIcon) {
+      cardIcon.innerHTML = getPaperFormatSvgIcon(fmt.group, fmt.id);
+    }
+    if (cardTitle) {
+      const displayName = lang === 'ru' ? fmt.name : fmt.name.replace('мм', 'mm');
+      cardTitle.textContent = `${displayName} (${wVal} × ${hVal} ${unitSymbol})`;
+    }
+    if (cardDesc) {
+      cardDesc.textContent = lang === 'ru' ? fmt.descriptionRu : fmt.descriptionEn;
+    }
+
+    const isThermal = fmt.group === 'thermal';
+    if (badgeMargins) {
+      if (isThermal) {
+        badgeMargins.className = 'badge-smart-margins badge-zero';
+        badgeMargins.textContent = t('badgeZeroMargins');
+      } else {
+        badgeMargins.className = 'badge-smart-margins badge-std';
+        badgeMargins.textContent = t('badgeStandardMargins');
+      }
+    }
+
+    const hintEl = document.getElementById('paperFormatHint');
+    if (hintEl) {
+      if (isThermal) {
+        hintEl.textContent = lang === 'ru' 
+          ? 'Термопринтер: поля автоматически сброшены в 0 мм для печати в край рулона или этикетки.' 
+          : 'Thermal printer: margins auto-reset to 0 mm for edge-to-edge printing.';
+      } else {
+        hintEl.textContent = lang === 'ru'
+          ? 'Рекомендуемые поля для листовой офисной печати: 3–5 мм.'
+          : 'Recommended sheet margins: 3–5 mm.';
+      }
+    }
+  }
+}
+
+function getPaperFormatSvgIcon(group: string, id: string): string {
+  if (group === 'thermal') {
+    if (id === 'peripage_57') {
+      return `<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="4" y="2" width="16" height="20" rx="3"></rect><line x1="8" y1="6" x2="16" y2="6"></line><line x1="8" y1="10" x2="16" y2="10"></line><line x1="8" y1="14" x2="16" y2="14"></line></svg>`;
+    }
+    return `<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20.59 13.41l-7.17 7.17a2 2 0 0 1-2.83 0L2 12V2h10l8.59 8.59a2 2 0 0 1 0 2.82z"></path><line x1="7" y1="7" x2="7.01" y2="7"></line></svg>`;
+  }
+  if (group === 'photo') {
+    return `<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect><circle cx="8.5" cy="8.5" r="1.5"></circle><polyline points="21 15 16 10 5 21"></polyline></svg>`;
+  }
+  if (group === 'custom') {
+    return `<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21.3 15.3a2.4 2.4 0 0 1 0 3.4l-2.6 2.6a2.4 2.4 0 0 1-3.4 0L2.7 8.7a2.41 2.41 0 0 1 0-3.4l2.6-2.6a2.41 2.41 0 0 1 3.4 0Z"></path><path d="m14.5 12.5 2-2"></path><path d="m11.5 9.5 2-2"></path><path d="m8.5 6.5 2-2"></path><path d="m17.5 15.5 2-2"></path></svg>`;
+  }
+  return `<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline></svg>`;
 }

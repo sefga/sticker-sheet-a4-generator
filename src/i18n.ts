@@ -75,9 +75,48 @@ export const translations = {
     paperChipA4: 'A4',
     paperChipLetter: 'Letter',
     paperChipCustom: 'Свой',
-    paperChipOther: 'Ещё ▾',
-    paperChipOtherTitle: 'Другие форматы бумаги (A3, A5, термопринтеры, фото)',
+    paperChipOther: 'Все принтеры ▾',
+    paperChipOtherTitle: 'Каталог принтеров и форматов бумаги (A3, термопринтеры, WB, Ozon, фото)',
     lblOtherPaperFormats: 'Другой формат бумаги:',
+    
+    // Каталог принтеров и форматов бумаги (дизайнерский селектор)
+    catAll: 'Все форматы',
+    catIso: 'Офис (ISO)',
+    catAnsi: 'США (ANSI)',
+    catThermal: 'Термо и этикетки',
+    catPhoto: 'Фотобумага',
+    catCustom: 'Свой размер',
+    searchPaperPlaceholder: 'Поиск формата или принтера (A4, PeriPage, WB, 58×40...)',
+    searchNoResults: 'Ничего не найдено. Попробуйте другой поисковый запрос.',
+    badgeRoll: 'Рулон',
+    badgeSheet: 'Лист',
+    badgePopular: 'Хит',
+    badgeZeroMargins: 'Поля 0 мм',
+    badgeStandardMargins: 'Поля 3–5 мм',
+    paperCatalogTitle: 'Выбор принтера и формата бумаги',
+    paperCatalogSubtitle: '14 предустановленных стандартов для офисных, термо- и фотопринтеров',
+    btnSelectPaperFormat: 'Выбрать',
+    btnCloseCatalog: 'Готово',
+    btnOpenCatalog: 'Все принтеры ▾',
+    chipWb: 'WB 58×40',
+    chipPeriPage: 'PeriPage',
+    paperHintActive: 'Выбран стандарт: {name}. {details}',
+    paperHintThermalZero: 'Автоматически установлены поля 0 мм для непрерывной печати в край рулона.',
+    paperHintStandardMargins: 'Рекомендуемые поля 3–5 мм под ролики протяжки листа.',
+    paperFmt_a4: 'A4 (210 × 297 мм)',
+    paperFmt_a3: 'A3 (297 × 420 мм)',
+    paperFmt_a5: 'A5 (148 × 210 мм)',
+    paperFmt_a6: 'A6 (105 × 148 мм)',
+    paperFmt_letter: 'US Letter (8.5 × 11" / 215.9 × 279.4 мм)',
+    paperFmt_legal: 'US Legal (8.5 × 14" / 215.9 × 355.6 мм)',
+    paperFmt_tabloid: 'US Tabloid (11 × 17" / 279.4 × 431.8 мм)',
+    paperFmt_half_letter: 'Half Letter (5.5 × 8.5" / 139.7 × 215.9 мм)',
+    paperFmt_peripage_57: 'PeriPage / Paperang (57 × 80 мм рулон)',
+    paperFmt_label_58x40: 'Термоэтикетка 58 × 40 мм (WB, Ozon, ценник)',
+    paperFmt_label_50x30: 'Этикетка 50 × 30 мм (Niimbot, Phomemo)',
+    paperFmt_label_4x6: '4 × 6" / 100 × 150 мм (Логистическая Ozon, WB, СДЭК)',
+    paperFmt_photo_10x15: '10 × 15 см (Фото 100 × 150 мм)',
+    paperFmt_custom: 'Пользовательский размер (Custom)',
     lblOrientation: 'Ориентация страницы',
     lblOrientPortrait: 'Книжная',
     lblOrientLandscape: 'Альбомная',
@@ -308,9 +347,48 @@ export const translations = {
     paperChipA4: 'A4',
     paperChipLetter: 'Letter',
     paperChipCustom: 'Custom',
-    paperChipOther: 'More ▾',
-    paperChipOtherTitle: 'More paper standards (A3, A5, thermal, photo)',
+    paperChipOther: 'All printers ▾',
+    paperChipOtherTitle: 'Printers & paper catalog (A3, thermal, WB, Ozon, photo)',
     lblOtherPaperFormats: 'Other paper standard:',
+
+    // Paper & Printer Catalog (Designer selector)
+    catAll: 'All Formats',
+    catIso: 'Office (ISO)',
+    catAnsi: 'US (ANSI)',
+    catThermal: 'Thermal & Labels',
+    catPhoto: 'Photo Paper',
+    catCustom: 'Custom Size',
+    searchPaperPlaceholder: 'Search format or printer (A4, PeriPage, WB, 58×40...)',
+    searchNoResults: 'No matching formats found. Try another search query.',
+    badgeRoll: 'Roll',
+    badgeSheet: 'Sheet',
+    badgePopular: 'Popular',
+    badgeZeroMargins: '0 mm margins',
+    badgeStandardMargins: '3–5 mm margins',
+    paperCatalogTitle: 'Select Printer & Paper Format',
+    paperCatalogSubtitle: '14 presets for office, thermal, label and photo printers',
+    btnSelectPaperFormat: 'Select',
+    btnCloseCatalog: 'Done',
+    btnOpenCatalog: 'All printers ▾',
+    chipWb: 'WB 58×40',
+    chipPeriPage: 'PeriPage',
+    paperHintActive: 'Selected preset: {name}. {details}',
+    paperHintThermalZero: 'Margins automatically set to 0 mm for borderless roll printing.',
+    paperHintStandardMargins: 'Standard 3–5 mm margins recommended for feed rollers.',
+    paperFmt_a4: 'A4 (210 × 297 mm)',
+    paperFmt_a3: 'A3 (297 × 420 mm)',
+    paperFmt_a5: 'A5 (148 × 210 mm)',
+    paperFmt_a6: 'A6 (105 × 148 mm)',
+    paperFmt_letter: 'US Letter (8.5 × 11" / 215.9 × 279.4 mm)',
+    paperFmt_legal: 'US Legal (8.5 × 14" / 215.9 × 355.6 mm)',
+    paperFmt_tabloid: 'US Tabloid (11 × 17" / 279.4 × 431.8 mm)',
+    paperFmt_half_letter: 'Half Letter (5.5 × 8.5" / 139.7 × 215.9 mm)',
+    paperFmt_peripage_57: 'PeriPage / Paperang (57 × 80 mm roll)',
+    paperFmt_label_58x40: 'Thermal Label 58 × 40 mm (WB, Ozon, price tag)',
+    paperFmt_label_50x30: 'Label 50 × 30 mm (Niimbot, Phomemo)',
+    paperFmt_label_4x6: '4 × 6" / 100 × 150 mm (Shipping label WB, Ozon)',
+    paperFmt_photo_10x15: '10 × 15 cm (Photo 100 × 150 mm)',
+    paperFmt_custom: 'Custom Sheet Dimensions',
     lblOrientation: 'Page orientation',
     lblOrientPortrait: 'Portrait',
     lblOrientLandscape: 'Landscape',
@@ -673,7 +751,25 @@ export function applyTranslations(root: any = typeof document !== 'undefined' ? 
     }
   });
 
-  // 4. Синхронизация состояния кнопок переключателя в шапке
+  // 4. Лейблы optgroup и других элементов с атрибутом label
+  const labelElements = root.querySelectorAll('[data-i18n-label]');
+  labelElements.forEach((el: any) => {
+    const key = el.getAttribute('data-i18n-label') as TranslationKey;
+    if (key) {
+      el.label = t(key);
+    }
+  });
+
+  // 5. Доступность aria-label
+  const ariaElements = root.querySelectorAll('[data-i18n-aria-label]');
+  ariaElements.forEach((el: any) => {
+    const key = el.getAttribute('data-i18n-aria-label') as TranslationKey;
+    if (key) {
+      el.setAttribute('aria-label', t(key));
+    }
+  });
+
+  // 6. Синхронизация состояния кнопок переключателя в шапке
   if (typeof document !== 'undefined') {
     const btnRu = document.getElementById('btnLangRu');
     const btnEn = document.getElementById('btnLangEn');

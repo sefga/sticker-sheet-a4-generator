@@ -298,7 +298,7 @@ body {
   box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
 }
 
-/* Блок дополнительных стандартов бумаги (раскрывается по 'Ещё ▾') */
+/* Блок дополнительных стандартов бумаги (раскрывается по 'Все принтеры ▾') */
 .more-paper-group {
   background: #f8fafc;
   border: 1px solid var(--border);
@@ -334,6 +334,472 @@ body {
 .form-select:focus {
   border-color: var(--primary);
   box-shadow: 0 0 0 2px rgba(37, 99, 235, 0.15);
+}
+
+/* Карточка активного формата бумаги и принтера */
+.paper-summary-card {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  background: #f8fafc;
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+  padding: 10px 14px;
+  margin-top: 10px;
+  transition: all 0.15s ease;
+}
+
+.paper-summary-card:hover {
+  border-color: #cbd5e1;
+  background: #f1f5f9;
+}
+
+.paper-summary-left {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  min-width: 0;
+}
+
+.paper-summary-icon {
+  font-size: 20px;
+  width: 36px;
+  height: 36px;
+  flex-shrink: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: #ffffff;
+  border: 1px solid #e2e8f0;
+  border-radius: 10px;
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.04);
+}
+
+.paper-summary-text {
+  min-width: 0;
+}
+
+.paper-summary-title {
+  font-size: 0.88rem;
+  font-weight: 700;
+  color: var(--text-main);
+  line-height: 1.25;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.paper-summary-desc {
+  font-size: 0.76rem;
+  color: var(--text-muted);
+  line-height: 1.3;
+  margin-top: 2px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.paper-summary-right {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-shrink: 0;
+}
+
+.badge-smart-margins {
+  display: inline-flex;
+  align-items: center;
+  font-size: 0.72rem;
+  font-weight: 600;
+  padding: 4px 8px;
+  border-radius: 6px;
+  white-space: nowrap;
+  letter-spacing: 0.01em;
+}
+
+.badge-smart-margins.badge-zero {
+  background: #ecfdf5;
+  color: #047857;
+  border: 1px solid #a7f3d0;
+}
+
+.badge-smart-margins.badge-std {
+  background: #f1f5f9;
+  color: #475569;
+  border: 1px solid #cbd5e1;
+}
+
+.btn-open-catalog-link {
+  background: #ffffff;
+  border: 1px solid var(--border);
+  font-size: 0.8rem;
+  font-weight: 600;
+  color: var(--primary);
+  padding: 6px 12px;
+  min-height: 34px;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: all 0.15s ease;
+  white-space: nowrap;
+}
+
+.btn-open-catalog-link:hover {
+  background: #eff6ff;
+  border-color: var(--primary);
+}
+
+.paper-format-hint {
+  font-size: 0.78rem;
+  color: var(--text-muted);
+  margin-top: 6px;
+  line-height: 1.35;
+}
+
+/* =========================================================================
+   Дизайнерский каталог принтеров и бумаги (ПК & Мобильный Bottom Sheet)
+   ========================================================================= */
+
+.paper-catalog-modal {
+  position: fixed;
+  inset: 0;
+  z-index: 9999;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.paper-catalog-modal.open {
+  opacity: 1;
+  pointer-events: auto;
+}
+
+.paper-catalog-backdrop {
+  position: fixed;
+  inset: 0;
+  background: rgba(15, 23, 42, 0.45);
+  backdrop-filter: blur(4px);
+  -webkit-backdrop-filter: blur(4px);
+}
+
+.paper-catalog-dialog {
+  position: relative;
+  z-index: 10000;
+  width: 92%;
+  max-width: 680px;
+  max-height: 85vh;
+  background: #ffffff;
+  border-radius: 20px;
+  box-shadow: 0 25px 50px -12px rgba(15, 23, 42, 0.25), 0 0 0 1px rgba(15, 23, 42, 0.08);
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  transform: scale(0.96) translateY(8px);
+  transition: transform 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.paper-catalog-modal.open .paper-catalog-dialog {
+  transform: scale(1) translateY(0);
+}
+
+/* Pull indicator для мобильного свайпа */
+.sheet-pull-bar {
+  display: none;
+}
+
+.paper-catalog-header {
+  padding: 18px 22px 14px 22px;
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  border-bottom: 1px solid #f1f5f9;
+  background: #ffffff;
+}
+
+.paper-catalog-header-text {
+  min-width: 0;
+}
+
+.paper-catalog-title {
+  font-size: 1.15rem;
+  font-weight: 700;
+  color: var(--text-main);
+  margin: 0;
+  letter-spacing: -0.01em;
+}
+
+.paper-catalog-subtitle {
+  font-size: 0.8rem;
+  color: var(--text-muted);
+  margin: 4px 0 0 0;
+}
+
+.catalog-close-btn {
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  background: #f1f5f9;
+  border: none;
+  cursor: pointer;
+  color: var(--text-muted);
+  font-size: 14px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.15s ease;
+  flex-shrink: 0;
+  margin-left: 12px;
+}
+
+.catalog-close-btn:hover {
+  background: #e2e8f0;
+  color: var(--text-main);
+}
+
+/* Поиск */
+.catalog-search-wrapper {
+  position: relative;
+  padding: 12px 22px 8px 22px;
+  background: #ffffff;
+}
+
+.catalog-search-icon {
+  position: absolute;
+  left: 34px;
+  top: 50%;
+  transform: translateY(-50%);
+  font-size: 14px;
+  color: #94a3b8;
+  pointer-events: none;
+}
+
+.catalog-search-input {
+  width: 100%;
+  height: 42px;
+  padding: 0 38px 0 40px;
+  background: #f8fafc;
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  font-size: 0.88rem;
+  color: var(--text-main);
+  font-family: inherit;
+  outline: none;
+  transition: all 0.15s ease;
+}
+
+.catalog-search-input:focus {
+  background: #ffffff;
+  border-color: var(--primary);
+  box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.12);
+}
+
+.catalog-search-clear {
+  position: absolute;
+  right: 32px;
+  top: 50%;
+  transform: translateY(-50%);
+  background: transparent;
+  border: none;
+  color: #94a3b8;
+  font-size: 14px;
+  cursor: pointer;
+  padding: 6px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.catalog-search-clear:hover {
+  color: var(--text-main);
+}
+
+/* Табы категорий */
+.catalog-category-tabs {
+  display: flex;
+  gap: 6px;
+  padding: 6px 22px 10px 22px;
+  overflow-x: auto;
+  scrollbar-width: none;
+  -webkit-overflow-scrolling: touch;
+  background: #ffffff;
+  border-bottom: 1px solid #f1f5f9;
+}
+
+.catalog-category-tabs::-webkit-scrollbar {
+  display: none;
+}
+
+.catalog-tab {
+  background: #f8fafc;
+  border: 1px solid #e2e8f0;
+  border-radius: 20px;
+  padding: 6px 14px;
+  font-size: 0.8rem;
+  font-weight: 600;
+  color: var(--text-muted);
+  cursor: pointer;
+  white-space: nowrap;
+  transition: all 0.15s ease;
+  user-select: none;
+}
+
+.catalog-tab:hover:not(.active) {
+  background: #f1f5f9;
+  color: var(--text-main);
+}
+
+.catalog-tab.active {
+  background: var(--primary);
+  color: #ffffff;
+  border-color: var(--primary);
+  box-shadow: 0 1px 3px rgba(37, 99, 235, 0.2);
+}
+
+/* Сетка карточек */
+.catalog-cards-grid {
+  padding: 14px 22px 18px 22px;
+  overflow-y: auto;
+  max-height: 52vh;
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+  gap: 10px;
+  background: #f8fafc;
+}
+
+.catalog-card {
+  background: #ffffff;
+  border: 1px solid #e2e8f0;
+  border-radius: 12px;
+  padding: 12px 14px;
+  cursor: pointer;
+  transition: all 0.15s cubic-bezier(0.16, 1, 0.3, 1);
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  position: relative;
+  text-align: left;
+}
+
+.catalog-card:hover {
+  border-color: #93c5fd;
+  background: #ffffff;
+  transform: translateY(-1px);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+}
+
+.catalog-card.active {
+  border-color: var(--primary);
+  background: #eff6ff;
+  box-shadow: 0 0 0 2px rgba(37, 99, 235, 0.2);
+}
+
+.card-header-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+}
+
+.card-title-wrap {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  min-width: 0;
+}
+
+.card-icon {
+  font-size: 18px;
+  width: 28px;
+  height: 28px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: #f1f5f9;
+  border-radius: 7px;
+  flex-shrink: 0;
+}
+
+.catalog-card.active .card-icon {
+  background: #dbeafe;
+}
+
+.card-name {
+  font-size: 0.88rem;
+  font-weight: 700;
+  color: var(--text-main);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.card-badges {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  flex-shrink: 0;
+}
+
+.card-badge {
+  font-size: 0.68rem;
+  font-weight: 700;
+  padding: 2px 6px;
+  border-radius: 4px;
+  text-transform: uppercase;
+  letter-spacing: 0.02em;
+}
+
+.card-badge-popular {
+  background: #fef3c7;
+  color: #b45309;
+}
+
+.card-badge-roll {
+  background: #f1f5f9;
+  color: #475569;
+}
+
+.card-badge-zero {
+  background: #ecfdf5;
+  color: #047857;
+}
+
+.card-dimensions {
+  font-size: 0.82rem;
+  font-weight: 600;
+  color: var(--primary);
+  font-feature-settings: "tnum";
+}
+
+.card-description {
+  font-size: 0.74rem;
+  color: var(--text-muted);
+  line-height: 1.35;
+}
+
+.catalog-no-results {
+  padding: 36px 20px;
+  text-align: center;
+  color: var(--text-muted);
+  font-size: 0.88rem;
+}
+
+.paper-catalog-footer {
+  padding: 12px 22px;
+  border-top: 1px solid #f1f5f9;
+  background: #ffffff;
+  display: flex;
+  justify-content: flex-end;
+}
+
+.btn-catalog-done {
+  min-height: 40px;
+  padding: 0 24px;
+  font-size: 0.88rem;
+  font-weight: 600;
+  border-radius: 10px;
 }
 
 /* Скрытый, но доступный для мобильного браузера input[type=file] */
@@ -1786,6 +2252,82 @@ input.input-has-error {
 
   .crop-modal-toolbar .btn {
     min-height: 44px;
+  }
+
+  /* Адаптивный Bottom Sheet каталога бумаги на смартфонах */
+  .paper-catalog-modal {
+    align-items: flex-end;
+  }
+
+  .paper-catalog-dialog {
+    width: 100%;
+    max-width: 100%;
+    max-height: 88vh;
+    border-radius: 24px 24px 0 0;
+    box-shadow: 0 -10px 35px rgba(15, 23, 42, 0.25);
+    transform: translateY(100%);
+  }
+
+  .paper-catalog-modal.open .paper-catalog-dialog {
+    transform: translateY(0);
+  }
+
+  .sheet-pull-bar {
+    display: block;
+    width: 44px;
+    height: 5px;
+    background: #cbd5e1;
+    border-radius: 3px;
+    margin: 10px auto 4px auto;
+  }
+
+  .paper-catalog-header {
+    padding: 8px 18px 12px 18px;
+  }
+
+  .catalog-search-wrapper {
+    padding: 8px 18px;
+  }
+
+  .catalog-category-tabs {
+    padding: 4px 18px 10px 18px;
+  }
+
+  .catalog-cards-grid {
+    padding: 10px 18px 16px 18px;
+    grid-template-columns: 1fr;
+    max-height: 55vh;
+  }
+
+  .catalog-card {
+    min-height: 52px;
+    padding: 12px 14px;
+  }
+
+  .paper-catalog-footer {
+    padding: 12px 18px 24px 18px;
+  }
+
+  .btn-catalog-done {
+    width: 100%;
+    min-height: 48px;
+    font-size: 0.95rem;
+  }
+
+  .paper-summary-card {
+    flex-direction: column;
+    align-items: stretch;
+    gap: 8px;
+  }
+
+  .paper-summary-right {
+    justify-content: space-between;
+    width: 100%;
+  }
+
+  .btn-open-catalog-link {
+    min-height: 38px;
+    padding: 8px 14px;
   }
 }
 
