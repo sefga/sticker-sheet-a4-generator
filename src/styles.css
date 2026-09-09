@@ -49,17 +49,26 @@ body {
 }
 
 .sidebar-header {
-  padding: 18px 24px;
+  padding: 16px 20px;
   border-bottom: 1px solid var(--border);
   display: flex;
   align-items: center;
   justify-content: space-between;
+  gap: 12px;
+}
+
+.header-brand {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-wrap: wrap;
 }
 
 .sidebar-header h1 {
   font-size: 1.15rem;
   font-weight: 700;
   color: var(--text-main);
+  line-height: 1.2;
 }
 
 .sidebar-header .badge {
@@ -69,6 +78,41 @@ body {
   padding: 3px 8px;
   border-radius: 9999px;
   font-weight: 600;
+  white-space: nowrap;
+}
+
+/* Компактный и стильный переключатель RU | EN */
+.lang-switch {
+  display: inline-flex;
+  align-items: center;
+  background: #f1f5f9;
+  border: 1px solid var(--border);
+  border-radius: 20px;
+  padding: 2px;
+  flex-shrink: 0;
+}
+
+.lang-switch-btn {
+  background: transparent;
+  border: none;
+  font-size: 0.75rem;
+  font-weight: 600;
+  color: var(--text-muted);
+  padding: 4px 10px;
+  border-radius: 16px;
+  cursor: pointer;
+  transition: all 0.15s ease-in-out;
+  line-height: 1.2;
+}
+
+.lang-switch-btn:hover:not(.active) {
+  color: var(--text-main);
+}
+
+.lang-switch-btn.active {
+  background: #ffffff;
+  color: var(--primary);
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
 }
 
 .sidebar-content {

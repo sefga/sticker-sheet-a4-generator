@@ -11,13 +11,16 @@
   <meta name="author" content="Михаил Сокольский (sefga)" />
   <meta name="robots" content="index, follow, max-image-preview:large, max-snippet:-1, max-video-preview:-1" />
   <link rel="canonical" href="https://sticker-sheet-a4-generator.vercel.app/" />
+  <link rel="alternate" hreflang="ru" href="https://sticker-sheet-a4-generator.vercel.app/" />
+  <link rel="alternate" hreflang="en" href="https://sticker-sheet-a4-generator.vercel.app/" />
+  <link rel="alternate" hreflang="x-default" href="https://sticker-sheet-a4-generator.vercel.app/" />
 
   <!-- Региональные GEO метатеги (GEO-таргетинг Яндекс и Google) -->
   <meta name="geo.region" content="RU" />
   <meta name="geo.placename" content="Москва, Россия" />
   <meta name="geo.position" content="55.7558;37.6176" />
   <meta name="ICBM" content="55.7558, 37.6176" />
-  <meta name="language" content="Russian" />
+  <meta name="language" content="Russian, English" />
 
   <!-- Open Graph / Facebook / VK / Telegram -->
   <meta property="og:type" content="website" />
@@ -44,13 +47,13 @@
   <script type="application/ld+json">
   {
     "@context": "https://schema.org",
-    "@type": "WebApplication",
+    "@type": "DesignApplication",
     "name": "Sticker Sheet A4 Generator",
     "alternateName": "Генератор раскладки наклеек на листе A4",
     "url": "https://sticker-sheet-a4-generator.vercel.app/",
     "applicationCategory": "DesignApplication",
     "operatingSystem": "Any",
-    "inLanguage": "ru",
+    "inLanguage": ["ru", "en"],
     "description": "Автономное веб-приложение для подготовки и верстки листов А4 с наклейками для печати с физической точностью геометрии в миллиметрах.",
     "browserRequirements": "Requires JavaScript. Requires HTML5 Canvas & SVG.",
     "softwareVersion": "1.0.0",
@@ -81,44 +84,50 @@
     <!-- Левая колонка: панель параметров и управления -->
     <aside class="sidebar">
       <div class="sidebar-header">
-        <h1>Раскладка наклеек A4</h1>
-        <span class="badge" id="layoutHeaderBadge">0 шт.</span>
+        <div class="header-brand">
+          <h1 data-i18n="appTitle">Раскладка наклеек A4</h1>
+          <span class="badge" id="layoutHeaderBadge">0 шт.</span>
+        </div>
+        <div class="lang-switch" role="group" aria-label="Выбор языка / Language selection">
+          <button type="button" class="lang-switch-btn active" id="btnLangRu" data-lang="ru" title="Русский">RU</button>
+          <button type="button" class="lang-switch-btn" id="btnLangEn" data-lang="en" title="English">EN</button>
+        </div>
       </div>
 
       <!-- Мобильный переключатель экранов: Параметры / Превью -->
       <div class="mobile-tab-nav" id="mobileTabNav">
-        <button type="button" class="mobile-tab-btn active" id="tabBtnControls">
+        <button type="button" class="mobile-tab-btn active" id="tabBtnControls" data-i18n="tabControls">
           ⚙️ Параметры
         </button>
         <button type="button" class="mobile-tab-btn" id="tabBtnPreview">
-          📄 Превью листа <span class="mobile-badge" id="mobileTabBadge">0</span>
+          <span data-i18n="tabPreview">📄 Превью листа</span> <span class="mobile-badge" id="mobileTabBadge">0</span>
         </button>
       </div>
 
       <div class="sidebar-content">
         <!-- 1. Изображение -->
         <section class="panel-section">
-          <div class="section-title">1. Изображение стикера</div>
+          <div class="section-title" data-i18n="secImageTitle">1. Изображение стикера</div>
           <input type="file" id="imageFileInput" class="visually-hidden-input" accept="image/png, image/jpeg, image/webp, image/*" />
 
-          <label for="imageFileInput" class="drop-zone" id="imageDropZone" title="Нажмите для выбора фото или перетащите файл">
+          <label for="imageFileInput" class="drop-zone" id="imageDropZone" data-i18n-title="dropZoneTitle" title="Нажмите для выбора фото или перетащите файл">
             <div id="dropZonePrompt" class="drop-zone-prompt">
               <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="#94a3b8" stroke-width="2" style="margin: 0 auto 6px;">
                 <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
                 <polyline points="17 8 12 3 7 8"></polyline>
                 <line x1="12" y1="3" x2="12" y2="15"></line>
               </svg>
-              <div style="font-weight: 600; color: var(--primary);">Нажмите, чтобы выбрать фото</div>
-              <div style="font-size: 0.75rem; color: #94a3b8; margin-top: 2px;">из галереи, камеры или перетащите файл</div>
+              <div style="font-weight: 600; color: var(--primary);" data-i18n="dropZoneMain">Нажмите, чтобы выбрать фото</div>
+              <div style="font-size: 0.75rem; color: #94a3b8; margin-top: 2px;" data-i18n="dropZoneSub">из галереи, камеры или перетащите файл</div>
             </div>
             <img id="dropZoneThumb" class="drop-zone-thumb" style="display: none;" alt="Миниатюра" />
           </label>
 
           <div class="drop-zone-actions">
-            <label for="imageFileInput" class="btn btn-secondary btn-sm" id="btnSelectImage" role="button" tabindex="0">
+            <label for="imageFileInput" class="btn btn-secondary btn-sm" id="btnSelectImage" role="button" tabindex="0" data-i18n="btnSelectImage">
               Выбрать изображение
             </label>
-            <button type="button" class="btn btn-secondary btn-sm" id="btnOpenCrop" disabled>
+            <button type="button" class="btn btn-secondary btn-sm" id="btnOpenCrop" data-i18n="btnOpenCrop" disabled>
               Обрезать
             </button>
           </div>
@@ -128,52 +137,52 @@
 
         <!-- 2. Размер стикера -->
         <section class="panel-section">
-          <div class="section-title">2. Размер стикера</div>
+          <div class="section-title" data-i18n="secSizeTitle">2. Размер стикера</div>
           <div class="form-row">
             <div class="form-col">
-              <label for="stickerWidth">Ширина (мм)</label>
+              <label for="stickerWidth" data-i18n="lblWidth">Ширина (мм)</label>
               <input type="number" id="stickerWidth" value="54.0" step="0.1" min="1" max="297" />
             </div>
             <div class="form-col">
-              <label for="stickerHeight">Высота (мм)</label>
+              <label for="stickerHeight" data-i18n="lblHeight">Высота (мм)</label>
               <input type="number" id="stickerHeight" value="85.0" step="0.1" min="1" max="297" />
             </div>
           </div>
 
           <label class="checkbox-label">
             <input type="checkbox" id="lockAspectRatio" checked />
-            🔒 Сохранять пропорции
+            <span data-i18n="lblLockRatio">🔒 Сохранять пропорции</span>
           </label>
 
           <div class="form-col">
-            <label>Режим заполнения</label>
+            <label data-i18n="lblSizingMode">Режим заполнения</label>
             <div class="segmented-control">
               <input type="radio" id="sizingFill" name="sizingMode" value="fill" checked />
-              <label for="sizingFill" title="Изображение полностью заполняет стикер (лишнее обрезается)">Crop / Fill</label>
+              <label for="sizingFill" data-i18n="lblSizingFill" data-i18n-title="titleSizingFill" title="Изображение полностью заполняет стикер (лишнее обрезается)">Crop / Fill</label>
               <input type="radio" id="sizingFit" name="sizingMode" value="fit" />
-              <label for="sizingFit" title="Всё изображение помещается целиком внутри заданного размера">Fit</label>
+              <label for="sizingFit" data-i18n="lblSizingFit" data-i18n-title="titleSizingFit" title="Всё изображение помещается целиком внутри заданного размера">Fit</label>
             </div>
           </div>
         </section>
 
         <!-- 3. Лист бумаги и поля -->
         <section class="panel-section">
-          <div class="section-title">3. Параметры листа A4</div>
+          <div class="section-title" data-i18n="secPageTitle">3. Параметры листа A4</div>
           <div class="form-col">
-            <label>Ориентация страницы</label>
+            <label data-i18n="lblOrientation">Ориентация страницы</label>
             <div class="segmented-control">
               <input type="radio" id="orientPortrait" name="pageOrientation" value="portrait" checked />
-              <label for="orientPortrait">Книжная (210 × 297)</label>
+              <label for="orientPortrait" data-i18n="lblOrientPortrait">Книжная (210 × 297)</label>
               <input type="radio" id="orientLandscape" name="pageOrientation" value="landscape" />
-              <label for="orientLandscape">Альбомная (297 × 210)</label>
+              <label for="orientLandscape" data-i18n="lblOrientLandscape">Альбомная (297 × 210)</label>
             </div>
           </div>
 
           <div class="form-col">
             <div style="display: flex; justify-content: space-between; align-items: center;">
-              <label>Поля листа (Margins)</label>
+              <label data-i18n="lblMargins">Поля листа (Margins)</label>
               <label class="checkbox-label" style="font-size: 0.78rem;">
-                <input type="checkbox" id="linkMargins" checked /> Связать все поля
+                <input type="checkbox" id="linkMargins" checked /> <span data-i18n="lblLinkMargins">Связать все поля</span>
               </label>
             </div>
 
@@ -185,19 +194,19 @@
             <!-- Раздельные поля -->
             <div id="marginUnlinkedGroup" class="form-grid-4" style="display: none;">
               <div>
-                <label for="marginTop">Верх (мм)</label>
+                <label for="marginTop" data-i18n="lblMarginTop">Верх (мм)</label>
                 <input type="number" id="marginTop" value="5.0" step="0.5" min="0" />
               </div>
               <div>
-                <label for="marginBottom">Низ (мм)</label>
+                <label for="marginBottom" data-i18n="lblMarginBottom">Низ (мм)</label>
                 <input type="number" id="marginBottom" value="5.0" step="0.5" min="0" />
               </div>
               <div>
-                <label for="marginLeft">Лево (мм)</label>
+                <label for="marginLeft" data-i18n="lblMarginLeft">Лево (мм)</label>
                 <input type="number" id="marginLeft" value="5.0" step="0.5" min="0" />
               </div>
               <div>
-                <label for="marginRight">Право (мм)</label>
+                <label for="marginRight" data-i18n="lblMarginRight">Право (мм)</label>
                 <input type="number" id="marginRight" value="5.0" step="0.5" min="0" />
               </div>
             </div>
@@ -209,9 +218,9 @@
           <!-- Зазоры между стикерами -->
           <div class="form-col">
             <div style="display: flex; justify-content: space-between; align-items: center;">
-              <label>Расстояние между стикерами (Gap)</label>
+              <label data-i18n="lblGaps">Расстояние между стикерами (Gap)</label>
               <label class="checkbox-label" style="font-size: 0.78rem;">
-                <input type="checkbox" id="linkGaps" checked /> Связать зазоры
+                <input type="checkbox" id="linkGaps" checked /> <span data-i18n="lblLinkGaps">Связать зазоры</span>
               </label>
             </div>
 
@@ -221,11 +230,11 @@
 
             <div id="gapUnlinkedGroup" class="form-grid-4" style="display: none;">
               <div>
-                <label for="gapX">По горизонтали (мм)</label>
+                <label for="gapX" data-i18n="lblGapX">По горизонтали (мм)</label>
                 <input type="number" id="gapX" value="3.0" step="0.5" min="0" />
               </div>
               <div>
-                <label for="gapY">По вертикали (мм)</label>
+                <label for="gapY" data-i18n="lblGapY">По вертикали (мм)</label>
                 <input type="number" id="gapY" value="3.0" step="0.5" min="0" />
               </div>
             </div>
@@ -234,20 +243,20 @@
 
         <!-- 4. Раскладка и оптимизация -->
         <section class="panel-section">
-          <div class="section-title">4. Раскладка и сетка</div>
+          <div class="section-title" data-i18n="secLayoutTitle">4. Раскладка и сетка</div>
 
           <label class="checkbox-label">
             <input type="checkbox" id="allowRotation" checked />
-            ☑ Автоматически выбрать наиболее экономичную ориентацию
+            <span data-i18n="lblAllowRotation">☑ Автоматически выбрать наиболее экономичную ориентацию</span>
           </label>
 
           <div class="form-row">
             <div class="form-col" style="flex: 2;">
-              <label for="requestedCopies">Количество копий</label>
-              <input type="text" id="requestedCopies" value="AUTO" placeholder="AUTO или число" />
+              <label for="requestedCopies" data-i18n="lblCopies">Количество копий</label>
+              <input type="text" id="requestedCopies" value="AUTO" data-i18n-placeholder="placeholderCopies" placeholder="AUTO или число" />
             </div>
             <div class="form-col" style="flex: 1; justify-content: flex-end;">
-              <button type="button" class="btn btn-secondary btn-sm" id="btnAutoCopies" style="height: 36px;">
+              <button type="button" class="btn btn-secondary btn-sm" id="btnAutoCopies" style="height: 36px;" data-i18n="btnMaxCopies">
                 Максимум
               </button>
             </div>
@@ -258,21 +267,21 @@
 
         <!-- 5. Метки реза и Bleed -->
         <section class="panel-section">
-          <div class="section-title">5. Полиграфия и резка</div>
+          <div class="section-title" data-i18n="secPrintPrepTitle">5. Полиграфия и резка</div>
           <div class="form-row">
             <div class="form-col">
               <label class="checkbox-label">
                 <input type="checkbox" id="cutMarksEnabled" />
-                Метки реза (Cut marks)
+                <span data-i18n="lblCutMarks">Метки реза (Cut marks)</span>
               </label>
             </div>
             <div class="form-col">
-              <label for="bleedSelect">Bleed (вылет)</label>
+              <label for="bleedSelect" data-i18n="lblBleed">Bleed (вылет)</label>
               <select id="bleedSelect">
-                <option value="0">0 мм (без вылета)</option>
-                <option value="1">1 мм</option>
-                <option value="2">2 мм</option>
-                <option value="3">3 мм</option>
+                <option value="0" data-i18n="optBleed0">0 мм (без вылета)</option>
+                <option value="1" data-i18n="optBleed1">1 мм</option>
+                <option value="2" data-i18n="optBleed2">2 мм</option>
+                <option value="3" data-i18n="optBleed3">3 мм</option>
               </select>
             </div>
           </div>
@@ -280,7 +289,7 @@
 
         <!-- 6. Действия и экспорт -->
         <section class="panel-section" style="border-color: var(--primary);">
-          <div class="section-title" style="color: var(--primary);">6. Экспорт и печать</div>
+          <div class="section-title" style="color: var(--primary);" data-i18n="secExportTitle">6. Экспорт и печать</div>
           
           <button type="button" class="btn btn-primary btn-lg btn-block" id="btnDownloadPdf">
             <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
@@ -288,22 +297,22 @@
               <polyline points="7 10 12 15 17 10"></polyline>
               <line x1="12" y1="15" x2="12" y2="3"></line>
             </svg>
-            Скачать PDF для печати
+            <span data-i18n="btnDownloadPdf">Скачать PDF для печати</span>
           </button>
 
-          <button type="button" class="btn btn-secondary btn-block" id="btnPrintPdf">
+          <button type="button" class="btn btn-secondary btn-block" id="btnPrintPdf" data-i18n="btnPrintPdf">
             🖨️ Печать
           </button>
 
-          <div class="print-notice">
+          <div class="print-notice" data-i18n="printNotice">
             💡 <strong>Важно при печати:</strong> В диалоге принтера обязательно установите масштаб <strong>«100%»</strong> или <strong>«Реальный размер»</strong> (Actual size). Не используйте режим «По размеру страницы» (Fit to page), чтобы сохранить точные размеры наклеек в мм!
           </div>
 
-          <button type="button" class="btn btn-secondary btn-sm btn-block" id="btnCalibrationPdf" style="margin-top: 4px;">
+          <button type="button" class="btn btn-secondary btn-sm btn-block" id="btnCalibrationPdf" style="margin-top: 4px;" data-i18n="btnCalibrationPdf">
             📏 Проверить масштаб принтера (Калибровка A4)
           </button>
 
-          <button type="button" class="btn btn-secondary btn-sm btn-block" id="btnResetSettings" style="color: #64748b;">
+          <button type="button" class="btn btn-secondary btn-sm btn-block" id="btnResetSettings" style="color: #64748b;" data-i18n="btnResetSettings">
             Сбросить настройки
           </button>
         </section>
@@ -317,7 +326,7 @@
           Загрузка листа A4...
         </div>
         <div class="preview-header-scale">
-          <span class="scale-badge">
+          <span class="scale-badge" id="previewScaleBadge" data-i18n="previewScale">
             Масштаб печати: 100%
           </span>
         </div>
@@ -341,7 +350,7 @@
           <polyline points="7 10 12 15 17 10"></polyline>
           <line x1="12" y1="15" x2="12" y2="3"></line>
         </svg>
-        Скачать PDF
+        <span data-i18n="mobileDownload">Скачать PDF</span>
       </button>
     </div>
   </div>

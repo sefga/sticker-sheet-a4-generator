@@ -1,6 +1,7 @@
 import Cropper from 'cropperjs';
 import 'cropperjs/dist/cropper.css';
 import { CropData } from '../image/cropEngine';
+import { t } from '../i18n';
 
 export interface CropDialogOptions {
   imageSrc: string;
@@ -27,8 +28,8 @@ export class CropDialog {
     modal.innerHTML = `
       <div class="crop-modal-window">
         <div class="crop-modal-header">
-          <h3>Кадрирование стикера</h3>
-          <span class="crop-badge-ratio">Пропорции: ${targetWidthMm} × ${targetHeightMm} мм (${targetAspectRatio.toFixed(2)})</span>
+          <h3>${t('cropModalTitle')}</h3>
+          <span class="crop-badge-ratio">${t('cropModalRatio', { w: targetWidthMm, h: targetHeightMm, ratio: targetAspectRatio.toFixed(2) })}</span>
         </div>
         <div class="crop-modal-body">
           <div class="crop-image-container">
@@ -36,21 +37,21 @@ export class CropDialog {
           </div>
         </div>
         <div class="crop-modal-toolbar">
-          <button type="button" class="btn btn-secondary" id="btnCropRotateLeft" title="Повернуть влево на 90°">
+          <button type="button" class="btn btn-secondary" id="btnCropRotateLeft" title="${t('cropBtnRotateLeftTitle')}">
             ↺ -90°
           </button>
-          <button type="button" class="btn btn-secondary" id="btnCropRotateRight" title="Повернуть вправо на 90°">
+          <button type="button" class="btn btn-secondary" id="btnCropRotateRight" title="${t('cropBtnRotateRightTitle')}">
             ↻ +90°
           </button>
-          <button type="button" class="btn btn-secondary" id="btnCropReset" title="Сбросить кадрирование">
-            Сброс
+          <button type="button" class="btn btn-secondary" id="btnCropReset" title="${t('cropBtnResetTitle')}">
+            ${t('cropBtnReset')}
           </button>
           <div class="spacer"></div>
           <button type="button" class="btn btn-secondary" id="btnCropCancel">
-            Отмена
+            ${t('cropBtnCancel')}
           </button>
           <button type="button" class="btn btn-primary" id="btnCropApply">
-            Применить
+            ${t('cropBtnApply')}
           </button>
         </div>
       </div>

@@ -8,6 +8,7 @@ import { generateStickerSheetPdf, downloadPdfBlob, openPdfForPrint } from '../pd
 import { createCalibrationPdf } from '../pdf/calibrationPage';
 import { renderPreviewSvg } from '../preview/previewRenderer';
 import { roundMm } from '../units/mm';
+import { setLanguage, t, applyTranslations, onLanguageChange, TranslationKey } from '../i18n';
 
 export class UIController {
   private currentLayout: LayoutResult | null = null;
@@ -15,7 +16,28 @@ export class UIController {
 
   constructor() {
     this.initEventListeners();
+    this.initLanguageSwitch();
+    applyTranslations();
+    onLanguageChange(() => {
+      this.render(store.getState());
+    });
     store.subscribe((state) => this.render(state));
+  }
+
+  /**
+   * Инициализация переключателя языков RU | EN
+   */
+  private initLanguageSwitch() {
+    const btnRu = document.getElementById('btnLangRu');
+    const btnEn = document.getElementById('btnLangEn');
+
+    btnRu?.addEventListener('click', () => {
+      setLanguage('ru');
+    });
+
+    btnEn?.addEventListener('click', () => {
+      setLanguage('en');
+    });
   }
 
   /**
@@ -321,7 +343,7 @@ export class UIController {
         }
       }
     } catch (e: any) {
-      alert(`Ошибка загрузки изображения: ${e.message}`);
+      alert(t('alertImageError', { error: e.message }));
     }
   }
 
@@ -379,7 +401,7 @@ export class UIController {
    */
   private async handleDownloadPdf() {
     if (!this.currentLayout || this.currentLayout.positions.length === 0) {
-      alert('Нет стикеров для размещения на листе.');
+      alert(t('alertNoStickers'));
       return;
     }
 
@@ -405,7 +427,7 @@ export class UIController {
    */
   private async handlePrintPdf() {
     if (!this.currentLayout || this.currentLayout.positions.length === 0) {
-      alert('Нет стикеров для размещения на листе.');
+      alert(t('alertNoStickers'));
       return;
     }
 
@@ -575,16 +597,32 @@ export class UIController {
       const dpi = state.effectiveDpi;
       const dpiInfo = getDpiInfo(state.croppedResult?.pixelWidth || state.loadedImage.sourceWidthPx, state.stickerWidthMm);
 
+      const gradeTitleMap: Record<string, TranslationKey> = {
+        excellent: 'dpiExcellentTitle',
+        acceptable: 'dpiAcceptableTitle',
+        low: 'dpiLowTitle',
+        warning: 'dpiWarningTitle',
+      };
+      const gradeDescMap: Record<string, TranslationKey> = {
+        excellent: 'dpiExcellentDesc',
+        acceptable: 'dpiAcceptableDesc',
+        low: 'dpiLowDesc',
+        warning: 'dpiWarningDesc',
+      };
+
+      const dpiTitle = t(gradeTitleMap[dpiInfo.grade] || 'dpiAcceptableTitle');
+      const dpiDesc = t(gradeDescMap[dpiInfo.grade] || 'dpiAcceptableDesc');
+
       infoContainer.innerHTML = `
         <div class="image-stats-grid">
-          <div><strong>Исходник:</strong> ${state.loadedImage.sourceWidthPx} × ${state.loadedImage.sourceHeightPx} px</div>
-          <div><strong>Кадр:</strong> ${state.croppedResult ? `${state.croppedResult.pixelWidth} × ${state.croppedResult.pixelHeight} px` : 'Авто'}</div>
+          <div><strong>${t('imgStatSource')}</strong> ${state.loadedImage.sourceWidthPx} × ${state.loadedImage.sourceHeightPx} px</div>
+          <div><strong>${t('imgStatCropped')}</strong> ${state.croppedResult ? `${state.croppedResult.pixelWidth} × ${state.croppedResult.pixelHeight} px` : t('imgStatAuto')}</div>
         </div>
         <div class="dpi-badge-wrapper">
           <span class="dpi-badge" style="background-color: ${dpiInfo.color}18; color: ${dpiInfo.color}; border: 1px solid ${dpiInfo.color}40;">
-            ● ${dpiInfo.label} — ${dpi} DPI
+            ● ${dpiTitle} — ${dpi} DPI
           </span>
-          <p class="dpi-description">${dpiInfo.description}</p>
+          <p class="dpi-description">${dpiDesc}</p>
         </div>
       `;
     }
@@ -598,14 +636,14 @@ export class UIController {
     const layoutHeaderBadge = document.getElementById('layoutHeaderBadge');
 
     if (layoutHeaderBadge) {
-      layoutHeaderBadge.textContent = `${layout.actualCopies} шт.`;
+      layoutHeaderBadge.textContent = t('itemsBadge', { count: layout.actualCopies });
     }
 
     if (layoutSummary) {
       if (layout.hasError) {
         layoutSummary.innerHTML = `
           <div class="alert alert-error">
-            ⚠️ ${layout.errorMessage}
+            ⚠️ ${this.getLocalizedRecommendation(layout, state)}
           </div>
         `;
         return;
@@ -615,15 +653,15 @@ export class UIController {
         <div class="stats-card">
           <div class="stats-main-number">
             <span class="number">${layout.actualCopies}</span>
-            <span class="label">стикеров на листе</span>
+            <span class="label">${t('statStickersOnSheet')}</span>
           </div>
           <div class="stats-details">
-            <div><strong>Сетка:</strong> ${layout.columns} колонок × ${layout.rows} строк</div>
-            <div><strong>Вместимость:</strong> ${layout.totalCapacity} шт. ${state.requestedCopies !== 'AUTO' ? `(задано: ${state.requestedCopies})` : ''}</div>
-            <div><strong>Ориентация стикера:</strong> ${layout.selectedRotation === 90 ? 'Повернут на 90°' : 'Без поворота (0°)'}</div>
+            <div><strong>${t('statGrid')}</strong> ${t('statColsRows', { cols: layout.columns, rows: layout.rows })}</div>
+            <div><strong>${t('statCapacity')}</strong> ${t('itemsBadge', { count: layout.totalCapacity })} ${state.requestedCopies !== 'AUTO' ? t('statRequested', { req: state.requestedCopies }) : ''}</div>
+            <div><strong>${t('statStickerRotation')}</strong> ${layout.selectedRotation === 90 ? t('statRotated90') : t('statNoRotation')}</div>
           </div>
           <div class="recommendation-box">
-            💡 ${layout.recommendationMessage}
+            💡 ${this.getLocalizedRecommendation(layout, state)}
           </div>
         </div>
       `;
@@ -633,15 +671,15 @@ export class UIController {
     const previewHeaderStats = document.getElementById('previewHeaderStats');
     if (previewHeaderStats) {
       previewHeaderStats.innerHTML = `
-        <span class="stat-chip"><strong>Лист:</strong> A4 ${pageDim.widthMm} × ${pageDim.heightMm} мм</span>
+        <span class="stat-chip"><strong>${t('chipSheet')}</strong> A4 ${pageDim.widthMm} × ${pageDim.heightMm} ${t('previewMm')}</span>
         <span class="stat-dot">•</span>
-        <span class="stat-chip"><strong>Стикер:</strong> ${state.stickerWidthMm} × ${state.stickerHeightMm} мм</span>
+        <span class="stat-chip"><strong>${t('chipSticker')}</strong> ${state.stickerWidthMm} × ${state.stickerHeightMm} ${t('previewMm')}</span>
         <span class="stat-dot">•</span>
-        <span class="stat-chip"><strong>Сетка:</strong> ${layout.columns} × ${layout.rows}</span>
+        <span class="stat-chip"><strong>${t('chipGrid')}</strong> ${layout.columns} × ${layout.rows}</span>
         <span class="stat-dot">•</span>
-        <span class="stat-chip"><strong>Поля:</strong> ${state.margins.top} мм</span>
+        <span class="stat-chip"><strong>${t('chipMargins')}</strong> ${state.margins.top} ${t('previewMm')}</span>
         <span class="stat-dot">•</span>
-        <span class="stat-chip"><strong>Зазор:</strong> ${state.gapX} мм</span>
+        <span class="stat-chip"><strong>${t('chipGap')}</strong> ${state.gapX} ${t('previewMm')}</span>
       `;
     }
 
@@ -651,10 +689,10 @@ export class UIController {
     const mobileTabBadge = document.getElementById('mobileTabBadge');
 
     if (mobileStickyCount) {
-      mobileStickyCount.textContent = `${layout.actualCopies} шт.`;
+      mobileStickyCount.textContent = t('itemsBadge', { count: layout.actualCopies });
     }
     if (mobileStickyGrid) {
-      mobileStickyGrid.textContent = `Сетка: ${layout.columns} × ${layout.rows}`;
+      mobileStickyGrid.textContent = t('mobileGrid', { cols: layout.columns, rows: layout.rows });
     }
     if (mobileTabBadge) {
       mobileTabBadge.textContent = `${layout.actualCopies}`;
@@ -673,12 +711,39 @@ export class UIController {
 
     if (minMargin < 3) {
       warningEl.style.display = 'block';
-      warningEl.innerHTML = `
-        ⚠️ <strong>Внимание к полям:</strong> Вы используете поля меньше 3 мм (${minMargin} мм).
-        Некоторые принтеры не способны печатать настолько близко к краю листа (риск обрезки контента).
-      `;
+      warningEl.innerHTML = t('warnPrintableArea', { min: minMargin });
     } else {
       warningEl.style.display = 'none';
+    }
+  }
+
+  /**
+   * Получение локализованного текста рекомендаций или ошибок раскладки
+   */
+  private getLocalizedRecommendation(layout: LayoutResult, state: AppState): string {
+    if (layout.usableWidthMm <= 0 || layout.usableHeightMm <= 0) {
+      return t('errMarginsExceed');
+    }
+    if (state.stickerWidthMm <= 0 || state.stickerHeightMm <= 0) {
+      return t('errStickerSizeZero');
+    }
+    if (layout.totalCapacity === 0) {
+      return t('errNoFit');
+    }
+
+    if (state.allowRotation) {
+      if (layout.rotationRecommended) {
+        return t('recBestRotated', { rot: layout.totalCapacity, orig: layout.alternativeCapacity });
+      }
+      if (layout.totalCapacity > layout.alternativeCapacity) {
+        return t('recOptimalNoRotation', { orig: layout.totalCapacity, rot: layout.alternativeCapacity });
+      }
+      return t('recEqualCapacity', { cap: layout.totalCapacity });
+    } else {
+      if (layout.alternativeCapacity > layout.totalCapacity) {
+        return t('recEnableRotation', { rot: layout.alternativeCapacity, orig: layout.totalCapacity });
+      }
+      return t('recPlacedNoRotation', { orig: layout.totalCapacity });
     }
   }
 }

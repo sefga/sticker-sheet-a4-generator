@@ -1,6 +1,7 @@
 import { LayoutResult } from '../layout/layoutEngine';
 import { CutMarksConfig, generateCutMarks } from '../pdf/cutMarks';
 import { Margins } from '../layout/layoutEngine';
+import { t } from '../i18n';
 
 export interface PreviewOptions {
   pageWidthMm: number;
@@ -96,7 +97,7 @@ export function renderPreviewSvg(options: PreviewOptions): string {
         `<rect x="${xMm}" y="${yMm}" width="${widthMm}" height="${heightMm}" fill="#f8fafc" stroke="#94a3b8" stroke-width="0.3" rx="0.5" />` +
         `<text x="${xMm + widthMm / 2}" y="${yMm + heightMm / 2 + 1.5}" ` +
         `font-family="system-ui, -apple-system, sans-serif" font-size="3" fill="#64748b" text-anchor="middle" font-weight="500">` +
-        `#${idx + 1} (${Math.round(widthMm)}×${Math.round(heightMm)} мм)</text>` +
+        `${t('previewStickerPlaceholder', { idx: idx + 1, w: Math.round(widthMm), h: Math.round(heightMm) })}</text>` +
         `</g>`
       );
     }
