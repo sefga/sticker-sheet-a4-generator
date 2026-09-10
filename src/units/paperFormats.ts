@@ -193,12 +193,20 @@ export function getPaperFormat(formatId: string): PaperFormat {
 
 export function isRollPaperFormat(formatId: string): boolean {
   const fmt = getPaperFormat(formatId);
-  return !!fmt.isRoll;
+  return !!fmt.isRoll || fmt.group === 'thermal';
+}
+
+/**
+ * Проверка, относится ли формат к принтерам для термопечати (рулоны, этикетки)
+ */
+export function isThermalPaperFormat(formatId: string): boolean {
+  const fmt = getPaperFormat(formatId);
+  return fmt.group === 'thermal';
 }
 
 /**
  * Расчет физических размеров страницы в миллиметрах с учетом формата,
- * пользовательских размеров (если выбран custom), длины рулона (для термопринтеров) и ориентации.
+ * пользовательских размеров (если выбран custom), длины ленты/рулона (для термопринтеров) и ориентации.
  */
 export function calculatePageDimensions(
   formatId: string,
@@ -216,9 +224,9 @@ export function calculatePageDimensions(
   } else {
     const format = getPaperFormat(formatId);
     baseW = format.widthMm;
-    if (format.isRoll) {
-      // Для рулонов термопринтера расстояние по длине настраивается пользователем
-      const chosenLen = rollLengthMm ?? customHeightMm;
+    if (format.group === 'thermal' || format.isRoll) {
+      // Для всех термопринтеров длина ленты/этикетки может настраиваться пользователем
+      const chosenLen = (rollLengthMm !== undefined && rollLengthMm > 0) ? rollLengthMm : (customHeightMm > 0 ? customHeightMm : format.heightMm);
       const len = chosenLen && chosenLen > 0 ? chosenLen : format.heightMm;
       baseH = Math.max(20, Math.min(3000, len));
     } else {

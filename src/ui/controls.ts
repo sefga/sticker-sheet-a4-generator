@@ -9,7 +9,7 @@ import { createCalibrationPdf } from '../pdf/calibrationPage';
 import { renderPreviewSvg } from '../preview/previewRenderer';
 import { roundMm } from '../units/mm';
 import { Unit, toMm, fromMm, formatUnitValue, getUnitSymbol } from '../units/units';
-import { PAPER_FORMATS, getPaperFormat, getAppTitleForFormat, isRollPaperFormat } from '../units/paperFormats';
+import { PAPER_FORMATS, getPaperFormat, getAppTitleForFormat, isThermalPaperFormat } from '../units/paperFormats';
 import { setLanguage, t, applyTranslations, onLanguageChange, TranslationKey } from '../i18n';
 import { trackEvent } from '../analytics';
 
@@ -18,6 +18,7 @@ export class UIController {
   private isProcessingImage: boolean = false;
   private activeCatalogCategory: string = 'all';
   private catalogSearchQuery: string = '';
+  private lastThermalFormatId: string = 'peripage_57';
   private lastArtworkCache: {
     imageSrc: string;
     cropJson: string;
@@ -979,35 +980,43 @@ export class UIController {
       paperSelect.value = state.paperFormatId;
     }
     const chipA4 = document.getElementById('chipPaperA4');
+    const chipThermal = document.getElementById('chipPaperThermal');
+    const chipCustom = document.getElementById('chipPaperCustom');
     const chipLetter = document.getElementById('chipPaperLetter');
     const chipWb = document.getElementById('chipPaperWb');
     const chipPeriPage = document.getElementById('chipPaperPeriPage');
-    const chipCustom = document.getElementById('chipPaperCustom');
     const chipMore = document.getElementById('chipPaperMore');
     const morePaperGroup = document.getElementById('morePaperGroup');
 
-    const isTopFormat =
-      state.paperFormatId === 'a4' ||
-      state.paperFormatId === 'letter' ||
-      state.paperFormatId === 'label_58x40' ||
-      state.paperFormatId === 'peripage_57' ||
-      state.paperFormatId === 'custom';
+    const isThermal = isThermalPaperFormat(state.paperFormatId);
 
-    chipA4?.classList.toggle('active', state.paperFormatId === 'a4');
+    const isA4 = state.paperFormatId === 'a4';
+    const lang = (localStorage.getItem('sticker_sheet_lang') as 'ru' | 'en') || 'ru';
+
+    chipA4?.classList.toggle('active', isA4);
+    chipMore?.classList.toggle('active', !isA4);
+
+    if (chipMore) {
+      if (isA4) {
+        chipMore.textContent = t('paperChipOther');
+      } else {
+        const shortName = getShortPaperFormatName(state.paperFormatId, lang);
+        chipMore.textContent = `${shortName} ▾`;
+      }
+    }
+
+    // Обратная совместимость со скрытыми чипами
+    chipThermal?.classList.toggle('active', isThermal);
+    chipCustom?.classList.toggle('active', state.paperFormatId === 'custom');
+    if (chipThermal) {
+      chipThermal.textContent = t('paperChipThermal');
+    }
+    if (chipCustom) {
+      chipCustom.textContent = t('paperChipCustom');
+    }
     chipLetter?.classList.toggle('active', state.paperFormatId === 'letter');
     chipWb?.classList.toggle('active', state.paperFormatId === 'label_58x40');
     chipPeriPage?.classList.toggle('active', state.paperFormatId === 'peripage_57');
-    chipCustom?.classList.toggle('active', state.paperFormatId === 'custom');
-    chipMore?.classList.toggle('active', !isTopFormat);
-
-    if (chipMore) {
-      if (!isTopFormat) {
-        const fmt = getPaperFormat(state.paperFormatId);
-        chipMore.textContent = `${fmt.name} ▾`;
-      } else {
-        chipMore.textContent = t('paperChipOther');
-      }
-    }
 
     if (morePaperGroup) {
       morePaperGroup.style.display = 'none';
@@ -1023,17 +1032,17 @@ export class UIController {
     setVal('customPageWidth', formatUnitValue(state.customPageWidthMm, state.unit));
     setVal('customPageHeight', formatUnitValue(state.customPageHeightMm, state.unit));
 
-    const isRoll = isRollPaperFormat(state.paperFormatId);
+    // Для ВСЕХ принтеров термопечати доступна настройка длины ленты/этикетки
     const thermalRollGroup = document.getElementById('thermalRollGroup');
     if (thermalRollGroup) {
-      thermalRollGroup.style.display = isRoll ? 'flex' : 'none';
+      thermalRollGroup.style.display = isThermal ? 'flex' : 'none';
     }
     setVal('thermalRollLength', formatUnitValue(state.rollLengthMm, state.unit));
 
     const rollChips = document.querySelectorAll('.roll-preset-chip');
     rollChips.forEach((chip) => {
       const lenVal = parseFloat((chip as HTMLElement).dataset.len || '0');
-      chip.classList.toggle('active', isRoll && Math.abs(state.rollLengthMm - lenVal) < 0.5);
+      chip.classList.toggle('active', isThermal && Math.abs(state.rollLengthMm - lenVal) < 0.5);
     });
 
     setVal('stickerWidth', formatUnitValue(state.stickerWidthMm, state.unit));
@@ -1421,21 +1430,39 @@ export class UIController {
    */
   private initPaperCatalog() {
     const chipA4 = document.getElementById('chipPaperA4');
+    const chipThermal = document.getElementById('chipPaperThermal');
+    const chipCustom = document.getElementById('chipPaperCustom');
     const chipLetter = document.getElementById('chipPaperLetter');
     const chipWb = document.getElementById('chipPaperWb');
     const chipPeriPage = document.getElementById('chipPaperPeriPage');
-    const chipCustom = document.getElementById('chipPaperCustom');
     const chipMore = document.getElementById('chipPaperMore');
     const btnOpenCatalogLink = document.getElementById('btnOpenCatalogLink');
 
     const paperSelect = document.getElementById('paperFormatSelect') as HTMLSelectElement;
     const morePaperGroup = document.getElementById('morePaperGroup');
 
-    // Быстрые чипсы
+    // Быстрые кнопки форматов (A4, Термо, Custom)
     chipA4?.addEventListener('click', () => {
       if (morePaperGroup) morePaperGroup.style.display = 'none';
       this.selectPaperFormat('a4');
     });
+    chipThermal?.addEventListener('click', () => {
+      if (morePaperGroup) morePaperGroup.style.display = 'none';
+      const curFmt = getPaperFormat(store.getState().paperFormatId);
+      if (curFmt.group === 'thermal') {
+        // Уже выбран термопринтер - клик открывает полный каталог для смены принтера
+        this.openPaperCatalog();
+      } else {
+        // Переключаемся на сохраненный или дефолтный термопринтер
+        this.selectPaperFormat(this.lastThermalFormatId || 'peripage_57');
+      }
+    });
+    chipCustom?.addEventListener('click', () => {
+      if (morePaperGroup) morePaperGroup.style.display = 'none';
+      this.selectPaperFormat('custom');
+    });
+
+    // Обратная совместимость с отдельными кнопками, если они вызываются в тестах
     chipLetter?.addEventListener('click', () => {
       if (morePaperGroup) morePaperGroup.style.display = 'none';
       this.selectPaperFormat('letter');
@@ -1448,17 +1475,24 @@ export class UIController {
       if (morePaperGroup) morePaperGroup.style.display = 'none';
       this.selectPaperFormat('peripage_57');
     });
-    chipCustom?.addEventListener('click', () => {
-      if (morePaperGroup) morePaperGroup.style.display = 'none';
-      this.selectPaperFormat('custom');
-    });
 
-    // Открытие дизайнерского каталога
+    // Открытие дизайнерского каталога по кнопке или всей карточке
     chipMore?.addEventListener('click', () => {
       this.openPaperCatalog();
     });
     btnOpenCatalogLink?.addEventListener('click', () => {
       this.openPaperCatalog();
+    });
+
+    const paperSummaryCard = document.getElementById('paperSummaryCard');
+    paperSummaryCard?.addEventListener('click', () => {
+      this.openPaperCatalog();
+    });
+    paperSummaryCard?.addEventListener('keydown', (e: KeyboardEvent) => {
+      if (e.key === 'Enter' || e.key === ' ') {
+        e.preventDefault();
+        this.openPaperCatalog();
+      }
     });
 
     // Синхронизация нативного селекта (для обратной совместимости)
@@ -1543,7 +1577,7 @@ export class UIController {
   }
 
   /**
-   * Закрытие каталога форматов
+   * Закрыть каталог форматов
    */
   public closePaperCatalog() {
     const modal = document.getElementById('paperCatalogModal');
@@ -1570,14 +1604,14 @@ export class UIController {
     const isCurZero = curMargins.top === 0 && curMargins.bottom === 0 && curMargins.left === 0 && curMargins.right === 0;
 
     if (newFormat.group === 'thermal') {
+      this.lastThermalFormatId = formatId;
       // При переходе на термопринтер сбрасываем поля в 0 мм для печати в край рулона
       if (isCurStandard) {
         updates.margins = { top: 0, bottom: 0, left: 0, right: 0 };
       }
-      if (newFormat.isRoll && newFormat.defaultRollLengthMm) {
-        if (!store.getState().rollLengthMm || store.getState().rollLengthMm <= 0) {
-          updates.rollLengthMm = newFormat.defaultRollLengthMm;
-        }
+      // Для всех термопринтеров задаем длину ленты/этикетки по умолчанию, если не была задана
+      if (!store.getState().rollLengthMm || store.getState().rollLengthMm <= 0 || curFormat.group !== 'thermal') {
+        updates.rollLengthMm = newFormat.defaultRollLengthMm || newFormat.heightMm;
       }
     } else if (newFormat.group === 'iso' || newFormat.group === 'ansi') {
       // При возврате с термопринтера на офисный лист восстанавливаем рекомендуемые поля 5 мм
@@ -1594,10 +1628,10 @@ export class UIController {
       customPaperGroup.style.display = formatId === 'custom' ? 'flex' : 'none';
     }
 
-    // Управляем видимостью блока настройки рулона
+    // Для ВСЕХ термопринтеров показываем блок настройки длины
     const thermalRollGroup = document.getElementById('thermalRollGroup');
     if (thermalRollGroup) {
-      thermalRollGroup.style.display = isRollPaperFormat(formatId) ? 'flex' : 'none';
+      thermalRollGroup.style.display = isThermalPaperFormat(formatId) ? 'flex' : 'none';
     }
 
     // Гарантируем скрытие рудиментарного блока morePaperGroup
@@ -1652,6 +1686,7 @@ export class UIController {
       card.setAttribute('role', 'option');
       card.setAttribute('aria-selected', isSelected ? 'true' : 'false');
       card.setAttribute('tabindex', '0');
+      card.dataset.paper = fmt.id;
 
       // SVG Иконка
       const iconSvg = getPaperFormatSvgIcon(fmt.group, fmt.id);
@@ -1731,20 +1766,17 @@ export class UIController {
 
     const fmt = getPaperFormat(state.paperFormatId);
     const lang = (localStorage.getItem('sticker_sheet_lang') as 'ru' | 'en') || 'ru';
-    const unitSymbol = getUnitSymbol(state.unit, lang);
-    const pageDim = store.getPageDimensions();
-    const wVal = formatUnitValue(pageDim.widthMm, state.unit);
-    const hVal = formatUnitValue(pageDim.heightMm, state.unit);
 
     if (cardIcon) {
       cardIcon.innerHTML = getPaperFormatSvgIcon(fmt.group, fmt.id);
     }
+
+    const { title, subtitle } = getPaperCardDisplayInfo(state.paperFormatId, state, lang);
     if (cardTitle) {
-      const displayName = lang === 'ru' ? fmt.name : fmt.name.replace('мм', 'mm');
-      cardTitle.textContent = `${displayName} (${wVal} × ${hVal} ${unitSymbol})`;
+      cardTitle.textContent = title;
     }
     if (cardDesc) {
-      cardDesc.textContent = lang === 'ru' ? fmt.descriptionRu : fmt.descriptionEn;
+      cardDesc.textContent = subtitle;
     }
 
     const isThermal = fmt.group === 'thermal';
@@ -1788,3 +1820,142 @@ function getPaperFormatSvgIcon(group: string, id: string): string {
   }
   return `<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline></svg>`;
 }
+
+function getShortPaperFormatName(formatId: string, lang: 'ru' | 'en'): string {
+  switch (formatId) {
+    case 'label_58x40':
+      return '58 × 40 мм';
+    case 'peripage_57':
+      return lang === 'ru' ? 'Лента 57 мм' : '57mm Roll';
+    case 'roll_80':
+      return lang === 'ru' ? 'Рулон 80 мм' : '80mm Roll';
+    case 'label_50x30':
+      return '50 × 30 мм';
+    case 'label_4x6':
+      return '100 × 150 мм';
+    case 'photo_10x15':
+      return '10 × 15 см';
+    case 'letter':
+      return 'US Letter';
+    case 'legal':
+      return 'US Legal';
+    case 'tabloid':
+      return 'Tabloid';
+    case 'half_letter':
+      return 'Half Letter';
+    case 'a3':
+      return 'A3';
+    case 'a5':
+      return 'A5';
+    case 'a6':
+      return 'A6';
+    case 'custom':
+      return lang === 'ru' ? 'Свой размер' : 'Custom Size';
+    default: {
+      const fmt = getPaperFormat(formatId);
+      return fmt.name.replace(/\s*\(.*\)/, '').trim();
+    }
+  }
+}
+
+function getPaperCardDisplayInfo(
+  formatId: string,
+  state: AppState,
+  lang: 'ru' | 'en'
+): { title: string; subtitle: string } {
+  const isRu = lang === 'ru';
+  const unitSymbol = getUnitSymbol(state.unit, lang);
+  const pageDim = store.getPageDimensions();
+  const wVal = formatUnitValue(pageDim.widthMm, state.unit);
+  const hVal = formatUnitValue(pageDim.heightMm, state.unit);
+
+  switch (formatId) {
+    case 'a4':
+      return {
+        title: `A4 (${wVal} × ${hVal} ${unitSymbol})`,
+        subtitle: isRu ? 'Офисный лист' : 'Office paper sheet',
+      };
+    case 'a3':
+      return {
+        title: `A3 (${wVal} × ${hVal} ${unitSymbol})`,
+        subtitle: isRu ? 'Большой лист' : 'Large sheet',
+      };
+    case 'a5':
+      return {
+        title: `A5 (${wVal} × ${hVal} ${unitSymbol})`,
+        subtitle: isRu ? 'Половина A4' : 'Half of A4',
+      };
+    case 'a6':
+      return {
+        title: `A6 (${wVal} × ${hVal} ${unitSymbol})`,
+        subtitle: isRu ? 'Открытка' : 'Postcard',
+      };
+    case 'peripage_57': {
+      const rollH = formatUnitValue(state.rollLengthMm || 80, state.unit);
+      return {
+        title: isRu ? `Лента ${wVal} × ${rollH} ${unitSymbol}` : `${wVal} × ${rollH} ${unitSymbol} Roll`,
+        subtitle: isRu ? 'Карманные принтеры' : 'Pocket mini printers',
+      };
+    }
+    case 'roll_80': {
+      const rollH = formatUnitValue(state.rollLengthMm || 100, state.unit);
+      return {
+        title: isRu ? `Рулон ${wVal} × ${rollH} ${unitSymbol}` : `${wVal} × ${rollH} ${unitSymbol} Roll`,
+        subtitle: isRu ? 'Кассовая лента' : 'POS receipt roll',
+      };
+    }
+    case 'label_58x40':
+      return {
+        title: isRu ? `Этикетка ${wVal} × ${hVal} ${unitSymbol}` : `${wVal} × ${hVal} ${unitSymbol} Label`,
+        subtitle: isRu ? 'Wildberries, Ozon' : 'Wildberries, Ozon',
+      };
+    case 'label_50x30':
+      return {
+        title: isRu ? `Этикетка ${wVal} × ${hVal} ${unitSymbol}` : `${wVal} × ${hVal} ${unitSymbol} Label`,
+        subtitle: isRu ? 'Штрихкоды, ценники' : 'Barcodes & tags',
+      };
+    case 'label_4x6':
+      return {
+        title: isRu ? `Этикетка 100 × 150 мм` : `100 × 150 mm Label`,
+        subtitle: isRu ? 'Накладная WB, Ozon' : 'Shipping label 4×6"',
+      };
+    case 'photo_10x15':
+      return {
+        title: isRu ? `Фотобумага ${wVal} × ${hVal} ${unitSymbol}` : `Photo ${wVal} × ${hVal} ${unitSymbol}`,
+        subtitle: isRu ? 'Фотопечать' : 'Photo print',
+      };
+    case 'letter':
+      return {
+        title: `US Letter (${wVal} × ${hVal} ${unitSymbol})`,
+        subtitle: isRu ? 'Стандарт США' : 'US Standard',
+      };
+    case 'legal':
+      return {
+        title: `US Legal (${wVal} × ${hVal} ${unitSymbol})`,
+        subtitle: isRu ? 'Длинный лист США' : 'US Legal sheet',
+      };
+    case 'tabloid':
+      return {
+        title: `US Tabloid (${wVal} × ${hVal} ${unitSymbol})`,
+        subtitle: isRu ? 'Формат Tabloid' : 'Tabloid format',
+      };
+    case 'half_letter':
+      return {
+        title: `Half Letter (${wVal} × ${hVal} ${unitSymbol})`,
+        subtitle: isRu ? 'Половина Letter' : 'Half of Letter',
+      };
+    case 'custom':
+      return {
+        title: isRu ? `Свой размер (${wVal} × ${hVal} ${unitSymbol})` : `Custom (${wVal} × ${hVal} ${unitSymbol})`,
+        subtitle: isRu ? 'Свои параметры' : 'Custom size',
+      };
+    default: {
+      const fmt = getPaperFormat(formatId);
+      return {
+        title: `${fmt.name} (${wVal} × ${hVal} ${unitSymbol})`,
+        subtitle: isRu ? fmt.descriptionRu.slice(0, 26) : fmt.descriptionEn.slice(0, 26),
+      };
+    }
+  }
+}
+

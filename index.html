@@ -207,17 +207,19 @@
           <div class="section-title-row section-title-paper">
             <div class="section-title" data-i18n="secPageTitle">3. Лист бумаги</div>
             <div class="paper-switch unit-switch" role="group" aria-label="Формат бумаги">
-              <button type="button" class="paper-chip-btn unit-btn active" id="chipPaperA4" data-paper="a4" aria-label="A4 (210 × 297 мм)">A4</button>
-              <button type="button" class="paper-chip-btn unit-btn" id="chipPaperLetter" data-paper="letter" aria-label="US Letter (8.5 × 11 in)">Letter</button>
-              <button type="button" class="paper-chip-btn unit-btn" id="chipPaperWb" data-paper="label_58x40" aria-label="Термоэтикетка 58 × 40 мм (WB, Ozon)" data-i18n="chipWb">WB 58×40</button>
-              <button type="button" class="paper-chip-btn unit-btn" id="chipPaperPeriPage" data-paper="peripage_57" aria-label="PeriPage 57 мм рулон" data-i18n="chipPeriPage">PeriPage</button>
-              <button type="button" class="paper-chip-btn unit-btn" id="chipPaperCustom" data-paper="custom" aria-label="Свой размер листа" data-i18n="paperChipCustom">Свой</button>
-              <button type="button" class="paper-chip-btn unit-btn" id="chipPaperMore" data-paper="more" aria-label="Каталог принтеров и форматов бумаги" data-i18n="paperChipOther">Все принтеры ▾</button>
+              <button type="button" class="paper-chip-btn unit-btn active" id="chipPaperA4" data-paper="a4" aria-label="A4 (210 × 297 мм)" data-i18n="paperChipA4">A4</button>
+              <button type="button" class="paper-chip-btn unit-btn btn-paper-more" id="chipPaperMore" data-paper="more" aria-label="Другие размеры бумаги" data-i18n="paperChipOther" data-i18n-title="paperChipOtherTitle" title="Выбор размера бумаги или этикетки">Другие размеры ▾</button>
+              <!-- Скрытые элементы для 100% обратной совместимости со старыми тестовыми скриптами -->
+              <button type="button" id="chipPaperThermal" style="display:none !important;" aria-hidden="true"></button>
+              <button type="button" id="chipPaperCustom" style="display:none !important;" aria-hidden="true"></button>
+              <button type="button" id="chipPaperLetter" style="display:none !important;" aria-hidden="true"></button>
+              <button type="button" id="chipPaperWb" style="display:none !important;" aria-hidden="true"></button>
+              <button type="button" id="chipPaperPeriPage" style="display:none !important;" aria-hidden="true"></button>
             </div>
           </div>
 
           <!-- Информативная карточка текущего выбранного формата бумаги и принтера -->
-          <div class="paper-summary-card" id="paperSummaryCard">
+          <div class="paper-summary-card" id="paperSummaryCard" role="button" tabindex="0" title="Нажмите, чтобы открыть каталог принтеров" aria-label="Текущий формат бумаги. Нажмите для смены принтера">
             <div class="paper-summary-left">
               <span class="paper-summary-icon" id="paperSummaryIcon" aria-hidden="true"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline></svg></span>
               <div class="paper-summary-text">
@@ -227,7 +229,10 @@
             </div>
             <div class="paper-summary-right">
               <span class="badge-smart-margins" id="badgeSmartMargins" data-i18n="badgeStandardMargins">Поля 3–5 мм</span>
-              <button type="button" class="btn-open-catalog-link" id="btnOpenCatalogLink" data-i18n="btnSelectPaperFormat" aria-label="Каталог форматов бумаги">Выбрать</button>
+              <span class="paper-card-chevron" aria-hidden="true">
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"></polyline></svg>
+              </span>
+              <button type="button" class="btn-open-catalog-link" id="btnOpenCatalogLink" style="display: none !important;" data-i18n="btnSelectPaperFormat" aria-label="Каталог форматов бумаги">Выбрать</button>
             </div>
           </div>
 

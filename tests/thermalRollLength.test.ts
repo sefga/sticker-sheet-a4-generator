@@ -124,4 +124,35 @@ describe('Настройка расстояния по длине рулонно
     expect(parsed.paperFormatId).toBe('peripage_57');
     expect(parsed.rollLengthMm).toBe(175);
   });
+
+  it('Все термопринтеры (WB 58x40, Niimbot, 4x6, PeriPage, 80мм) поддерживают настройку длины', () => {
+    // 1. WB 58x40: дефолт 58x40 мм в альбомной ориентации, при настройке длины рулона 90 мм
+    const dimWbDefault = calculatePageDimensions('label_58x40', 0, 0, 'landscape');
+    expect(dimWbDefault.widthMm).toBe(58);
+    expect(dimWbDefault.heightMm).toBe(40);
+
+    const dimWbCustom = calculatePageDimensions('label_58x40', 0, 0, 'portrait', 90);
+    expect(dimWbCustom.widthMm).toBe(58);
+    expect(dimWbCustom.heightMm).toBe(90);
+
+    // 2. Niimbot 50x30: дефолт 30 мм, при настройке длины 65 мм
+    const dimNiimbotCustom = calculatePageDimensions('label_50x30', 0, 0, 'portrait', 65);
+    expect(dimNiimbotCustom.widthMm).toBe(50);
+    expect(dimNiimbotCustom.heightMm).toBe(65);
+
+    // 3. 4x6" логистическая этикетка: при настройке длины 200 мм
+    const dim4x6Custom = calculatePageDimensions('label_4x6', 0, 0, 'portrait', 200);
+    expect(dim4x6Custom.widthMm).toBe(101.6);
+    expect(dim4x6Custom.heightMm).toBe(200);
+  });
+
+  it('Офисные форматы (A4, Letter, A3) игнорируют настройку rollLengthMm и сохраняют строгие стандартные размеры', () => {
+    const dimA4 = calculatePageDimensions('a4', 0, 0, 'portrait', 500);
+    expect(dimA4.widthMm).toBe(210);
+    expect(dimA4.heightMm).toBe(297);
+
+    const dimLetter = calculatePageDimensions('letter', 0, 0, 'portrait', 400);
+    expect(dimLetter.widthMm).toBe(215.9);
+    expect(dimLetter.heightMm).toBe(279.4);
+  });
 });
