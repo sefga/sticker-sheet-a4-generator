@@ -689,8 +689,8 @@
 
         <div class="paper-catalog-header">
           <div class="paper-catalog-header-text">
-            <h2 id="paperCatalogTitle" class="paper-catalog-title" data-i18n="paperCatalogTitle">Выбор принтера и формата бумаги</h2>
-            <p class="paper-catalog-subtitle" data-i18n="paperCatalogSubtitle">14 предустановленных стандартов для офисных, термо- и фотопринтеров</p>
+            <h2 id="paperCatalogTitle" class="paper-catalog-title" data-i18n="paperCatalogTitle">Выбор размера и формата бумаги</h2>
+            <p class="paper-catalog-subtitle" data-i18n="paperCatalogSubtitle">15 предустановленных стандартов для листовой, термо- и фотопечати</p>
           </div>
           <button type="button" class="catalog-close-btn" id="btnClosePaperCatalog" aria-label="Закрыть каталог" title="Закрыть окно">✕</button>
         </div>
@@ -698,18 +698,18 @@
         <!-- Поисковая строка -->
         <div class="catalog-search-wrapper">
           <span class="catalog-search-icon" aria-hidden="true"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg></span>
-          <input type="text" id="paperCatalogSearch" class="catalog-search-input" data-i18n-placeholder="searchPaperPlaceholder" placeholder="Поиск формата или принтера (A4, PeriPage, WB, 58×40...)" autocomplete="off" />
+          <input type="text" id="paperCatalogSearch" class="catalog-search-input" data-i18n-placeholder="searchPaperPlaceholder" placeholder="Поиск размера или формата (A4, 58×40, рулон, фото...)" autocomplete="off" />
           <button type="button" id="btnClearPaperSearch" class="catalog-search-clear" style="display: none;" aria-label="Очистить">✕</button>
         </div>
 
         <!-- Табы категорий -->
         <div class="catalog-category-tabs" role="tablist" aria-label="Категории бумаги">
-          <button type="button" class="catalog-tab active" data-cat="all" data-i18n="catAll">Все форматы</button>
-          <button type="button" class="catalog-tab" data-cat="iso" data-i18n="catIso">Офис (ISO)</button>
-          <button type="button" class="catalog-tab" data-cat="thermal" data-i18n="catThermal">Термо и этикетки</button>
-          <button type="button" class="catalog-tab" data-cat="ansi" data-i18n="catAnsi">США (ANSI)</button>
-          <button type="button" class="catalog-tab" data-cat="photo" data-i18n="catPhoto">Фотобумага</button>
+          <button type="button" class="catalog-tab active" data-cat="all" data-i18n="catAll">Все размеры</button>
           <button type="button" class="catalog-tab" data-cat="custom" data-i18n="catCustom">Свой размер</button>
+          <button type="button" class="catalog-tab" data-cat="thermal" data-i18n="catThermal">Этикетки и рулоны</button>
+          <button type="button" class="catalog-tab" data-cat="iso" data-i18n="catIso">Офис (ISO)</button>
+          <button type="button" class="catalog-tab" data-cat="photo" data-i18n="catPhoto">Фотобумага</button>
+          <button type="button" class="catalog-tab" data-cat="ansi" data-i18n="catAnsi">США (ANSI)</button>
         </div>
 
         <!-- Сетка карточек форматов бумаги -->

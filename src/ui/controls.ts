@@ -1722,15 +1722,13 @@ export class UIController {
 
       card.innerHTML = `
         <div class="card-header-row">
-          <div class="card-title-wrap">
-            <span class="card-icon" aria-hidden="true">${iconSvg}</span>
-            <span class="card-name">${displayName}</span>
-          </div>
-          <div class="card-badges">
-            ${badgesHtml.join('')}
-          </div>
+          <span class="card-icon" aria-hidden="true">${iconSvg}</span>
+          <span class="card-name">${displayName}</span>
         </div>
-        <div class="card-dimensions">${dimText}</div>
+        <div class="card-meta-row">
+          <span class="card-dimensions">${dimText}</span>
+          ${badgesHtml.length > 0 ? `<div class="card-badges">${badgesHtml.join('')}</div>` : ''}
+        </div>
         <div class="card-description">${desc}</div>
       `;
 

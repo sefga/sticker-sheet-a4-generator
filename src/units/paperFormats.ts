@@ -16,6 +16,18 @@ export interface PaperFormat {
 }
 
 export const PAPER_FORMATS: PaperFormat[] = [
+  // Пользовательский размер листа (на 1-м месте для быстрого доступа)
+  {
+    id: 'custom',
+    name: 'Свой размер листа',
+    group: 'custom',
+    widthMm: 210,
+    heightMm: 297,
+    descriptionRu: 'Настройка произвольной ширины и высоты листа',
+    descriptionEn: 'Custom page width and height dimensions',
+    keywords: ['свой', 'пользовательский', 'произвольный', 'custom', 'ручной', 'размер'],
+  },
+
   // Международные форматы ISO 216 (Серия A)
   {
     id: 'a4',
@@ -168,17 +180,6 @@ export const PAPER_FORMATS: PaperFormat[] = [
     keywords: ['фото', 'photo', '10x15', 'глянец', 'эпсон', 'epson'],
   },
 
-  // Пользовательский размер
-  {
-    id: 'custom',
-    name: 'Пользовательский размер',
-    group: 'custom',
-    widthMm: 210,
-    heightMm: 297,
-    descriptionRu: 'Любой произвольный размер листа',
-    descriptionEn: 'Custom sheet dimension',
-    keywords: ['свой', 'пользовательский', 'произвольный', 'custom'],
-  },
 ];
 
 export const DEFAULT_PAPER_FORMAT_ID = 'a4';
@@ -188,7 +189,9 @@ export const DEFAULT_PAPER_FORMAT_ID = 'a4';
  */
 export function getPaperFormat(formatId: string): PaperFormat {
   const found = PAPER_FORMATS.find((f) => f.id.toLowerCase() === formatId.toLowerCase());
-  return found || PAPER_FORMATS[0]; // По умолчанию A4
+  if (found) return found;
+  const a4 = PAPER_FORMATS.find((f) => f.id === DEFAULT_PAPER_FORMAT_ID);
+  return a4 || PAPER_FORMATS[0];
 }
 
 export function isRollPaperFormat(formatId: string): boolean {
